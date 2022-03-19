@@ -102,6 +102,10 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
   <ItemGroup>
     <ClInclude Include="Common.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
