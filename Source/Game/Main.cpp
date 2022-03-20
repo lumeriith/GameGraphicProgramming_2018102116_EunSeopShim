@@ -44,9 +44,8 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		library::CleanupDevice();
 		return 0;
 	}
-
 	// Main message loop
-	MSG msg;
+	MSG msg = {};
 	PeekMessage(&msg, nullptr, 0U, 0U, PM_NOREMOVE);
 
 	while (WM_QUIT != msg.message)

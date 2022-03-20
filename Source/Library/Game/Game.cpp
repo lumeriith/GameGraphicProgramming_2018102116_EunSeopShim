@@ -2,6 +2,9 @@
 
 namespace library
 {
+	template <typename T>
+	using ComPtr = Microsoft::WRL::ComPtr<T>;
+
 	const wchar_t CLASS_NAME[] = L"Game Window Class";
 	const D3D_FEATURE_LEVEL FEATURE_LEVELS[] = {
 		D3D_FEATURE_LEVEL_9_1,
@@ -16,10 +19,10 @@ namespace library
 	HINSTANCE hInstance;
 	HWND hWindow;
 
-	Microsoft::WRL::ComPtr<ID3D11Device>			pCurrentDevice;
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		pCurrentContext;
-	Microsoft::WRL::ComPtr<IDXGISwapChain>			pCurrentSwapChain;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	pRenderTargetView;
+	ComPtr<ID3D11Device>			pCurrentDevice;
+	ComPtr<ID3D11DeviceContext>		pCurrentContext;
+	ComPtr<IDXGISwapChain>			pCurrentSwapChain;
+	ComPtr<ID3D11RenderTargetView>	pRenderTargetView;
 
 
 	/*--------------------------------------------------------------------
@@ -73,7 +76,7 @@ namespace library
 	HRESULT InitWindow(_In_ HINSTANCE hInstance, _In_ INT nCmdShow) {
 		library::hInstance = hInstance;
 		// Registers the window class
-		WNDCLASS wc = {  };
+		WNDCLASS wc = {};
 
 		wc.lpfnWndProc = WindowProc;
 		wc.hInstance = hInstance;
@@ -160,8 +163,8 @@ namespace library
 
 	HRESULT CreateSwapChain() {
 		// -------------- Create the swap chain -------------------
-		DXGI_SWAP_CHAIN_DESC desc;
-		ZeroMemory(&desc, sizeof(DXGI_SWAP_CHAIN_DESC));
+		DXGI_SWAP_CHAIN_DESC desc = {};
+
 		desc.Windowed = TRUE; // Sets the initial state of full-screen mode.
 		desc.BufferCount = 2;
 		desc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -172,12 +175,12 @@ namespace library
 		desc.OutputWindow = hWindow;
 
 		// Create the DXGI device object to use in other factories, such as Direct2D.
-		Microsoft::WRL::ComPtr<IDXGIDevice3> pDxgiDevice;
+		ComPtr<IDXGIDevice3> pDxgiDevice;
 		pCurrentDevice.As(&pDxgiDevice);
 
 		// Create swap chain.
-		Microsoft::WRL::ComPtr<IDXGIAdapter> pAdapter;
-		Microsoft::WRL::ComPtr<IDXGIFactory> pFactory;
+		ComPtr<IDXGIAdapter> pAdapter;
+		ComPtr<IDXGIFactory> pFactory;
 
 		HRESULT hr = pDxgiDevice->GetAdapter(&pAdapter);
 
@@ -196,13 +199,13 @@ namespace library
 		HRESULT hr;
 
 		// Create a render target view
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> pBackBuffer;
+		ComPtr<ID3D11Texture2D> pBackBuffer;
 		D3D11_TEXTURE2D_DESC bbDesc;
 
 		hr = pCurrentSwapChain->GetBuffer(
 			0,
 			__uuidof(ID3D11Texture2D),
-			(void**)&pBackBuffer);
+			(void**)pBackBuffer.GetAddressOf());
 		if (FAILED(hr)) return hr;
 
 		hr = pCurrentDevice->CreateRenderTargetView(
@@ -215,8 +218,8 @@ namespace library
 		pBackBuffer->GetDesc(&bbDesc);
 
 		// Create a depth-stencil buffer
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
-		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthStencilView;
+		ComPtr<ID3D11Texture2D> pDepthStencil;
+		ComPtr<ID3D11DepthStencilView> pDepthStencilView;
 
 		CD3D11_TEXTURE2D_DESC depthStencilDesc(
 			DXGI_FORMAT_D24_UNORM_S8_UINT,
