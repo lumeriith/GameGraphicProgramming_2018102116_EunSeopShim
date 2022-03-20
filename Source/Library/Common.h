@@ -1,7 +1,7 @@
 /*+===================================================================
   File:      COMMON.H
 
-  Summary:   Common header file that contains common header files and 
+  Summary:   Common header file that contains common header files and
 			 macros used for the Library project of Game Graphics
 			 Programming course.
 
@@ -21,6 +21,8 @@
 #include <directxcolors.h>
 
 #include "Resource.h"
+
+#include <wrl.h>
 
 constexpr LPCWSTR PSZ_COURSE_TITLE = L"Game Graphics Programming";
 
