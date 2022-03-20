@@ -157,8 +157,9 @@ namespace library
 			&featureLevel,            // Returns feature level of device created.
 			pCurrentContext.GetAddressOf()                    // Returns the device immediate context.
 		);
-
 		if (FAILED(hr)) return hr;
+
+		return S_OK;
 	}
 
 	HRESULT CreateSwapChain() {
@@ -182,17 +183,21 @@ namespace library
 		ComPtr<IDXGIAdapter> pAdapter;
 		ComPtr<IDXGIFactory> pFactory;
 
-		HRESULT hr = pDxgiDevice->GetAdapter(&pAdapter);
-
+		HRESULT hr;
+		hr = pDxgiDevice->GetAdapter(&pAdapter);
 		if (FAILED(hr)) return hr;
 
-		pAdapter->GetParent(IID_PPV_ARGS(&pFactory));
+		hr = pAdapter->GetParent(IID_PPV_ARGS(&pFactory));
+		if (FAILED(hr)) return hr;
 
 		hr = pFactory->CreateSwapChain(
 			pCurrentDevice.Get(),
 			&desc,
 			&pCurrentSwapChain
 		);
+		if (FAILED(hr)) return hr;
+
+		return S_OK;
 	}
 
 	HRESULT CreateRenderTarget() {
@@ -230,24 +235,24 @@ namespace library
 			D3D11_BIND_DEPTH_STENCIL
 		);
 
-		pCurrentDevice->CreateTexture2D(
+		hr = pCurrentDevice->CreateTexture2D(
 			&depthStencilDesc,
 			nullptr,
 			pDepthStencil.GetAddressOf()
 		);
+		if (FAILED(hr)) return hr;
 
 		CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
 
-		pCurrentDevice->CreateDepthStencilView(
+		hr = pCurrentDevice->CreateDepthStencilView(
 			pDepthStencil.Get(),
 			&depthStencilViewDesc,
 			pDepthStencilView.GetAddressOf()
 		);
+		if (FAILED(hr)) return hr;
 
 		// Create a viewport
-		D3D11_VIEWPORT viewport;
-
-		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+		D3D11_VIEWPORT viewport = {};
 		viewport.Height = (float)bbDesc.Height;
 		viewport.Width = (float)bbDesc.Width;
 		viewport.MinDepth = 0;
@@ -257,24 +262,24 @@ namespace library
 			1,
 			&viewport
 		);
-	}
 
+		return S_OK;
+	}
 
 	void CleanupDevice() {
-		// pCurrentDevice.Get()->Release();
-		// pCurrentContext.Get()->Release();
-		// pRenderTargetView.Get()->Release();
-		// delete currentSwapChain;
+		// Explicitly release ComPtrs
+		pCurrentDevice = nullptr;
+		pCurrentContext = nullptr;
+		pCurrentSwapChain = nullptr;
+		pRenderTargetView = nullptr;
 	}
 
-
 	void Render() {
-		//
 		// Clear the backbuffer
-		//
-		float ClearColor[4] = { 0.0f, 0.125f, 0.6f, 1.0f }; // RGBA
+		const float ClearColor[4] = { 0.0f, 0.125f, 0.6f, 1.0f }; // RGBA
 		pCurrentContext->ClearRenderTargetView(pRenderTargetView.Get(), ClearColor);
 
+		// Present
 		pCurrentSwapChain->Present(0, 0);
 	}
 }
