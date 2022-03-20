@@ -24,10 +24,13 @@ namespace library
 	ComPtr<IDXGISwapChain>			pCurrentSwapChain;
 	ComPtr<ID3D11RenderTargetView>	pRenderTargetView;
 
-
 	/*--------------------------------------------------------------------
 	  Forward declarations
 	--------------------------------------------------------------------*/
+
+	HRESULT GetInterfaceForDeviceAndContext();
+	HRESULT CreateSwapChain();
+	HRESULT CreateRenderTarget();
 
 	/*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	  Function: WindowProc
@@ -114,10 +117,6 @@ namespace library
 		return S_OK;
 	}
 
-	HRESULT GetInterfaceForDeviceAndContext();
-	HRESULT CreateSwapChain();
-	HRESULT CreateRenderTarget();
-
 	HRESULT InitDevice() {
 		HRESULT hr;
 
@@ -135,7 +134,7 @@ namespace library
 
 	HRESULT GetInterfaceForDeviceAndContext() {
 		// This flag adds support for surfaces with a color-channel ordering different
-// from the API default. It is required for compatibility with Direct2D.
+		// from the API default. It is required for compatibility with Direct2D.
 		UINT deviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
 #if defined(DEBUG) || defined(_DEBUG)
