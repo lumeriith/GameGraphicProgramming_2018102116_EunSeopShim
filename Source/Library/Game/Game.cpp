@@ -72,6 +72,8 @@ namespace library
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;
+		default:
+			break;
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}

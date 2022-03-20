@@ -34,7 +34,7 @@
   Returns:  INT
 			  Status code.
 -----------------------------------------------------------------F-F*/
-INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ INT nCmdShow)
+INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ INT nCmdShow)
 {
 	if (FAILED(library::InitWindow(hInstance, nCmdShow))) {
 		return 0;
