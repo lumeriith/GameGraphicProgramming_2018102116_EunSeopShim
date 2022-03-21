@@ -16,7 +16,7 @@ namespace library
 		D3D_FEATURE_LEVEL_11_1
 	};
 
-	HINSTANCE hInstance;
+	HINSTANCE hCurrentInstance;
 	HWND hWindow;
 
 	ComPtr<ID3D11Device>			pCurrentDevice;
@@ -35,7 +35,7 @@ namespace library
 	/*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	  Function: WindowProc
 
-	  Summary:  Defines the behavior of the window—its appearance, how
+	  Summary:  Defines the behavior of the window-its appearance, how
 				it interacts with the user, and so forth
 
 	  Args:     HWND hWnd
@@ -64,7 +64,7 @@ namespace library
 			DestroyWindow(hWnd);
 			UnregisterClass(
 				CLASS_NAME,
-				hInstance
+				hCurrentInstance
 			);
 			return 0;
 		}
@@ -79,7 +79,7 @@ namespace library
 	}
 
 	HRESULT InitWindow(_In_ HINSTANCE hInstance, _In_ INT nCmdShow) {
-		library::hInstance = hInstance;
+		hCurrentInstance = hInstance;
 		// Registers the window class
 		WNDCLASS wc = {};
 
