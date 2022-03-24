@@ -12,9 +12,9 @@ namespace library {
 	  Modifies: [m_pszGameName, m_mainWindow, m_renderer].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	Game::Game(_In_ PCWSTR pszGameName) {
-		this->m_pszGameName = pszGameName;
-		this->m_mainWindow = nullptr;
-		this->m_renderer = nullptr;
+		m_pszGameName = pszGameName;
+		m_mainWindow = nullptr;
+		m_renderer = nullptr;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -36,11 +36,11 @@ namespace library {
 	HRESULT library::Game::Initialize(_In_ HINSTANCE hInstance, _In_ INT nCmdShow) {
 		HRESULT hr;
 
-		this->m_mainWindow = std::make_unique<MainWindow>();
-		hr = this->m_mainWindow->Initialize(hInstance, nCmdShow, L"Some Window Name");
+		m_mainWindow = std::make_unique<MainWindow>();
+		hr = m_mainWindow->Initialize(hInstance, nCmdShow, L"Some Window Name");
 		if (FAILED(hr)) return hr;
 
-		this->m_renderer = std::make_unique<Renderer>();
+		m_renderer = std::make_unique<Renderer>();
 		hr = m_renderer->Initialize(m_mainWindow->GetWindow());
 		if (FAILED(hr)) return hr;
 

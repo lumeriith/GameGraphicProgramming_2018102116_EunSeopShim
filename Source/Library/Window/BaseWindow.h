@@ -149,7 +149,7 @@ namespace library
 	template<class DerivedType>
 	HWND BaseWindow<DerivedType>::GetWindow() const
 	{
-		return this->m_hWnd;
+		return m_hWnd;
 	}
 
 
@@ -195,7 +195,7 @@ namespace library
 
 		wc.lpfnWndProc = DerivedType::WindowProc;
 		wc.hInstance = hInstance;
-		wc.lpszClassName = this->GetWindowClassName();
+		wc.lpszClassName = GetWindowClassName();
 		wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 
 		RegisterClass(&wc);
@@ -203,7 +203,7 @@ namespace library
 		// Creates a window
 		m_hWnd = CreateWindowEx(
 			0,									// Optional window styles.
-			this->GetWindowClassName(),			// Window class
+			GetWindowClassName(),			// Window class
 			pszWindowName,						// Window text
 			dwStyle,							// Window style
 
