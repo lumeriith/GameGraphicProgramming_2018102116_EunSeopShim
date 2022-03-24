@@ -99,13 +99,13 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Desktop\Lab02\Library\Renderer\Renderer.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\Lab02\Library\Window\MainWindow.cpp" />
+    <ClCompile Include="Renderer\Renderer.cpp" />
+    <ClCompile Include="Window\MainWindow.cpp" />
     <ClCompile Include="Game\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Desktop\Lab02\Library\Renderer\Renderer.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Lab02\Library\Window\MainWindow.h" />
+    <ClInclude Include="Renderer\Renderer.h" />
+    <ClInclude Include="Window\MainWindow.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Resource.h" />
