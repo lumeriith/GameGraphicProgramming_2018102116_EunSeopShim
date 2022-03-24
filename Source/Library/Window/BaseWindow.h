@@ -190,6 +190,9 @@ namespace library
 	template<class DerivedType>
 	HRESULT BaseWindow<DerivedType>::initialize(HINSTANCE hInstance, INT nCmdShow, PCWSTR pszWindowName, DWORD dwStyle, INT x, INT y, INT nWidth, INT nHeight, HWND hWndParent, HMENU hMenu)
 	{
+		m_hInstance = hInstance;
+		m_pszWindowName = pszWindowName;
+
 		// Registers the window class
 		WNDCLASS wc = {};
 
