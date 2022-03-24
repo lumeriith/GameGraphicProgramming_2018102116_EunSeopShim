@@ -37,7 +37,7 @@ namespace library {
 		HRESULT hr;
 
 		m_mainWindow = std::make_unique<MainWindow>();
-		hr = m_mainWindow->Initialize(hInstance, nCmdShow, L"Some Window Name");
+		hr = m_mainWindow->Initialize(hInstance, nCmdShow, L"Game Graphics Programming Lab 02: Object Oriented Design");
 		if (FAILED(hr)) return hr;
 
 		m_renderer = std::make_unique<Renderer>();
