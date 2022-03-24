@@ -96,7 +96,7 @@ namespace library
 					Integer value that your program returns to Windows
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	template <class DerivedType>
-	static LRESULT BaseWindow<DerivedType>::WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam) {
+	LRESULT BaseWindow<DerivedType>::WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam) {
 		DerivedType* pThis = NULL;
 
 		if (uMsg == WM_NCCREATE)
@@ -104,13 +104,13 @@ namespace library
 			CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
 			pThis = (DerivedType*)pCreate->lpCreateParams;
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pThis);
-
 			pThis->m_hWnd = hWnd;
 		}
 		else
 		{
 			pThis = (DerivedType*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 		}
+
 		if (pThis)
 		{
 			return pThis->HandleMessage(uMsg, wParam, lParam);
@@ -202,18 +202,18 @@ namespace library
 
 		// Creates a window
 		m_hWnd = CreateWindowEx(
-			0,                              // Optional window styles.
-			this->GetWindowClassName(),                     // Window class
-			L"Game Graphics Programming Lab 01: Direct3D 11 Basics",    // Window text
-			dwStyle,            // Window style
+			0,									// Optional window styles.
+			this->GetWindowClassName(),			// Window class
+			pszWindowName,						// Window text
+			dwStyle,							// Window style
 
 			// Size and position
 			x, y, nWidth, nHeight,
 
 			hWndParent,		// Parent window    
-			hMenu,		// Menu
+			hMenu,			// Menu
 			hInstance,		// Instance handle
-			nullptr			// Additional application data
+			this			// Additional application data
 		);
 
 		if (m_hWnd == nullptr)
