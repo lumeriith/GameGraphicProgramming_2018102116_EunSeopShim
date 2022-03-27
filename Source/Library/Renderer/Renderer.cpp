@@ -72,9 +72,9 @@ namespace library {
 			FEATURE_LEVELS,							// List of feature levels this app can support.
 			ARRAYSIZE(FEATURE_LEVELS),				// Size of the list above.
 			D3D11_SDK_VERSION,						// Always set this to D3D11_SDK_VERSION for Windows Store apps.
-			m_d3dDevice.GetAddressOf(),		// Returns the Direct3D device created.
+			&m_d3dDevice,		// Returns the Direct3D device created.
 			&m_featureLevel,					// Returns feature level of device created.
-			m_immediateContext.GetAddressOf() // Returns the device immediate context.
+			&m_immediateContext // Returns the device immediate context.
 		);
 		if (FAILED(hr)) return hr;
 
@@ -113,7 +113,7 @@ namespace library {
 		hr = pFactory->CreateSwapChain(
 			m_d3dDevice.Get(),
 			&desc,
-			m_swapChain.GetAddressOf()
+			&m_swapChain
 		);
 		if (FAILED(hr)) return hr;
 
@@ -129,13 +129,13 @@ namespace library {
 		hr = m_swapChain->GetBuffer(
 			0,
 			__uuidof(ID3D11Texture2D),
-			(void**)pBackBuffer.GetAddressOf());
+			&pBackBuffer);
 		if (FAILED(hr)) return hr;
 
 		hr = m_d3dDevice->CreateRenderTargetView(
 			pBackBuffer.Get(),
 			nullptr,
-			m_renderTargetView.GetAddressOf()
+			&m_renderTargetView
 		);
 		if (FAILED(hr)) return hr;
 
@@ -157,7 +157,7 @@ namespace library {
 		hr = m_d3dDevice->CreateTexture2D(
 			&depthStencilDesc,
 			nullptr,
-			pDepthStencil.GetAddressOf()
+			&pDepthStencil
 		);
 		if (FAILED(hr)) return hr;
 
@@ -166,7 +166,7 @@ namespace library {
 		hr = m_d3dDevice->CreateDepthStencilView(
 			pDepthStencil.Get(),
 			&depthStencilViewDesc,
-			pDepthStencilView.GetAddressOf()
+			&pDepthStencilView
 		);
 		if (FAILED(hr)) return hr;
 
