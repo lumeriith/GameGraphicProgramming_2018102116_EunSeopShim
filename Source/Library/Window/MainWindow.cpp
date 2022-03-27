@@ -32,7 +32,7 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	PCWSTR MainWindow::GetWindowClassName() const
 	{
-		return L"MainWindow";
+		return L"Main Window";
 	}
 
 
