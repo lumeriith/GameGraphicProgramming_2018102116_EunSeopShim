@@ -11,11 +11,7 @@ namespace library {
 
 	  Modifies: [m_pszGameName, m_mainWindow, m_renderer].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	Game::Game(_In_ PCWSTR pszGameName) {
-		m_pszGameName = pszGameName;
-		m_mainWindow = nullptr;
-		m_renderer = nullptr;
-	}
+	Game::Game(_In_ PCWSTR pszGameName) : m_pszGameName(pszGameName), m_mainWindow(nullptr), m_renderer(nullptr) {}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Game::Initialize
