@@ -189,12 +189,12 @@ namespace library
 		m_pszWindowName = pszWindowName;
 
 		// Registers the window class
-		WNDCLASS wc = {};
-
-		wc.lpfnWndProc = DerivedType::WindowProc;
-		wc.hInstance = hInstance;
-		wc.lpszClassName = GetWindowClassName();
-		wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+		WNDCLASS wc = {
+			.lpfnWndProc = DerivedType::WindowProc,
+			.hInstance = hInstance,
+			.hCursor = LoadCursor(nullptr, IDC_ARROW),
+			.lpszClassName = GetWindowClassName()
+		};
 
 		RegisterClass(&wc);
 

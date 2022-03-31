@@ -83,16 +83,20 @@ namespace library {
 		// CreateSwapChain 
 		// ---------------------------------------------------------------------------------------------
 
-		DXGI_SWAP_CHAIN_DESC desc = {};
-
-		desc.Windowed = TRUE; // Sets the initial state of full-screen mode.
-		desc.BufferCount = 2;
-		desc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-		desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		desc.SampleDesc.Count = 1;      //multisampling setting
-		desc.SampleDesc.Quality = 0;    //vendor-specific flag
-		desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-		desc.OutputWindow = hWnd;
+		DXGI_SWAP_CHAIN_DESC desc = {
+			.BufferDesc = {
+				.Format = DXGI_FORMAT_B8G8R8A8_UNORM
+			},
+			.SampleDesc = {
+				.Count = 1,
+				.Quality = 0
+			},
+			.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+			.BufferCount = 2,
+			.OutputWindow = hWnd,
+			.Windowed = TRUE,
+			.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL,
+		};
 
 		// Create the DXGI device object to use in other factories, such as Direct2D.
 		ComPtr<IDXGIDevice3> pDxgiDevice;
@@ -169,11 +173,12 @@ namespace library {
 		if (FAILED(hr)) return hr;
 
 		// Create a viewport
-		D3D11_VIEWPORT viewport = {};
-		viewport.Height = (float)bbDesc.Height;
-		viewport.Width = (float)bbDesc.Width;
-		viewport.MinDepth = 0;
-		viewport.MaxDepth = 1;
+		D3D11_VIEWPORT viewport = {
+			.Width = (float)bbDesc.Width,
+			.Height = (float)bbDesc.Height,
+			.MinDepth = 0,
+			.MaxDepth = 1
+		};
 
 		m_immediateContext->RSSetViewports(
 			1,
