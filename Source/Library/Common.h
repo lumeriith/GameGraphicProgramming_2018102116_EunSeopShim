@@ -1,7 +1,7 @@
 /*+===================================================================
   File:      COMMON.H
 
-  Summary:   Common header file that contains common header files and 
+  Summary:   Common header file that contains common header files and
 			 macros used for the Library project of Game Graphics
 			 Programming course.
 
@@ -19,6 +19,7 @@
 #include <wrl.h>
 
 #include <d3d11_4.h>
+#include <d3dcompiler.h>
 #include <directxcolors.h>
 
 #include <memory>

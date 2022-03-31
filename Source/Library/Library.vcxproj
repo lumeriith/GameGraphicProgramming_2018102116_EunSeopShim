@@ -114,6 +114,13 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Lab03.fxh" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\Lab03_PS.hlsl" />
+    <FxCompile Include="Shaders\Lab03_VS.hlsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
