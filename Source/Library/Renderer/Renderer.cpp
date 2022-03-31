@@ -1,16 +1,6 @@
 #include "Renderer/Renderer.h"
 
 namespace library {
-	const D3D_FEATURE_LEVEL FEATURE_LEVELS[] = {
-	D3D_FEATURE_LEVEL_9_1,
-	D3D_FEATURE_LEVEL_9_2,
-	D3D_FEATURE_LEVEL_9_3,
-	D3D_FEATURE_LEVEL_10_0,
-	D3D_FEATURE_LEVEL_10_1,
-	D3D_FEATURE_LEVEL_11_0,
-	D3D_FEATURE_LEVEL_11_1
-	};
-
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::Renderer
 
@@ -58,6 +48,15 @@ namespace library {
 		// This flag adds support for surfaces with a color-channel ordering different
 		// from the API default. It is required for compatibility with Direct2D.
 		UINT deviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+		const D3D_FEATURE_LEVEL featureLevels[] = {
+			D3D_FEATURE_LEVEL_9_1,
+			D3D_FEATURE_LEVEL_9_2,
+			D3D_FEATURE_LEVEL_9_3,
+			D3D_FEATURE_LEVEL_10_0,
+			D3D_FEATURE_LEVEL_10_1,
+			D3D_FEATURE_LEVEL_11_0,
+			D3D_FEATURE_LEVEL_11_1
+		};
 
 #if defined(DEBUG) || defined(_DEBUG)
 		deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
@@ -67,8 +66,8 @@ namespace library {
 			D3D_DRIVER_TYPE_HARDWARE,				// Create a device using the hardware graphics driver.
 			nullptr,								// Should be 0 unless the driver is D3D_DRIVER_TYPE_SOFTWARE.
 			deviceFlags,							// Set debug and Direct2D compatibility flags.
-			FEATURE_LEVELS,							// List of feature levels this app can support.
-			ARRAYSIZE(FEATURE_LEVELS),				// Size of the list above.
+			featureLevels,							// List of feature levels this app can support.
+			ARRAYSIZE(featureLevels),				// Size of the list above.
 			D3D11_SDK_VERSION,						// Always set this to D3D11_SDK_VERSION for Windows Store apps.
 			&m_d3dDevice,		// Returns the Direct3D device created.
 			&m_featureLevel,					// Returns feature level of device created.
