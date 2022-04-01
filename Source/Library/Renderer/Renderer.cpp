@@ -12,7 +12,7 @@ namespace library {
 				  m_pixelShader, m_vertexLayout, m_vertexBuffer].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	Renderer::Renderer() :
-		m_driverType(D3D_DRIVER_TYPE_NULL),
+		m_driverType(D3D_DRIVER_TYPE_HARDWARE),
 		m_featureLevel(D3D_FEATURE_LEVEL_11_1),
 		m_d3dDevice(nullptr),
 		m_d3dDevice1(nullptr),
@@ -62,15 +62,15 @@ namespace library {
 #endif
 		hr = D3D11CreateDevice(
 			nullptr,								// Specify nullptr to use the default adapter.
-			D3D_DRIVER_TYPE_HARDWARE,				// Create a device using the hardware graphics driver.
+			m_driverType,							// Create a device using the hardware graphics driver.
 			nullptr,								// Should be 0 unless the driver is D3D_DRIVER_TYPE_SOFTWARE.
 			deviceFlags,							// Set debug and Direct2D compatibility flags.
 			featureLevels,							// List of feature levels this app can support.
 			ARRAYSIZE(featureLevels),				// Size of the list above.
 			D3D11_SDK_VERSION,						// Always set this to D3D11_SDK_VERSION for Windows Store apps.
-			&m_d3dDevice,		// Returns the Direct3D device created.
-			&m_featureLevel,					// Returns feature level of device created.
-			&m_immediateContext // Returns the device immediate context.
+			&m_d3dDevice,							// Returns the Direct3D device created.
+			&m_featureLevel,						// Returns feature level of device created.
+			&m_immediateContext						// Returns the device immediate context.
 		);
 		if (FAILED(hr)) return hr;
 
@@ -83,7 +83,7 @@ namespace library {
 
 		DXGI_SWAP_CHAIN_DESC desc = {
 			.BufferDesc = {
-				.Format = DXGI_FORMAT_B8G8R8A8_UNORM
+				.Format = DXGI_FORMAT_B8G8R8A8_UNORM,
 			},
 			.SampleDesc = {
 				.Count = 1,
@@ -139,6 +139,8 @@ namespace library {
 		);
 		if (FAILED(hr)) return hr;
 
+		m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
+
 		pBackBuffer->GetDesc(&bbDesc);
 
 		// Create a depth-stencil buffer
@@ -185,7 +187,7 @@ namespace library {
 
 #pragma endregion
 
-		// Compile, create and set vertex shader shader
+		// Compile, create vertex shader shader
 		ComPtr<ID3DBlob> vsBlob = nullptr;
 		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "VS", "vs_5_0", &vsBlob);
 		if (FAILED(hr))
@@ -194,14 +196,22 @@ namespace library {
 			return hr;
 		}
 
-		ComPtr<ID3D11VertexShader> vsShader = nullptr;
-		auto a = vsBlob.Get();
-		hr = m_d3dDevice->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &vsShader);
+		hr = m_d3dDevice->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &m_vertexShader);
 		if (FAILED(hr)) return hr;
 
-		m_immediateContext->VSSetShader(vsShader.Get(), nullptr, 0u);
+		// Define, create, set the input layout
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		UINT numElements = ARRAYSIZE(layout);
 
-		// Compile, create and set pixel shader shader
+		hr = m_d3dDevice->CreateInputLayout(layout, numElements, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_vertexLayout);
+		if (FAILED(hr)) return hr;
+
+		m_immediateContext->IASetInputLayout(m_vertexLayout.Get());
+
+		// Compile, create pixel shader shader
 		ComPtr<ID3DBlob> psBlob = nullptr;
 		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "PS", "ps_5_0", &psBlob);
 		if (FAILED(hr))
@@ -212,21 +222,8 @@ namespace library {
 
 		ComPtr<ID3D11PixelShader> psShader = nullptr;
 
-		hr = m_d3dDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &psShader);
+		hr = m_d3dDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &m_pixelShader);
 		if (FAILED(hr)) return hr;
-
-		m_immediateContext->PSSetShader(psShader.Get(), nullptr, 0u);
-
-		// Define, create, set the input layout
-		D3D11_INPUT_ELEMENT_DESC layout[] =
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		};
-		UINT numElements = ARRAYSIZE(layout);
-		hr = m_d3dDevice->CreateInputLayout(layout, numElements, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_vertexLayout);
-		if (FAILED(hr)) return hr;
-
-		m_immediateContext->IASetInputLayout(m_vertexLayout.Get());
 
 		// Create, set a Vertex Buffer
 		SimpleVertex vertices[] = {
@@ -236,7 +233,7 @@ namespace library {
 		};
 
 		D3D11_BUFFER_DESC bufferDesc = {
-			.ByteWidth = sizeof(SimpleVertex) * 3,
+			.ByteWidth = sizeof(vertices),
 			.Usage = D3D11_USAGE_DEFAULT,
 			.BindFlags = D3D11_BIND_VERTEX_BUFFER,
 			.CPUAccessFlags = 0,
@@ -258,13 +255,12 @@ namespace library {
 		m_immediateContext->IASetVertexBuffers(
 			0,                // the first input slot for binding
 			1,                // the number of buffers in the array
-			&m_vertexBuffer, // the array of vertex buffers
+			m_vertexBuffer.GetAddressOf(), // the array of vertex buffers
 			&stride,          // array of stride values, one for each buffer
 			&offset);
 
 		// Set primitive topology
 		m_immediateContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 
 		return S_OK;
 	}
@@ -281,11 +277,18 @@ namespace library {
 		const float ClearColor[4] = { 0.0f, 0.125f, 0.6f, 1.0f }; // RGBA
 		m_immediateContext->ClearRenderTargetView(m_renderTargetView.Get(), ClearColor);
 
+		// Set shaders
+		m_immediateContext->VSSetShader(m_vertexShader.Get(), nullptr, 0u);
+		m_immediateContext->PSSetShader(m_pixelShader.Get(), nullptr, 0u);
+
 		// Draw
 		m_immediateContext->Draw(3, 0);
 
 		// Present
 		m_swapChain->Present(0, 0);
+
+		// Set Render Target View again (Present call for Swap Effect Flip Sequential unbinds backbuffer 0)
+		m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
