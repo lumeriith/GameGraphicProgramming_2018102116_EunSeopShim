@@ -53,13 +53,8 @@ namespace library {
 		// from the API default. It is required for compatibility with Direct2D.
 		UINT deviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 		const D3D_FEATURE_LEVEL featureLevels[] = {
-			D3D_FEATURE_LEVEL_9_1,
-			D3D_FEATURE_LEVEL_9_2,
-			D3D_FEATURE_LEVEL_9_3,
-			D3D_FEATURE_LEVEL_10_0,
-			D3D_FEATURE_LEVEL_10_1,
-			D3D_FEATURE_LEVEL_11_0,
-			D3D_FEATURE_LEVEL_11_1
+			D3D_FEATURE_LEVEL_11_1,
+			D3D_FEATURE_LEVEL_11_0
 		};
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -190,7 +185,7 @@ namespace library {
 
 #pragma endregion
 
-		// Compile vertex shader shader
+		// Compile, create and set vertex shader shader
 		ComPtr<ID3DBlob> vsBlob = nullptr;
 		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "VS", "vs_5_0", &vsBlob);
 		if (FAILED(hr))
@@ -199,19 +194,14 @@ namespace library {
 			return hr;
 		}
 
-		// Define, create, set the input layout
-		D3D11_INPUT_ELEMENT_DESC layout[] =
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		};
-		UINT numElements = ARRAYSIZE(layout);
-
-		hr = m_d3dDevice->CreateInputLayout(layout, numElements, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_vertexLayout);
+		ComPtr<ID3D11VertexShader> vsShader = nullptr;
+		auto a = vsBlob.Get();
+		hr = m_d3dDevice->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &vsShader);
 		if (FAILED(hr)) return hr;
 
-		m_immediateContext->IASetInputLayout(m_vertexLayout.Get());
+		m_immediateContext->VSSetShader(vsShader.Get(), nullptr, 0u);
 
-		// Compile pixel shader shader
+		// Compile, create and set pixel shader shader
 		ComPtr<ID3DBlob> psBlob = nullptr;
 		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "PS", "ps_5_0", &psBlob);
 		if (FAILED(hr))
@@ -219,6 +209,24 @@ namespace library {
 			printf("Failed compiling pixel shader %08X\n", hr);
 			return hr;
 		}
+
+		ComPtr<ID3D11PixelShader> psShader = nullptr;
+
+		hr = m_d3dDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &psShader);
+		if (FAILED(hr)) return hr;
+
+		m_immediateContext->PSSetShader(psShader.Get(), nullptr, 0u);
+
+		// Define, create, set the input layout
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		UINT numElements = ARRAYSIZE(layout);
+		hr = m_d3dDevice->CreateInputLayout(layout, numElements, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_vertexLayout);
+		if (FAILED(hr)) return hr;
+
+		m_immediateContext->IASetInputLayout(m_vertexLayout.Get());
 
 		// Create, set a Vertex Buffer
 		SimpleVertex vertices[] = {
