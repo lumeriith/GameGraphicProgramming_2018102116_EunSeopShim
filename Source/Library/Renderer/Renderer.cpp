@@ -47,9 +47,7 @@ namespace library {
 	{
 		HRESULT hr;
 
-		// ---------------------------------------------------------------------------------------------
-		// GetInterfaceForDeviceAndContext 
-		// ---------------------------------------------------------------------------------------------
+#pragma region GetInterfaceForDeviceAndContext
 
 		// This flag adds support for surfaces with a color-channel ordering different
 		// from the API default. It is required for compatibility with Direct2D.
@@ -84,9 +82,9 @@ namespace library {
 		m_d3dDevice.As(&m_d3dDevice1);
 		m_immediateContext.As(&m_immediateContext1);
 
-		// ---------------------------------------------------------------------------------------------
-		// CreateSwapChain 
-		// ---------------------------------------------------------------------------------------------
+#pragma endregion
+
+#pragma region CreateSwapChain
 
 		DXGI_SWAP_CHAIN_DESC desc = {
 			.BufferDesc = {
@@ -126,9 +124,9 @@ namespace library {
 
 		m_swapChain.As(&m_swapChain1);
 
-		// ---------------------------------------------------------------------------------------------
-		// CreateRenderTarget 
-		// ---------------------------------------------------------------------------------------------
+#pragma endregion
+
+#pragma region CreateRenderTarget
 
 		ComPtr<ID3D11Texture2D> pBackBuffer;
 		D3D11_TEXTURE2D_DESC bbDesc;
@@ -190,6 +188,76 @@ namespace library {
 			&viewport
 		);
 
+#pragma endregion
+
+		// Compile vertex shader shader
+		ComPtr<ID3DBlob> vsBlob = nullptr;
+		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "VS", "vs_5_0", &vsBlob);
+		if (FAILED(hr))
+		{
+			printf("Failed compiling vertex shader %08X\n", hr);
+			return hr;
+		}
+
+		// Define, create, set the input layout
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		UINT numElements = ARRAYSIZE(layout);
+
+		hr = m_d3dDevice->CreateInputLayout(layout, numElements, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_vertexLayout);
+		if (FAILED(hr)) return hr;
+
+		m_immediateContext->IASetInputLayout(m_vertexLayout.Get());
+
+		// Compile pixel shader shader
+		ComPtr<ID3DBlob> psBlob = nullptr;
+		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "PS", "ps_5_0", &psBlob);
+		if (FAILED(hr))
+		{
+			printf("Failed compiling pixel shader %08X\n", hr);
+			return hr;
+		}
+
+		// Create, set a Vertex Buffer
+		SimpleVertex vertices[] = {
+			XMFLOAT3(0.0f, 0.5f, 0.5f),
+			XMFLOAT3(0.5f, -0.5f, 0.5f),
+			XMFLOAT3(-0.5f, -0.5f, 0.5f),
+		};
+
+		D3D11_BUFFER_DESC bufferDesc = {
+			.ByteWidth = sizeof(SimpleVertex) * 3,
+			.Usage = D3D11_USAGE_DEFAULT,
+			.BindFlags = D3D11_BIND_VERTEX_BUFFER,
+			.CPUAccessFlags = 0,
+			.MiscFlags = 0
+		};
+
+		D3D11_SUBRESOURCE_DATA initData = {
+			.pSysMem = vertices,
+			.SysMemPitch = 0,
+			.SysMemSlicePitch = 0
+		};
+
+		hr = m_d3dDevice->CreateBuffer(&bufferDesc, &initData, &m_vertexBuffer);
+		if (FAILED(hr)) return hr;
+
+		UINT stride = sizeof(SimpleVertex);
+		UINT offset = 0;
+
+		m_immediateContext->IASetVertexBuffers(
+			0,                // the first input slot for binding
+			1,                // the number of buffers in the array
+			&m_vertexBuffer, // the array of vertex buffers
+			&stride,          // array of stride values, one for each buffer
+			&offset);
+
+		// Set primitive topology
+		m_immediateContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
 		return S_OK;
 	}
 
@@ -204,6 +272,9 @@ namespace library {
 		// Clear the backbuffer
 		const float ClearColor[4] = { 0.0f, 0.125f, 0.6f, 1.0f }; // RGBA
 		m_immediateContext->ClearRenderTargetView(m_renderTargetView.Get(), ClearColor);
+
+		// Draw
+		m_immediateContext->Draw(3, 0);
 
 		// Present
 		m_swapChain->Present(0, 0);
@@ -234,8 +305,40 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::compileShaderFromFile(_In_ PCWSTR pszFileName, _In_ PCSTR pszEntryPoint, _In_ PCSTR szShaderModel, _Outptr_ ID3DBlob** ppBlobOut) {
+	HRESULT Renderer::compileShaderFromFile(_In_ PCWSTR pszFileName, _In_ PCSTR pszEntryPoint, _In_ PCSTR szShaderModel, _Outptr_ ID3DBlob** ppBlobOut)
+	{
+		if (!pszFileName || !pszEntryPoint || !szShaderModel || !ppBlobOut)
+			return E_INVALIDARG;
 
+		*ppBlobOut = nullptr;
+
+		UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+#if defined( DEBUG ) || defined( _DEBUG )
+		flags |= D3DCOMPILE_DEBUG;
+#endif
+
+		const D3D_SHADER_MACRO defines[] =
+		{
+			"EXAMPLE_DEFINE", "1",
+			NULL, NULL
+		};
+
+		ComPtr<ID3DBlob> errorBlob = nullptr;
+
+		HRESULT hr = D3DCompileFromFile(pszFileName, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+			pszEntryPoint, szShaderModel,
+			flags, 0, ppBlobOut, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+			}
+			return hr;
+		}
+
+		return hr;
 	}
 }
 
