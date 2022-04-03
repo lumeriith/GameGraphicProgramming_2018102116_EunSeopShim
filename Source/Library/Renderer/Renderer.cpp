@@ -184,22 +184,14 @@ namespace library {
 #pragma region CompileCreateShaders
 		ComPtr<ID3DBlob> vsBlob = nullptr;
 		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "VS", "vs_5_0", &vsBlob);
-		if (FAILED(hr))
-		{
-			printf("Failed compiling vertex shader %08X\n", hr);
-			return hr;
-		}
+		if (FAILED(hr)) return hr;
 
 		hr = m_d3dDevice->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &m_vertexShader);
 		if (FAILED(hr)) return hr;
 
 		ComPtr<ID3DBlob> psBlob = nullptr;
 		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "PS", "ps_5_0", &psBlob);
-		if (FAILED(hr))
-		{
-			printf("Failed compiling pixel shader %08X\n", hr);
-			return hr;
-		}
+		if (FAILED(hr)) return hr;
 
 		ComPtr<ID3D11PixelShader> psShader = nullptr;
 
@@ -222,9 +214,9 @@ namespace library {
 
 #pragma region CreateSetVertexBuffer
 		SimpleVertex vertices[] = {
-			XMFLOAT3(0.0f, 0.5f, 0.5f),
-			XMFLOAT3(0.5f, -0.5f, 0.5f),
-			XMFLOAT3(-0.5f, -0.5f, 0.5f),
+			{ XMFLOAT3(0.0f, 0.5f, 0.5f) },
+			{ XMFLOAT3(0.5f, -0.5f, 0.5f) },
+			{ XMFLOAT3(-0.5f, -0.5f, 0.5f) },
 		};
 
 		D3D11_BUFFER_DESC bufferDesc = {
