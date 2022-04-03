@@ -48,7 +48,6 @@ namespace library {
 		HRESULT hr;
 
 #pragma region GetInterfaceForDeviceAndContext
-
 		// This flag adds support for surfaces with a color-channel ordering different
 		// from the API default. It is required for compatibility with Direct2D.
 		UINT deviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
@@ -76,11 +75,9 @@ namespace library {
 
 		m_d3dDevice.As(&m_d3dDevice1);
 		m_immediateContext.As(&m_immediateContext1);
-
 #pragma endregion
 
 #pragma region CreateSwapChain
-
 		DXGI_SWAP_CHAIN_DESC desc = {
 			.BufferDesc = {
 				.Format = DXGI_FORMAT_B8G8R8A8_UNORM,
@@ -118,11 +115,9 @@ namespace library {
 		if (FAILED(hr)) return hr;
 
 		m_swapChain.As(&m_swapChain1);
-
 #pragma endregion
 
 #pragma region CreateRenderTarget
-
 		ComPtr<ID3D11Texture2D> pBackBuffer;
 		D3D11_TEXTURE2D_DESC bbDesc;
 
@@ -184,10 +179,9 @@ namespace library {
 			1,
 			&viewport
 		);
-
 #pragma endregion
 
-		// Compile, create vertex shader shader
+#pragma region CompileCreateShaders
 		ComPtr<ID3DBlob> vsBlob = nullptr;
 		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "VS", "vs_5_0", &vsBlob);
 		if (FAILED(hr))
@@ -199,19 +193,6 @@ namespace library {
 		hr = m_d3dDevice->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &m_vertexShader);
 		if (FAILED(hr)) return hr;
 
-		// Define, create, set the input layout
-		D3D11_INPUT_ELEMENT_DESC layout[] =
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		};
-		UINT numElements = ARRAYSIZE(layout);
-
-		hr = m_d3dDevice->CreateInputLayout(layout, numElements, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_vertexLayout);
-		if (FAILED(hr)) return hr;
-
-		m_immediateContext->IASetInputLayout(m_vertexLayout.Get());
-
-		// Compile, create pixel shader shader
 		ComPtr<ID3DBlob> psBlob = nullptr;
 		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "PS", "ps_5_0", &psBlob);
 		if (FAILED(hr))
@@ -224,8 +205,22 @@ namespace library {
 
 		hr = m_d3dDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &m_pixelShader);
 		if (FAILED(hr)) return hr;
+#pragma endregion
 
-		// Create, set a Vertex Buffer
+#pragma region DefineCreateSetInputLayout
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		UINT numElements = ARRAYSIZE(layout);
+
+		hr = m_d3dDevice->CreateInputLayout(layout, numElements, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_vertexLayout);
+		if (FAILED(hr)) return hr;
+
+		m_immediateContext->IASetInputLayout(m_vertexLayout.Get());
+#pragma endregion
+
+#pragma region CreateSetVertexBuffer
 		SimpleVertex vertices[] = {
 			XMFLOAT3(0.0f, 0.5f, 0.5f),
 			XMFLOAT3(0.5f, -0.5f, 0.5f),
@@ -258,6 +253,7 @@ namespace library {
 			m_vertexBuffer.GetAddressOf(), // the array of vertex buffers
 			&stride,          // array of stride values, one for each buffer
 			&offset);
+#pragma endregion
 
 		// Set primitive topology
 		m_immediateContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -287,7 +283,7 @@ namespace library {
 		// Present
 		m_swapChain->Present(0, 0);
 
-		// Set Render Target View again (Present call for Swap Effect Flip Sequential unbinds backbuffer 0)
+		// Set Render Target View again (Present call for DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL unbinds backbuffer 0)
 		m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
 	}
 
