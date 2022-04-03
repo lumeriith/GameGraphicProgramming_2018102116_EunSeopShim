@@ -1,17 +1,16 @@
 /*+===================================================================
   File:      RENDERER.H
-
   Summary:   Renderer header file contains declarations of Renderer
 			 class used for the lab samples of Game Graphics
 			 Programming course.
-
   Classes: Renderer
-
   © 2022 Kyung Hee University
 ===================================================================+*/
 #pragma once
 
 #include "Common.h"
+
+#include <vector>
 
 #include "Window/MainWindow.h"
 
@@ -19,7 +18,6 @@ namespace library
 {
 	/*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
 	  Struct:    SimpleVertex
-
 	  Summary:  Simple vertex structure containing a single field of the
 				type XMFLOAT3
 	C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
@@ -30,10 +28,8 @@ namespace library
 
 	/*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
 	  Class:    Renderer
-
 	  Summary:  Renderer initializes Direct3D, and renders renderable
 				data onto the screen
-
 	  Methods:  Initialize
 				  Creates Direct3D device and swap chain
 				Render
