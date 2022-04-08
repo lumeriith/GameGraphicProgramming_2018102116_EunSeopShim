@@ -2,7 +2,8 @@
 
 HeartbeatCube::HeartbeatCube() : framesCount(0)
 {
-	Translate(XMVECTOR(0.0f, 4.0f, 0.0f));
+	XMFLOAT3 trVector(0.0f, 4.0f, 0.0f);
+	Translate(XMLoadFloat3(&trVector));
 }
 
 void HeartbeatCube::Update(_In_ FLOAT deltaTime)

@@ -95,14 +95,30 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cube\BaseCube.cpp" />
+    <ClCompile Include="Cube\HeartbeatCube.cpp" />
+    <ClCompile Include="Cube\OrbitingSmallCube.cpp" />
+    <ClCompile Include="Cube\RotatingCube.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h" />
+    <ClInclude Include="Cube\HeartbeatCube.h" />
+    <ClInclude Include="Cube\OrbitingSmallCube.h" />
+    <ClInclude Include="Cube\RotatingCube.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\PS.hlsl" />
-    <FxCompile Include="Shaders\VS.hlsl" />
+    <FxCompile Include="Shaders\PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PS</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="Shaders\VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS</EntryPointName>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Shaders.fxh" />

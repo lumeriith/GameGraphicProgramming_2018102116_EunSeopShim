@@ -33,9 +33,27 @@
     <ClCompile Include="Cube\BaseCube.cpp">
       <Filter>Source Files\Cube</Filter>
     </ClCompile>
+    <ClCompile Include="Cube\OrbitingSmallCube.cpp">
+      <Filter>Source Files\Cube</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube\RotatingCube.cpp">
+      <Filter>Source Files\Cube</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube\HeartbeatCube.cpp">
+      <Filter>Source Files\Cube</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h">
+      <Filter>Header Files\Cube</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube\OrbitingSmallCube.h">
+      <Filter>Header Files\Cube</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube\RotatingCube.h">
+      <Filter>Header Files\Cube</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube\HeartbeatCube.h">
       <Filter>Header Files\Cube</Filter>
     </ClInclude>
   </ItemGroup>

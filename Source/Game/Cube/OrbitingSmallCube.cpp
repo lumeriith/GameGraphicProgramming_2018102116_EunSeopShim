@@ -3,7 +3,9 @@
 OrbitingSmallCube::OrbitingSmallCube()
 {
 	Scale(0.7f, 0.7f, 0.7f);
-	Translate(XMVECTOR(4.0f, 0.0f, 0.0f));
+
+	XMFLOAT3 trVector(4.0f, 0.0f, 0.0f);
+	Translate(XMLoadFloat3(&trVector));
 }
 
 void OrbitingSmallCube::Update(_In_ FLOAT deltaTime)

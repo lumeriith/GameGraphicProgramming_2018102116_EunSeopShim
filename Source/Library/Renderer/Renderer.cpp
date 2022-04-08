@@ -190,9 +190,9 @@ namespace library {
 
 #pragma region CreateViewAndProjectionMatrices
 		// Initialize view matrix and the projection matrix
-		FXMVECTOR vEye(0.0f, 1.0f, -5.0f, 0.0f);
-		FXMVECTOR vAt(0.0f, 1.0f, 0.0f, 0.0f);
-		FXMVECTOR vUp(0.0f, 1.0f, 0.0f, 0.0f);
+		FXMVECTOR vEye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
+		FXMVECTOR vAt = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		FXMVECTOR vUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 		m_view = XMMatrixLookAtLH(vEye, vAt, vUp);
 
@@ -201,7 +201,7 @@ namespace library {
 		float farZ = 100.0f;
 
 
-		m_projection = XMMatrixPerspectiveFovLH(fovAngleY, bbDesc.Width / bbDesc.Height, nearZ, farZ);
+		m_projection = XMMatrixPerspectiveFovLH(fovAngleY, (float)bbDesc.Width / bbDesc.Height, nearZ, farZ);
 #pragma endregion
 
 #pragma region InitializeRenderablesAndShaders
@@ -408,7 +408,13 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderer::SetVertexShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszVertexShaderName)
 	{
-		return E_NOTIMPL;
+		if (m_renderables.count(pszRenderableName) == 0 || m_vertexShaders.count(pszVertexShaderName) == 0)
+		{
+			return E_INVALIDARG;
+		}
+		auto& vs = m_vertexShaders[pszVertexShaderName];
+		m_renderables[pszRenderableName]->SetVertexShader(vs);
+		return S_OK;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -428,7 +434,13 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderer::SetPixelShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszPixelShaderName)
 	{
-		return E_NOTIMPL;
+		if (m_renderables.count(pszRenderableName) == 0 || m_pixelShaders.count(pszPixelShaderName) == 0)
+		{
+			return E_INVALIDARG;
+		}
+		auto& ps = m_pixelShaders[pszPixelShaderName];
+		m_renderables[pszRenderableName]->SetPixelShader(ps);
+		return S_OK;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -441,7 +453,7 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	D3D_DRIVER_TYPE Renderer::GetDriverType() const
 	{
-		return D3D_DRIVER_TYPE();
+		return m_driverType;
 	}
 }
 
