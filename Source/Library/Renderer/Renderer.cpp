@@ -14,17 +14,20 @@ namespace library {
 	Renderer::Renderer() :
 		m_driverType(D3D_DRIVER_TYPE_HARDWARE),
 		m_featureLevel(D3D_FEATURE_LEVEL_11_1),
-		m_d3dDevice(nullptr),
-		m_d3dDevice1(nullptr),
-		m_immediateContext(nullptr),
-		m_immediateContext1(nullptr),
-		m_swapChain(nullptr),
-		m_swapChain1(nullptr),
-		m_renderTargetView(nullptr),
-		m_vertexShader(nullptr),
-		m_pixelShader(nullptr),
-		m_vertexLayout(nullptr),
-		m_vertexBuffer(nullptr)
+		m_d3dDevice(),
+		m_d3dDevice1(),
+		m_immediateContext(),
+		m_immediateContext1(),
+		m_swapChain(),
+		m_swapChain1(),
+		m_renderTargetView(),
+		m_depthStencil(),
+		m_depthStencilView(),
+		m_view(),
+		m_projection(),
+		m_renderables(),
+		m_vertexShaders(),
+		m_pixelShaders()
 	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -198,19 +201,7 @@ namespace library {
 		hr = m_d3dDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &m_pixelShader);
 		if (FAILED(hr)) return hr;
 #pragma endregion
-
-#pragma region DefineCreateSetInputLayout
-		D3D11_INPUT_ELEMENT_DESC layout[] =
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		};
-		UINT numElements = ARRAYSIZE(layout);
-
-		hr = m_d3dDevice->CreateInputLayout(layout, numElements, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_vertexLayout);
-		if (FAILED(hr)) return hr;
-
 		m_immediateContext->IASetInputLayout(m_vertexLayout.Get());
-#pragma endregion
 
 #pragma region CreateSetVertexBuffer
 		SimpleVertex vertices[] = {
@@ -345,61 +336,6 @@ namespace library {
 
 		// Set Render Target View again (Present call for DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL unbinds backbuffer 0)
 		m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
-	}
-
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::compileShaderFromFile
-
-	  Summary:  Helper for compiling shaders with D3DCompile
-
-	  Args:     PCWSTR pszFileName
-				  A pointer to a constant null-terminated string that
-				  contains the name of the file that contains the
-				  shader code
-				PCSTR pszEntryPoint
-				  A pointer to a constant null-terminated string that
-				  contains the name of the shader entry point function
-				  where shader execution begins
-				PCSTR pszShaderModel
-				  A pointer to a constant null-terminated string that
-				  specifies the shader target or set of shader
-				  features to compile against
-				ID3DBlob** ppBlobOut
-				  A pointer to a variable that receives a pointer to
-				  the ID3DBlob interface that you can use to access
-				  the compiled code
-
-	  Returns:  HRESULT
-				  Status code
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::compileShaderFromFile(_In_ PCWSTR pszFileName, _In_ PCSTR pszEntryPoint, _In_ PCSTR szShaderModel, _Outptr_ ID3DBlob** ppBlobOut)
-	{
-		if (!pszFileName || !pszEntryPoint || !szShaderModel || !ppBlobOut)
-			return E_INVALIDARG;
-
-		*ppBlobOut = nullptr;
-
-		UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG )
-		flags |= D3DCOMPILE_DEBUG;
-#endif
-
-		ComPtr<ID3DBlob> errorBlob = nullptr;
-
-		HRESULT hr = D3DCompileFromFile(pszFileName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-			pszEntryPoint, szShaderModel,
-			flags, 0, ppBlobOut, &errorBlob);
-
-		if (FAILED(hr))
-		{
-			if (errorBlob)
-			{
-				OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			}
-			return hr;
-		}
-
-		return hr;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
