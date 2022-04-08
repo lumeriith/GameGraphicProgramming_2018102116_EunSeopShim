@@ -288,7 +288,13 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderer::AddRenderable(_In_ PCWSTR pszRenderableName, _In_ const std::shared_ptr<Renderable>& renderable)
 	{
-		return E_NOTIMPL;
+		if (m_renderables.count(pszRenderableName) > 0) return E_FAIL;
+
+		std::shared_ptr<Renderable> newItem(renderable);
+		m_renderables.insert({ pszRenderableName, newItem });
+		// TODO Is this even right??
+
+		return S_OK;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -308,7 +314,13 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderer::AddVertexShader(_In_ PCWSTR pszVertexShaderName, _In_ const std::shared_ptr<VertexShader>& vertexShader)
 	{
-		return E_NOTIMPL;
+		if (m_vertexShaders.count(pszVertexShaderName) > 0) return E_FAIL;
+
+		std::shared_ptr<VertexShader> newItem(vertexShader);
+		m_vertexShaders.insert({ pszVertexShaderName, newItem });
+		// TODO Is this even right??
+
+		return S_OK;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -328,7 +340,13 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderer::AddPixelShader(_In_ PCWSTR pszPixelShaderName, _In_ const std::shared_ptr<PixelShader>& pixelShader)
 	{
-		return E_NOTIMPL;
+		if (m_pixelShaders.count(pszPixelShaderName) > 0) return E_FAIL;
+
+		std::shared_ptr<PixelShader> newItem(pixelShader);
+		m_pixelShaders.insert({ pszPixelShaderName, newItem });
+		// TODO Is this even right??
+
+		return S_OK;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
