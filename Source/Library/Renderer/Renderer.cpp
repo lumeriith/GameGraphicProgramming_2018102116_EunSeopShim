@@ -120,7 +120,7 @@ namespace library {
 		m_swapChain.As(&m_swapChain1);
 #pragma endregion
 
-#pragma region CreateRenderTarget
+#pragma region CreateBuffersAndViews
 		ComPtr<ID3D11Texture2D> pBackBuffer;
 		D3D11_TEXTURE2D_DESC bbDesc;
 
@@ -141,35 +141,41 @@ namespace library {
 
 		pBackBuffer->GetDesc(&bbDesc);
 
-		// Create a depth-stencil buffer
-		ComPtr<ID3D11Texture2D> pDepthStencil;
-		ComPtr<ID3D11DepthStencilView> pDepthStencilView;
+		// Create depth stencil and the depth stencil view
 
+		// Depth Stencil
 		CD3D11_TEXTURE2D_DESC depthStencilDesc(
 			DXGI_FORMAT_D24_UNORM_S8_UINT,
 			bbDesc.Width,
 			bbDesc.Height,
-			1, // This depth stencil view has only one texture.
-			1, // Use a single mipmap level.
+			1, // Number of textures.
+			1, // Single mipmap level.
 			D3D11_BIND_DEPTH_STENCIL
 		);
 
 		hr = m_d3dDevice->CreateTexture2D(
 			&depthStencilDesc,
 			nullptr,
-			&pDepthStencil
+			&m_depthStencil
 		);
 		if (FAILED(hr)) return hr;
 
-		CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
+		// Depth Stencil View
+		CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(
+			D3D11_DSV_DIMENSION_TEXTURE2D,
+			DXGI_FORMAT_D24_UNORM_S8_UINT,
+			0
+		);
 
 		hr = m_d3dDevice->CreateDepthStencilView(
-			pDepthStencil.Get(),
+			m_depthStencil.Get(),
 			&depthStencilViewDesc,
-			&pDepthStencilView
+			&m_depthStencilView
 		);
 		if (FAILED(hr)) return hr;
+#pragma endregion
 
+#pragma region CreateAndSetViewport
 		// Create a viewport
 		D3D11_VIEWPORT viewport = {
 			.Width = (float)bbDesc.Width,
@@ -184,23 +190,44 @@ namespace library {
 		);
 #pragma endregion
 
-#pragma region CompileCreateShaders
-		ComPtr<ID3DBlob> vsBlob = nullptr;
-		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "VS", "vs_5_0", &vsBlob);
-		if (FAILED(hr)) return hr;
+#pragma region CreateViewAndProjectionMatrices
+		// Initialize view matrix and the projection matrix
+		FXMVECTOR vEye(0.0f, 1.0f, -5.0f, 0.0f);
+		FXMVECTOR vAt(0.0f, 1.0f, 0.0f, 0.0f);
+		FXMVECTOR vUp(0.0f, 1.0f, 0.0f, 0.0f);
 
-		hr = m_d3dDevice->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &m_vertexShader);
-		if (FAILED(hr)) return hr;
+		m_view = XMMatrixLookAtLH(vEye, vAt, vUp);
 
-		ComPtr<ID3DBlob> psBlob = nullptr;
-		hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "PS", "ps_5_0", &psBlob);
-		if (FAILED(hr)) return hr;
+		float fovAngleY = 3.14159265358979323846f;
+		float nearZ = 0.01f;
+		float farZ = 100.0f;
 
-		ComPtr<ID3D11PixelShader> psShader = nullptr;
 
-		hr = m_d3dDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &m_pixelShader);
-		if (FAILED(hr)) return hr;
+		m_projection = XMMatrixPerspectiveFovLH(fovAngleY, bbDesc.Width / bbDesc.Height, nearZ, farZ);
 #pragma endregion
+
+#pragma region InitializeRenderablesAndShaders
+		for (auto renderable : m_renderables)
+		{
+			renderable.second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
+		}
+
+		for (auto vs : m_vertexShaders)
+		{
+			vs.second->Initialize(m_d3dDevice.Get());
+		}
+
+		for (auto ps : m_pixelShaders)
+		{
+			ps.second->Initialize(m_d3dDevice.Get());
+		}
+#pragma endregion
+
+		// Initialize the shaders, then the renderables
+		// - Shaders and renderables are stored in Hash maps
+		// - Strings are used as the key, and the shader/renderable objects are the value
+		// - When iterating, use iterators
+
 		m_immediateContext->IASetInputLayout(m_vertexLayout.Get());
 
 #pragma region CreateSetVertexBuffer
@@ -259,9 +286,10 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code.
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::AddRenderable definition (remove the comment)
-	--------------------------------------------------------------------*/
+	HRESULT Renderer::AddRenderable(_In_ PCWSTR pszRenderableName, _In_ const std::shared_ptr<Renderable>& renderable)
+	{
+		return E_NOTIMPL;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::AddVertexShader
@@ -278,9 +306,10 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::AddVertexShader definition (remove the comment)
-	--------------------------------------------------------------------*/
+	HRESULT Renderer::AddVertexShader(_In_ PCWSTR pszVertexShaderName, _In_ const std::shared_ptr<VertexShader>& vertexShader)
+	{
+		return E_NOTIMPL;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::AddPixelShader
@@ -297,9 +326,10 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::AddPixelShader definition (remove the comment)
-	--------------------------------------------------------------------*/
+	HRESULT Renderer::AddPixelShader(_In_ PCWSTR pszPixelShaderName, _In_ const std::shared_ptr<PixelShader>& pixelShader)
+	{
+		return E_NOTIMPL;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::Update
@@ -309,9 +339,9 @@ namespace library {
 	  Args:     FLOAT deltaTime
 				  Time difference of a frame
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::Update definition (remove the comment)
-	--------------------------------------------------------------------*/
+	void Renderer::Update(_In_ FLOAT deltaTime)
+	{
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::Render
@@ -353,9 +383,10 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::SetVertexShaderOfRenderable definition (remove the comment)
-	--------------------------------------------------------------------*/
+	HRESULT Renderer::SetVertexShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszVertexShaderName)
+	{
+		return E_NOTIMPL;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::SetPixelShaderOfRenderable
@@ -372,9 +403,10 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::SetPixelShaderOfRenderable definition (remove the comment)
-	--------------------------------------------------------------------*/
+	HRESULT Renderer::SetPixelShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszPixelShaderName)
+	{
+		return E_NOTIMPL;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::GetDriverType
@@ -384,9 +416,10 @@ namespace library {
 	  Returns:  D3D_DRIVER_TYPE
 				  The Direct3D driver type used
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::GetDriverType definition (remove the comment)
-	--------------------------------------------------------------------*/
+	D3D_DRIVER_TYPE Renderer::GetDriverType() const
+	{
+		return D3D_DRIVER_TYPE();
+	}
 }
 
 
