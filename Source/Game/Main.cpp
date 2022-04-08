@@ -13,9 +13,10 @@
 
 #include <memory>
 
-/*--------------------------------------------------------------------
-  TODO: Include custom cubes (remove the comment)
---------------------------------------------------------------------*/
+#include "Cube/RotatingCube.h"
+#include "Cube/OrbitingSmallCube.h"
+#include "Cube/DrillingCube.h"
+
 #include "Game/Game.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -63,9 +64,21 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		return 0;
 	}
 
-	/*--------------------------------------------------------------------
-	  TODO: Add your cubes and set their shaders (remove the comment)
-	--------------------------------------------------------------------*/
+	std::shared_ptr<RotatingCube> rotCube = std::make_shared<RotatingCube>();
+	std::shared_ptr<OrbitingSmallCube> orbCube = std::make_shared<OrbitingSmallCube>();
+	std::shared_ptr<DrillingCube> drlCube = std::make_shared<DrillingCube>();
+
+	game->GetRenderer()->AddRenderable(L"RotCube", rotCube);
+	game->GetRenderer()->AddRenderable(L"OrbCube", orbCube);
+	game->GetRenderer()->AddRenderable(L"DrlCube", drlCube);
+
+	game->GetRenderer()->SetVertexShaderOfRenderable(L"RotCube", L"MainShader");
+	game->GetRenderer()->SetVertexShaderOfRenderable(L"OrbCube", L"MainShader");
+	game->GetRenderer()->SetVertexShaderOfRenderable(L"DrlCube", L"MainShader");
+
+	game->GetRenderer()->SetPixelShaderOfRenderable(L"RotCube", L"MainShader");
+	game->GetRenderer()->SetPixelShaderOfRenderable(L"OrbCube", L"MainShader");
+	game->GetRenderer()->SetPixelShaderOfRenderable(L"DrlCube", L"MainShader");
 
 	if (FAILED(game->Initialize(hInstance, nCmdShow)))
 	{
