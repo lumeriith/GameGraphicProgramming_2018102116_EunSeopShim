@@ -131,9 +131,9 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	template<class DerivedType>
 	BaseWindow<DerivedType>::BaseWindow() :
-		m_hInstance(nullptr),
-		m_hWnd(nullptr),
-		m_pszWindowName(nullptr)
+		m_hInstance(),
+		m_hWnd(),
+		m_pszWindowName()
 	{}
 
 
