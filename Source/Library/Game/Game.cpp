@@ -108,9 +108,10 @@ namespace library {
 	  Returns:  std::unique_ptr<MainWindow>&
 				  The main window
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Game::GetWindow definition (remove the comment)
-	--------------------------------------------------------------------*/
+	std::unique_ptr<MainWindow>& Game::GetWindow()
+	{
+		return m_mainWindow;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Game::GetRenderer
@@ -120,7 +121,8 @@ namespace library {
 	  Returns:  std::unique_ptr<Renderer>&
 				  The renderer
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Game::GetRenderer definition (remove the comment)
-	--------------------------------------------------------------------*/
+	std::unique_ptr<Renderer>& Game::GetRenderer()
+	{
+		return m_renderer;
+	}
 }
