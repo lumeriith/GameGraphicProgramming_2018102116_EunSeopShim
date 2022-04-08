@@ -359,6 +359,10 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void Renderer::Update(_In_ FLOAT deltaTime)
 	{
+		for (auto renderable : m_renderables)
+		{
+			renderable.second->Update(deltaTime);
+		}
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
