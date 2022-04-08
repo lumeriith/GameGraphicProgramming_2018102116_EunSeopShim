@@ -206,17 +206,20 @@ namespace library {
 #pragma region InitializeRenderablesAndShaders
 		for (auto& vs : m_vertexShaders)
 		{
-			vs.second->Initialize(m_d3dDevice.Get());
+			hr = vs.second->Initialize(m_d3dDevice.Get());
+			if (FAILED(hr)) return hr;
 		}
 
 		for (auto& ps : m_pixelShaders)
 		{
-			ps.second->Initialize(m_d3dDevice.Get());
+			hr = ps.second->Initialize(m_d3dDevice.Get());
+			if (FAILED(hr)) return hr;
 		}
 
 		for (auto& renderable : m_renderables)
 		{
-			renderable.second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
+			hr = renderable.second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
+			if (FAILED(hr)) return hr;
 		}
 #pragma endregion
 
