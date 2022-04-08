@@ -55,6 +55,13 @@ namespace library {
 		MSG msg = {};
 		PeekMessage(&msg, nullptr, 0U, 0U, PM_NOREMOVE);
 
+		LARGE_INTEGER frequency;
+		QueryPerformanceFrequency(&frequency);
+
+		LARGE_INTEGER startingTicks, endingTicks;
+		LARGE_INTEGER elapsedMicroseconds;
+
+		QueryPerformanceCounter(&startingTicks);
 		while (WM_QUIT != msg.message)
 		{
 			if (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE) != 0)
@@ -64,6 +71,16 @@ namespace library {
 			}
 			else
 			{
+				QueryPerformanceCounter(&endingTicks);
+				elapsedMicroseconds.QuadPart = endingTicks.QuadPart - startingTicks.QuadPart;
+				elapsedMicroseconds.QuadPart *= 1000000;
+				elapsedMicroseconds.QuadPart /= frequency.QuadPart;
+				// update elapsed time
+				// update game
+				// update renderer
+				// renderer updates renderables
+				QueryPerformanceCounter(&startingTicks);
+
 				m_renderer->Render();
 			}
 		}
