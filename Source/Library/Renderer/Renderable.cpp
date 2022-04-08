@@ -63,13 +63,15 @@ namespace library
 			.ByteWidth = sizeof(ConstantBuffer),
 			.Usage = D3D11_USAGE_DEFAULT,
 			.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-			.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+			.CPUAccessFlags = 0,
 			.MiscFlags = 0,
 			.StructureByteStride = 0
 		};
 
+		ConstantBuffer cb = {};
+
 		D3D11_SUBRESOURCE_DATA cData = {
-			.pSysMem = getIndices(),
+			.pSysMem = &cb,
 			.SysMemPitch = 0,
 			.SysMemSlicePitch = 0
 		};

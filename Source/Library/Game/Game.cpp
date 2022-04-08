@@ -13,8 +13,8 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	Game::Game(_In_ PCWSTR pszGameName) :
 		m_pszGameName(pszGameName),
-		m_mainWindow(),
-		m_renderer()
+		m_mainWindow(std::make_unique<MainWindow>()),
+		m_renderer(std::make_unique<Renderer>())
 	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -36,11 +36,9 @@ namespace library {
 	HRESULT library::Game::Initialize(_In_ HINSTANCE hInstance, _In_ INT nCmdShow) {
 		HRESULT hr;
 
-		m_mainWindow = std::make_unique<MainWindow>();
-		hr = m_mainWindow->Initialize(hInstance, nCmdShow, L"Game Graphics Programming Lab 02: Object Oriented Design");
+		hr = m_mainWindow->Initialize(hInstance, nCmdShow, L"Game Graphics Programming Lab 04: 3D Spaces and Transformations");
 		if (FAILED(hr)) return hr;
 
-		m_renderer = std::make_unique<Renderer>();
 		hr = m_renderer->Initialize(m_mainWindow->GetWindow());
 		if (FAILED(hr)) return hr;
 

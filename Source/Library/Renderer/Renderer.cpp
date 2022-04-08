@@ -196,12 +196,11 @@ namespace library {
 
 		m_view = XMMatrixLookAtLH(vEye, vAt, vUp);
 
-		float fovAngleY = 3.14159265358979323846f;
+		float fovAngleY = XM_PI;
 		float nearZ = 0.01f;
 		float farZ = 100.0f;
 
-
-		m_projection = XMMatrixPerspectiveFovLH(fovAngleY, (float)bbDesc.Width / bbDesc.Height, nearZ, farZ);
+		m_projection = XMMatrixPerspectiveFovLH(fovAngleY / 2.0f, bbDesc.Width / (float)bbDesc.Height, nearZ, farZ);
 #pragma endregion
 
 #pragma region InitializeRenderablesAndShaders
@@ -353,7 +352,7 @@ namespace library {
 			);
 
 			// Set the index buffer
-			m_immediateContext->IASetIndexBuffer(renderable->GetIndexBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+			m_immediateContext->IASetIndexBuffer(renderable->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0);
 
 			// Set the input layout
 			m_immediateContext->IASetInputLayout(renderable->GetVertexLayout().Get());
@@ -381,6 +380,8 @@ namespace library {
 			m_immediateContext->VSSetConstantBuffers(0, 1, renderable->GetConstantBuffer().GetAddressOf());
 
 			// Render the triangles
+			m_immediateContext->VSSetShader(renderable->GetVertexShader().Get(), nullptr, 0);
+			m_immediateContext->PSSetShader(renderable->GetPixelShader().Get(), nullptr, 0);
 			m_immediateContext->DrawIndexed(renderable->GetNumIndices(), 0, 0);
 		}
 

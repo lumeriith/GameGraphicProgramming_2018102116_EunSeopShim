@@ -20,6 +20,7 @@ cbuffer ConstantBuffer : register(b0)
 	matrix Projection;
 };
 
+
 //--------------------------------------------------------------------------------------
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Struct:   VS_INPUT
@@ -46,19 +47,21 @@ struct PS_INPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-float4 VS(float4 Pos : POSITION) : SV_POSITION
+PS_INPUT VS(VS_INPUT input) : SV_POSITION
 {
-	Pos = mul(Pos, World);
-	Pos = mul(Pos, View);
-	Pos = mul(Pos, Projection);
-	return Pos;
+	PS_INPUT output = (PS_INPUT)0;
+	output.Pos = input.Pos;
+	output.Pos = mul(output.Pos, World);
+	output.Pos = mul(output.Pos, View);
+	output.Pos = mul(output.Pos, Projection);
+	return output;
 }
 
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 PS(float4 Pos : SV_POSITION) : SV_Target
+float4 PS(PS_INPUT input) : SV_Target
 {
 	return float4(1.0f, 0.0f, 0.0f, 1.0f);
 }

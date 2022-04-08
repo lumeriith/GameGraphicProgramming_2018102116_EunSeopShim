@@ -8,5 +8,6 @@
 
 class RotatingCube : public BaseCube
 {
+public:
 	void Update(_In_ FLOAT deltaTime);
 };

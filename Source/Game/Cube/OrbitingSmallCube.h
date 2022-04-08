@@ -8,6 +8,7 @@
 
 class OrbitingSmallCube : public BaseCube
 {
-	OrbitingSmallCube();
+public:
+	virtual HRESULT Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext) override;
 	void Update(_In_ FLOAT deltaTime);
 };
