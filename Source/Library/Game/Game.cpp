@@ -63,7 +63,7 @@ namespace library {
 		QueryPerformanceFrequency(&frequency);
 
 		LARGE_INTEGER startingTicks, endingTicks;
-		LARGE_INTEGER elapsedMicroseconds;
+		LARGE_INTEGER elapsedMicroseconds = {};
 
 		QueryPerformanceCounter(&startingTicks);
 		while (WM_QUIT != msg.message)
@@ -79,12 +79,9 @@ namespace library {
 				elapsedMicroseconds.QuadPart = endingTicks.QuadPart - startingTicks.QuadPart;
 				elapsedMicroseconds.QuadPart *= 1000000;
 				elapsedMicroseconds.QuadPart /= frequency.QuadPart;
-				// update elapsed time
-				// update game
-				// update renderer
-				// renderer updates renderables
+				// Update game
+				m_renderer->Update(elapsedMicroseconds.QuadPart / 1000000.0f);
 				QueryPerformanceCounter(&startingTicks);
-
 				m_renderer->Render();
 			}
 		}
