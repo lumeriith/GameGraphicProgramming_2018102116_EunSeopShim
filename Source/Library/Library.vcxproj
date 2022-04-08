@@ -107,12 +107,21 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Renderer\Renderable.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
+    <ClCompile Include="Shader\PixelShader.cpp" />
+    <ClCompile Include="Shader\Shader.cpp" />
+    <ClCompile Include="Shader\VertexShader.cpp" />
     <ClCompile Include="Window\MainWindow.cpp" />
     <ClCompile Include="Game\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Renderer\DataTypes.h" />
+    <ClInclude Include="Renderer\Renderable.h" />
     <ClInclude Include="Renderer\Renderer.h" />
+    <ClInclude Include="Shader\PixelShader.h" />
+    <ClInclude Include="Shader\Shader.h" />
+    <ClInclude Include="Shader\VertexShader.h" />
     <ClInclude Include="Window\MainWindow.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Game\Game.h" />
@@ -121,13 +130,6 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Shaders\Lab03.fxh" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Shaders\Lab03_PS.hlsl" />
-    <FxCompile Include="Shaders\Lab03_VS.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

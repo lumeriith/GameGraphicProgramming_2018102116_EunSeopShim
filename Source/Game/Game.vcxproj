@@ -94,7 +94,18 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Cube\BaseCube.cpp" />
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Cube\BaseCube.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\PS.hlsl" />
+    <FxCompile Include="Shaders\VS.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Shaders.fxh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

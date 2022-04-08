@@ -13,10 +13,43 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Cube">
+      <UniqueIdentifier>{5903a100-8cd4-4277-b0e0-1f9e90ea6969}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shader">
+      <UniqueIdentifier>{dab8c955-522b-4e0d-ab1a-066e5667b6b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Cube">
+      <UniqueIdentifier>{c8915c57-1aca-48fb-a491-353447f7223e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader">
+      <UniqueIdentifier>{c2d4f5fa-2365-4cce-9a9d-95c8c5cb82bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Cube\BaseCube.cpp">
+      <Filter>Source Files\Cube</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Cube\BaseCube.h">
+      <Filter>Header Files\Cube</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\PS.hlsl">
+      <Filter>Source Files\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\VS.hlsl">
+      <Filter>Source Files\Shader</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Shaders.fxh">
+      <Filter>Header Files\Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
