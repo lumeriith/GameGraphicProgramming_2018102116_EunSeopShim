@@ -39,7 +39,7 @@
     <ClCompile Include="Cube\RotatingCube.cpp">
       <Filter>Source Files\Cube</Filter>
     </ClCompile>
-    <ClCompile Include="Cube\HeartbeatCube.cpp">
+    <ClCompile Include="Cube\DrillingCube.cpp">
       <Filter>Source Files\Cube</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,7 +53,7 @@
     <ClInclude Include="Cube\RotatingCube.h">
       <Filter>Header Files\Cube</Filter>
     </ClInclude>
-    <ClInclude Include="Cube\HeartbeatCube.h">
+    <ClInclude Include="Cube\DrillingCube.h">
       <Filter>Header Files\Cube</Filter>
     </ClInclude>
   </ItemGroup>

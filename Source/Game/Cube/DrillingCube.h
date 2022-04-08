@@ -6,11 +6,9 @@
 #include "Renderer/DataTypes.h"
 #include "Renderer/Renderable.h"
 
-class HeartbeatCube : public BaseCube
+class DrillingCube : public BaseCube
 {
-	HeartbeatCube();
+public:
+	virtual HRESULT Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext) override;
 	void Update(_In_ FLOAT deltaTime);
-
-private:
-	int framesCount;
 };
