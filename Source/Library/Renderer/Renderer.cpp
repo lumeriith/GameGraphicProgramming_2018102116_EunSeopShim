@@ -120,7 +120,7 @@ namespace library {
 		m_swapChain.As(&m_swapChain1);
 #pragma endregion
 
-#pragma region CreateBuffersAndViews
+#pragma region CreateBackDepthStencilBuffersAndViews
 		ComPtr<ID3D11Texture2D> pBackBuffer;
 		D3D11_TEXTURE2D_DESC bbDesc;
 
@@ -137,11 +137,7 @@ namespace library {
 		);
 		if (FAILED(hr)) return hr;
 
-		m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
-
 		pBackBuffer->GetDesc(&bbDesc);
-
-		// Create depth stencil and the depth stencil view
 
 		// Depth Stencil
 		CD3D11_TEXTURE2D_DESC depthStencilDesc(
@@ -173,6 +169,8 @@ namespace library {
 			&m_depthStencilView
 		);
 		if (FAILED(hr)) return hr;
+
+		m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 #pragma endregion
 
 #pragma region CreateAndSetViewport
@@ -207,62 +205,20 @@ namespace library {
 #pragma endregion
 
 #pragma region InitializeRenderablesAndShaders
-		for (auto renderable : m_renderables)
-		{
-			renderable.second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
-		}
-
-		for (auto vs : m_vertexShaders)
+		for (auto& vs : m_vertexShaders)
 		{
 			vs.second->Initialize(m_d3dDevice.Get());
 		}
 
-		for (auto ps : m_pixelShaders)
+		for (auto& ps : m_pixelShaders)
 		{
 			ps.second->Initialize(m_d3dDevice.Get());
 		}
-#pragma endregion
 
-		// Initialize the shaders, then the renderables
-		// - Shaders and renderables are stored in Hash maps
-		// - Strings are used as the key, and the shader/renderable objects are the value
-		// - When iterating, use iterators
-
-		m_immediateContext->IASetInputLayout(m_vertexLayout.Get());
-
-#pragma region CreateSetVertexBuffer
-		SimpleVertex vertices[] = {
-			{ XMFLOAT3(0.0f, 0.5f, 0.5f) },
-			{ XMFLOAT3(0.5f, -0.5f, 0.5f) },
-			{ XMFLOAT3(-0.5f, -0.5f, 0.5f) },
-		};
-
-		D3D11_BUFFER_DESC bufferDesc = {
-			.ByteWidth = sizeof(vertices),
-			.Usage = D3D11_USAGE_DEFAULT,
-			.BindFlags = D3D11_BIND_VERTEX_BUFFER,
-			.CPUAccessFlags = 0,
-			.MiscFlags = 0
-		};
-
-		D3D11_SUBRESOURCE_DATA initData = {
-			.pSysMem = vertices,
-			.SysMemPitch = 0,
-			.SysMemSlicePitch = 0
-		};
-
-		hr = m_d3dDevice->CreateBuffer(&bufferDesc, &initData, &m_vertexBuffer);
-		if (FAILED(hr)) return hr;
-
-		UINT stride = sizeof(SimpleVertex);
-		UINT offset = 0;
-
-		m_immediateContext->IASetVertexBuffers(
-			0,                // the first input slot for binding
-			1,                // the number of buffers in the array
-			m_vertexBuffer.GetAddressOf(), // the array of vertex buffers
-			&stride,          // array of stride values, one for each buffer
-			&offset);
+		for (auto& renderable : m_renderables)
+		{
+			renderable.second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
+		}
 #pragma endregion
 
 		// Set primitive topology
@@ -359,7 +315,7 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void Renderer::Update(_In_ FLOAT deltaTime)
 	{
-		for (auto renderable : m_renderables)
+		for (auto& renderable : m_renderables)
 		{
 			renderable.second->Update(deltaTime);
 		}
@@ -376,18 +332,63 @@ namespace library {
 		const float ClearColor[4] = { 0.0f, 0.125f, 0.6f, 1.0f }; // RGBA
 		m_immediateContext->ClearRenderTargetView(m_renderTargetView.Get(), ClearColor);
 
-		// Set shaders
-		m_immediateContext->VSSetShader(m_vertexShader.Get(), nullptr, 0u);
-		m_immediateContext->PSSetShader(m_pixelShader.Get(), nullptr, 0u);
+		// Clear the depth buffer to 1.0 (maximum depth)
+		m_immediateContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-		// Draw
-		m_immediateContext->Draw(3, 0);
+		// For each renderables
+		for (auto& pair : m_renderables)
+		{
+			auto& renderable = pair.second;
+
+			// Set the vertex buffer
+			UINT stride = sizeof(SimpleVertex);
+			UINT offset = 0;
+
+			m_immediateContext->IASetVertexBuffers(
+				0,												// the first input slot for binding
+				1,												// the number of buffers in the array
+				renderable->GetVertexBuffer().GetAddressOf(),	// the array of vertex buffers
+				&stride,										// array of stride values, one for each buffer
+				&offset
+			);
+
+			// Set the index buffer
+			m_immediateContext->IASetIndexBuffer(renderable->GetIndexBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+
+			// Set the input layout
+			m_immediateContext->IASetInputLayout(renderable->GetVertexLayout().Get());
+
+			// Update constant buffer
+			ConstantBuffer cb = {
+				.World = renderable->GetWorldMatrix(),
+				.View = m_view,
+				.Projection = m_projection,
+			};
+			cb.World = XMMatrixTranspose(cb.World);
+			cb.View = XMMatrixTranspose(cb.View);
+			cb.Projection = XMMatrixTranspose(cb.Projection);
+
+			m_immediateContext->UpdateSubresource(
+				renderable->GetConstantBuffer().Get(),
+				0u,
+				nullptr,
+				&cb,
+				0u,
+				0u
+			);
+
+			// Set constant buffer
+			m_immediateContext->VSSetConstantBuffers(0, 1, renderable->GetConstantBuffer().GetAddressOf());
+
+			// Render the triangles
+			m_immediateContext->DrawIndexed(renderable->GetNumIndices(), 0, 0);
+		}
 
 		// Present
 		m_swapChain->Present(0, 0);
 
 		// Set Render Target View again (Present call for DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL unbinds backbuffer 0)
-		m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
+		m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
