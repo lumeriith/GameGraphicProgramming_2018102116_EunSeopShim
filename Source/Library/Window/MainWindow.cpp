@@ -78,5 +78,38 @@ namespace library {
 			return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 		}
 	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   MainWindow::GetDirections
+
+	  Summary:  Returns the keyboard direction input
+
+	  Returns:  const DirectionsInput&
+				  Keyboard direction input
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: MainWindow::GetDirections definition (remove the comment)
+	--------------------------------------------------------------------*/
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   MainWindow::GetMouseRelativeMovement
+
+	  Summary:  Returns the mouse relative movement
+
+	  Returns:  const MouseRelativeMovement&
+				  Mouse relative movement
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: MainWindow::GetMouseRelativeMovement definition (remove the comment)
+	--------------------------------------------------------------------*/
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   MainWindow::ResetMouseMovement
+
+	  Summary:  Reset the mouse relative movement to zero
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: MainWindow::ResetMouseMovement definition (remove the comment)
+	--------------------------------------------------------------------*/
 }
 

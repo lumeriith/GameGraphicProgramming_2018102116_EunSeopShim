@@ -307,6 +307,10 @@ namespace library {
 		return S_OK;
 	}
 
+	void Renderer::HandleInput(const DirectionsInput& directions, const MouseRelativeMovement& mouseRelativeMovement, FLOAT deltaTime)
+	{
+	}
+
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::Update
 
