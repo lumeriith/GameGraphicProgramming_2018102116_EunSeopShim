@@ -9,6 +9,8 @@ HRESULT DrillingCube::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceCo
 
 	XMFLOAT3 trVector(0.0f, 2.0f, 0.0f);
 	Translate(XMLoadFloat3(&trVector));
+
+	return hr;
 }
 
 void DrillingCube::Update(_In_ FLOAT deltaTime)

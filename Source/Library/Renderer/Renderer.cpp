@@ -196,11 +196,11 @@ namespace library {
 
 		m_view = XMMatrixLookAtLH(vEye, vAt, vUp);
 
-		float fovAngleY = XM_PI;
+		float fovAngleY = XM_PIDIV2;
 		float nearZ = 0.01f;
 		float farZ = 100.0f;
 
-		m_projection = XMMatrixPerspectiveFovLH(fovAngleY / 2.0f, bbDesc.Width / (float)bbDesc.Height, nearZ, farZ);
+		m_projection = XMMatrixPerspectiveFovLH(fovAngleY, bbDesc.Width / (float)bbDesc.Height, nearZ, farZ);
 #pragma endregion
 
 #pragma region InitializeRenderablesAndShaders
