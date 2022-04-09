@@ -77,8 +77,11 @@ namespace library {
 				elapsedMicroseconds.QuadPart = endingTicks.QuadPart - startingTicks.QuadPart;
 				elapsedMicroseconds.QuadPart *= 1000000;
 				elapsedMicroseconds.QuadPart /= frequency.QuadPart;
+				float deltaTime = elapsedMicroseconds.QuadPart / 1000000.0f;
 				// Update game
-				m_renderer->Update(elapsedMicroseconds.QuadPart / 1000000.0f);
+				m_renderer->HandleInput(m_mainWindow->GetDirections(), m_mainWindow->GetMouseRelativeMovement(), deltaTime);
+				m_mainWindow->ResetMouseMovement();
+				m_renderer->Update(deltaTime);
 				QueryPerformanceCounter(&startingTicks);
 				m_renderer->Render();
 			}

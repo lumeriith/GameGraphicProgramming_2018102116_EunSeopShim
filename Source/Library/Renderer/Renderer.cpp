@@ -23,11 +23,11 @@ namespace library {
 		m_renderTargetView(),
 		m_depthStencil(),
 		m_depthStencilView(),
-		m_view(),
 		m_projection(),
 		m_renderables(),
 		m_vertexShaders(),
-		m_pixelShaders()
+		m_pixelShaders(),
+		m_camera(XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f))
 	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -188,14 +188,8 @@ namespace library {
 		);
 #pragma endregion
 
-#pragma region CreateViewAndProjectionMatrices
-		// Initialize view matrix and the projection matrix
-		FXMVECTOR vEye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
-		FXMVECTOR vAt = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-		FXMVECTOR vUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-		m_view = XMMatrixLookAtLH(vEye, vAt, vUp);
-
+#pragma region CreateProjectionMatrix
+		// Initialize the projection matrix
 		float fovAngleY = XM_PIDIV2;
 		float nearZ = 0.01f;
 		float farZ = 100.0f;
@@ -307,8 +301,25 @@ namespace library {
 		return S_OK;
 	}
 
-	void Renderer::HandleInput(const DirectionsInput& directions, const MouseRelativeMovement& mouseRelativeMovement, FLOAT deltaTime)
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderer::HandleInput
+
+	  Summary:  Add the pixel shader into the renderer and initialize it
+
+	  Args:     const DirectionsInput& directions
+				  Data structure containing keyboard input data
+				const MouseRelativeMovement& mouseRelativeMovement
+				  Data structure containing mouse relative input data
+
+	  Modifies: [m_camera].
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	void Renderer::HandleInput(_In_ const DirectionsInput& directions, _In_ const MouseRelativeMovement& mouseRelativeMovement, _In_ FLOAT deltaTime)
 	{
+		m_camera.HandleInput(
+			directions,
+			mouseRelativeMovement,
+			deltaTime
+		);
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -367,7 +378,7 @@ namespace library {
 			// Update constant buffer
 			ConstantBuffer cb = {
 				.World = renderable->GetWorldMatrix(),
-				.View = m_view,
+				.View = m_camera.GetView(),
 				.Projection = m_projection,
 			};
 			cb.World = XMMatrixTranspose(cb.World);

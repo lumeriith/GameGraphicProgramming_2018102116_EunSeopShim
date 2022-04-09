@@ -1,6 +1,19 @@
 #include "Window/MainWindow.h"
 
-namespace library {
+namespace library
+{
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+		Method:   MainWindow::MainWindow
+
+		Summary:  Constructor
+
+		Modifies: [m_directions, m_mouseRelativeMovement].
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	MainWindow::MainWindow() :
+		m_directions(),
+		m_mouseRelativeMovement()
+	{}
+
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   MainWindow::Initialize
 
@@ -18,9 +31,22 @@ namespace library {
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT MainWindow::Initialize(_In_ HINSTANCE hInstance, _In_ INT nCmdShow, _In_ PCWSTR pszWindowName) {
+		static bool didInitRawInput = false;
+		if (!didInitRawInput)
+		{
+			RAWINPUTDEVICE rid =
+			{
+				.usUsagePage = 0x01,
+				.usUsage = 0x02,
+				.dwFlags = 0,
+				.hwndTarget = nullptr
+			};
+
+			if (!RegisterRawInputDevices(&rid, 1, sizeof(rid))) return E_FAIL;
+			didInitRawInput = true;
+		}
 		return initialize(hInstance, nCmdShow, pszWindowName, WS_OVERLAPPEDWINDOW);
 	}
-
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   MainWindow::GetWindowClassName
@@ -34,7 +60,6 @@ namespace library {
 	{
 		return L"Main Window";
 	}
-
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   MainWindow::HandleMessage
@@ -70,10 +95,81 @@ namespace library {
 			);
 			return 0;
 		}
+		case WM_INPUT:
+		{
+			UINT dataSize;
+			GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, nullptr, &dataSize, sizeof(RAWINPUTHEADER));
 
+			if (dataSize > 0)
+			{
+				std::unique_ptr<BYTE[]> rawData = std::make_unique<BYTE[]>(dataSize);
+				if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, rawData.get(), &dataSize, sizeof(RAWINPUTHEADER)) == dataSize)
+				{
+					RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(rawData.get());
+					if (raw->header.dwType == RIM_TYPEMOUSE)
+					{
+						m_mouseRelativeMovement.X += raw->data.mouse.lLastX;
+						m_mouseRelativeMovement.Y += raw->data.mouse.lLastY;
+					}
+				}
+			}
+			return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
+		}
+		case WM_KEYDOWN:
+		{
+			switch (wParam)
+			{
+			case 0x57: // W
+				m_directions.bFront = true;
+				break;
+			case 0x41: // A
+				m_directions.bLeft = true;
+				break;
+			case 0x53: // S
+				m_directions.bBack = true;
+				break;
+			case 0x44: // D
+				m_directions.bRight = true;
+				break;
+			case VK_SPACE:
+				m_directions.bUp = true;
+				break;
+			case VK_SHIFT:
+				m_directions.bDown = true;
+				break;
+			}
+			return 0;
+		}
+		case WM_KEYUP:
+		{
+			switch (wParam)
+			{
+			case 0x57: // W
+				m_directions.bFront = false;
+				break;
+			case 0x41: // A
+				m_directions.bLeft = false;
+				break;
+			case 0x53: // S
+				m_directions.bBack = false;
+				break;
+			case 0x44: // D
+				m_directions.bRight = false;
+				break;
+			case VK_SPACE:
+				m_directions.bUp = false;
+				break;
+			case VK_SHIFT:
+				m_directions.bDown = false;
+				break;
+			}
+			return 0;
+		}
 		case WM_DESTROY:
+		{
 			PostQuitMessage(0);
 			return 0;
+		}
 		default:
 			return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 		}
@@ -87,9 +183,10 @@ namespace library {
 	  Returns:  const DirectionsInput&
 				  Keyboard direction input
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: MainWindow::GetDirections definition (remove the comment)
-	--------------------------------------------------------------------*/
+	const DirectionsInput& MainWindow::GetDirections() const
+	{
+		return m_directions;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   MainWindow::GetMouseRelativeMovement
@@ -99,17 +196,19 @@ namespace library {
 	  Returns:  const MouseRelativeMovement&
 				  Mouse relative movement
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: MainWindow::GetMouseRelativeMovement definition (remove the comment)
-	--------------------------------------------------------------------*/
+	const MouseRelativeMovement& MainWindow::GetMouseRelativeMovement() const
+	{
+		return m_mouseRelativeMovement;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   MainWindow::ResetMouseMovement
 
 	  Summary:  Reset the mouse relative movement to zero
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: MainWindow::ResetMouseMovement definition (remove the comment)
-	--------------------------------------------------------------------*/
+	void MainWindow::ResetMouseMovement()
+	{
+		m_mouseRelativeMovement = {};
+	}
 }
 

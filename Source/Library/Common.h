@@ -48,3 +48,19 @@ constexpr LPCWSTR PSZ_COURSE_TITLE = L"Game Graphics Programming";
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
+
+struct DirectionsInput
+{
+	BOOL bFront;
+	BOOL bLeft;
+	BOOL bBack;
+	BOOL bRight;
+	BOOL bUp;
+	BOOL bDown;
+};
+
+struct MouseRelativeMovement
+{
+	LONG X;
+	LONG Y;
+};
