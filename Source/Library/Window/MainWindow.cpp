@@ -31,6 +31,10 @@ namespace library
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT MainWindow::Initialize(_In_ HINSTANCE hInstance, _In_ INT nCmdShow, _In_ PCWSTR pszWindowName) {
+		HRESULT hr;
+		hr = initialize(hInstance, nCmdShow, pszWindowName, WS_OVERLAPPEDWINDOW);
+		if (FAILED(hr)) return hr;
+
 		static bool didInitRawInput = false;
 		if (!didInitRawInput)
 		{
@@ -45,7 +49,29 @@ namespace library
 			if (!RegisterRawInputDevices(&rid, 1, sizeof(rid))) return E_FAIL;
 			didInitRawInput = true;
 		}
-		return initialize(hInstance, nCmdShow, pszWindowName, WS_OVERLAPPEDWINDOW);
+
+		RECT rc;
+		POINT p1, p2;
+
+		if (!GetClientRect(m_hWnd, &rc))
+			return HRESULT_FROM_WIN32(GetLastError());
+		p1.x = rc.left;
+		p1.y = rc.top;
+		p2.x = rc.right;
+		p2.y = rc.bottom;
+
+		if (!ClientToScreen(m_hWnd, &p1)) return E_FAIL;
+		if (!ClientToScreen(m_hWnd, &p2)) return E_FAIL;
+
+		rc.left = p1.x;
+		rc.top = p1.y;
+		rc.right = p2.x;
+		rc.bottom = p2.y;
+
+		if (!ClipCursor(&rc))
+			return HRESULT_FROM_WIN32(GetLastError());
+
+		return S_OK;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
