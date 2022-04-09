@@ -18,13 +18,13 @@ namespace library
 		m_moveLeftRight(),
 		m_moveBackForward(),
 		m_moveUpDown(),
-		m_travelSpeed(10.0f),
+		m_travelSpeed(15.0f),
 		m_rotationSpeed(10.0f),
 		m_padding(),
 		m_cameraForward(DEFAULT_FORWARD),
 		m_cameraRight(DEFAULT_RIGHT),
 		m_cameraUp(DEFAULT_UP),
-		m_eye(),
+		m_eye(position),
 		m_at(),
 		m_up(),
 		m_rotation(),
@@ -138,8 +138,10 @@ namespace library
 			XMStoreFloat2(&vRot, xmvRot);
 			m_yaw += vRot.x;
 			m_pitch += vRot.y;
+
+			if (m_pitch > XM_PIDIV2) m_pitch = XM_PIDIV2;
+			else if (m_pitch < -XM_PIDIV2) m_pitch = -XM_PIDIV2;
 		}
-		// TODO
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

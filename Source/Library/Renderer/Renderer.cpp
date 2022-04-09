@@ -27,7 +27,7 @@ namespace library {
 		m_renderables(),
 		m_vertexShaders(),
 		m_pixelShaders(),
-		m_camera(XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f))
+		m_camera(XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f))
 	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
