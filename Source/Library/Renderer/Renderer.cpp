@@ -336,6 +336,8 @@ namespace library {
 		{
 			renderable.second->Update(deltaTime);
 		}
+
+		m_camera.Update(deltaTime);
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
