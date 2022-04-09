@@ -81,6 +81,8 @@ namespace library
 
 		// Initialize the world matrix (Use identity matrix)
 		m_world = XMMatrixIdentity();
+
+		return S_OK;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

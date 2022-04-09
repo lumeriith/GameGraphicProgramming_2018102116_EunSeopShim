@@ -76,6 +76,6 @@ namespace library
 			return hr;
 		}
 
-		return hr;
+		return S_OK;
 	}
 }
