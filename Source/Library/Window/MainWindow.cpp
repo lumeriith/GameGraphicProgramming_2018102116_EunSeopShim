@@ -123,7 +123,7 @@ namespace library
 		}
 		case WM_INPUT:
 		{
-			UINT dataSize;
+			UINT dataSize = 0;
 			GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, nullptr, &dataSize, sizeof(RAWINPUTHEADER));
 
 			if (dataSize > 0)

@@ -1,4 +1,4 @@
-/*+===================================================================
+﻿/*+===================================================================
   File:      BASECUBE.H
 
   Summary:   Base cube header file contains declarations of BaseCube
@@ -7,7 +7,7 @@
 
   Classes: Cube
 
-  � 2022 Kyung Hee University
+  © 2022 Kyung Hee University
 ===================================================================+*/
 #pragma once
 

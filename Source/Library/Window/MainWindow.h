@@ -1,4 +1,4 @@
-/*+===================================================================
+﻿/*+===================================================================
   File:      BASEWINDOW.H
 
   Summary:   BaseWindow header file contains declarations of the
@@ -8,7 +8,7 @@
 
   Functions: InitWindow, InitDevice
 
-	2022 Kyung Hee University
+  © 2022 Kyung Hee University
 ===================================================================+*/
 #pragma once
 

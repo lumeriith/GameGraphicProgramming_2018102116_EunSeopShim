@@ -23,11 +23,11 @@ namespace library {
 		m_renderTargetView(),
 		m_depthStencil(),
 		m_depthStencilView(),
+		m_camera(XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f)),
 		m_projection(),
 		m_renderables(),
 		m_vertexShaders(),
-		m_pixelShaders(),
-		m_camera(XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f))
+		m_pixelShaders()
 	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -194,7 +194,7 @@ namespace library {
 		float nearZ = 0.01f;
 		float farZ = 100.0f;
 
-		m_projection = XMMatrixPerspectiveFovLH(fovAngleY, bbDesc.Width / (float)bbDesc.Height, nearZ, farZ);
+		m_projection = XMMatrixPerspectiveFovLH(fovAngleY, (float)bbDesc.Width / (float)bbDesc.Height, nearZ, farZ);
 #pragma endregion
 
 #pragma region InitializeRenderablesAndShaders

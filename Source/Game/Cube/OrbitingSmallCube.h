@@ -13,4 +13,5 @@ public:
 	void Update(_In_ FLOAT deltaTime);
 private:
 	float m_elapsedTime;
+	BYTE m_padding[12];
 };

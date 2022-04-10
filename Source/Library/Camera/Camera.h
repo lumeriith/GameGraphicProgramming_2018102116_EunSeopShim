@@ -1,4 +1,4 @@
-/*+===================================================================
+﻿/*+===================================================================
   File:      CUBE.H
 
   Summary:   Cube header file contains declarations of Cube class
@@ -7,7 +7,7 @@
 
   Classes: Cube
 
-  � 2022 Kyung Hee University
+  © 2022 Kyung Hee University
 ===================================================================+*/
 #pragma once
 

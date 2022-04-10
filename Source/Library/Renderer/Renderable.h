@@ -1,10 +1,10 @@
-/*+===================================================================
+﻿/*+===================================================================
   File:      RENDERABLE.H
   Summary:   Renderable header file contains declarations of
 			 Renderable class used for the lab samples of Game
 			 Graphics Programming course.
   Classes: Renderable
-  � 2022 Kyung Hee University
+  © 2022 Kyung Hee University
 ===================================================================+*/
 #pragma once
 

@@ -20,6 +20,7 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderable::initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
 	{
+		UNREFERENCED_PARAMETER(pImmediateContext);
 		HRESULT hr;
 
 		// Create the vertex buffer

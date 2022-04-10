@@ -1,4 +1,4 @@
-/*+===================================================================
+﻿/*+===================================================================
   File:      RENDERER.H
 
   Summary:   Renderer header file contains declarations of Renderer
@@ -7,7 +7,7 @@
 
   Classes: Renderer
 
-	2022 Kyung Hee University
+  © 2022 Kyung Hee University
 ===================================================================+*/
 #pragma once
 

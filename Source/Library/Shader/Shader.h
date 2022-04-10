@@ -1,4 +1,4 @@
-/*+===================================================================
+﻿/*+===================================================================
   File:      SHADER.H
 
   Summary:   Shader header file contains declarations of Shader
@@ -7,7 +7,7 @@
 
   Classes: Shader
 
-  � 2022 Kyung Hee University
+  © 2022 Kyung Hee University
 ===================================================================+*/
 #pragma once
 

@@ -1,4 +1,4 @@
-/*+===================================================================
+﻿/*+===================================================================
   File:      GAME.H
 
   Summary:   Game header file contains declarations of functions
@@ -7,7 +7,7 @@
 
   Classes:  Game
 
-  � 2022 Kyung Hee University
+  © 2022 Kyung Hee University
 ===================================================================+*/
 #pragma once
 

@@ -114,7 +114,7 @@ namespace library
 
 		if (xMov != 0 || yMov != 0 || zMov != 0)
 		{
-			XMVECTOR xmvMove = XMVectorSet(xMov, yMov, zMov, 0.0f);
+			XMVECTOR xmvMove = XMVectorSet((float)xMov, (float)yMov, (float)zMov, 0.0f);
 			xmvMove = XMVector3Normalize(xmvMove);
 			xmvMove *= m_travelSpeed * deltaTime;
 			XMFLOAT3 vMove;
@@ -131,7 +131,7 @@ namespace library
 
 		if (xRot != 0 || yRot != 0)
 		{
-			XMVECTOR xmvRot = XMVectorSet(xRot, yRot, 0.0f, 0.0f);
+			XMVECTOR xmvRot = XMVectorSet((float)xRot, (float)yRot, 0.0f, 0.0f);
 			xmvRot = XMVector2Normalize(xmvRot);
 			xmvRot *= m_rotationSpeed * deltaTime;
 			XMFLOAT2 vRot;
@@ -158,6 +158,7 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void Camera::Update(_In_ FLOAT deltaTime)
 	{
+		UNREFERENCED_PARAMETER(deltaTime);
 		m_rotation = XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, 0.0f);
 		XMMATRIX yawRot = XMMatrixRotationY(m_yaw);
 
