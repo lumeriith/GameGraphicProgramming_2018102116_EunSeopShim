@@ -159,17 +159,18 @@ namespace library
 	void Camera::Update(_In_ FLOAT deltaTime)
 	{
 		m_rotation = XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, 0.0f);
+		XMMATRIX yawRot = XMMatrixRotationY(m_yaw);
 
-		m_cameraRight = XMVector3TransformCoord(DEFAULT_RIGHT, m_rotation);
-		m_cameraUp = XMVector3TransformCoord(DEFAULT_UP, m_rotation);
-		m_cameraForward = XMVector3TransformCoord(DEFAULT_FORWARD, m_rotation);
+		m_cameraRight = XMVector3TransformCoord(DEFAULT_RIGHT, yawRot);
+		m_cameraUp = XMVector3TransformCoord(DEFAULT_UP, yawRot);
+		m_cameraForward = XMVector3TransformCoord(DEFAULT_FORWARD, yawRot);
 
 		m_eye += m_moveLeftRight * m_cameraRight;
 		m_eye += m_moveUpDown * m_cameraUp;
 		m_eye += m_moveBackForward * m_cameraForward;
 
-		m_at = m_eye + m_cameraForward;
-		m_up = m_cameraUp;
+		m_at = m_eye + XMVector3TransformCoord(DEFAULT_FORWARD, m_rotation);
+		m_up = XMVector3TransformCoord(DEFAULT_UP, m_rotation);
 
 		m_moveLeftRight = 0.0f;
 		m_moveUpDown = 0.0f;
