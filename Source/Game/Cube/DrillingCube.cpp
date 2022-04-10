@@ -12,7 +12,7 @@ HRESULT DrillingCube::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceCo
 
 void DrillingCube::Update(_In_ FLOAT deltaTime)
 {
-	// 2,000RPM Yuna Kim Cube.
+	// 2,000RPM Yuna Kim Cube
 	RotateY(deltaTime * 16.0f);
 	Translate(XMVectorSet(0.0f, -1.0f * deltaTime, 0.0f, 0.0f));
 }
