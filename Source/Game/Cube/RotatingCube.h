@@ -9,5 +9,12 @@
 class RotatingCube : public BaseCube
 {
 public:
-	void Update(_In_ FLOAT deltaTime);
+	RotatingCube() = default;
+	RotatingCube(const RotatingCube& other) = delete;
+	RotatingCube(RotatingCube&& other) = delete;
+	RotatingCube& operator=(const RotatingCube& other) = delete;
+	RotatingCube& operator=(RotatingCube&& other) = delete;
+	~RotatingCube() = default;
+
+	virtual void Update(_In_ FLOAT deltaTime) override;
 };

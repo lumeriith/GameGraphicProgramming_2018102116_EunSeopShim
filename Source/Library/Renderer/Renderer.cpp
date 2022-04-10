@@ -145,7 +145,7 @@ namespace library {
 			bbDesc.Width,
 			bbDesc.Height,
 			1, // Number of textures.
-			1, // Single mipmap level.
+			1, // Single mipmap level. Use 1 for multisampled texture.
 			D3D11_BIND_DEPTH_STENCIL
 		);
 
@@ -197,7 +197,7 @@ namespace library {
 		m_projection = XMMatrixPerspectiveFovLH(fovAngleY, (float)bbDesc.Width / (float)bbDesc.Height, nearZ, farZ);
 #pragma endregion
 
-#pragma region InitializeRenderablesAndShaders
+#pragma region InitializeShadersAndRenderables
 		for (auto& vs : m_vertexShaders)
 		{
 			hr = vs.second->Initialize(m_d3dDevice.Get());

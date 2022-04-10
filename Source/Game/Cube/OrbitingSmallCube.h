@@ -10,7 +10,13 @@ class OrbitingSmallCube : public BaseCube
 {
 public:
 	OrbitingSmallCube();
-	void Update(_In_ FLOAT deltaTime);
+	OrbitingSmallCube(const OrbitingSmallCube& other) = delete;
+	OrbitingSmallCube(OrbitingSmallCube&& other) = delete;
+	OrbitingSmallCube& operator=(const OrbitingSmallCube& other) = delete;
+	OrbitingSmallCube& operator=(OrbitingSmallCube&& other) = delete;
+	~OrbitingSmallCube() = default;
+
+	virtual void Update(_In_ FLOAT deltaTime) override;
 private:
 	float m_elapsedTime;
 	BYTE m_padding[12];

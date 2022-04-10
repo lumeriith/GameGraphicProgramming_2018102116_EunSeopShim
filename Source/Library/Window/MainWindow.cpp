@@ -126,17 +126,16 @@ namespace library
 			UINT dataSize = 0;
 			GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, nullptr, &dataSize, sizeof(RAWINPUTHEADER));
 
-			if (dataSize > 0)
+			if (dataSize <= 0) return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
+
+			std::unique_ptr<BYTE[]> rawData = std::make_unique<BYTE[]>(dataSize);
+			if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, rawData.get(), &dataSize, sizeof(RAWINPUTHEADER)) == dataSize)
 			{
-				std::unique_ptr<BYTE[]> rawData = std::make_unique<BYTE[]>(dataSize);
-				if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, rawData.get(), &dataSize, sizeof(RAWINPUTHEADER)) == dataSize)
+				RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(rawData.get());
+				if (raw->header.dwType == RIM_TYPEMOUSE)
 				{
-					RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(rawData.get());
-					if (raw->header.dwType == RIM_TYPEMOUSE)
-					{
-						m_mouseRelativeMovement.X += raw->data.mouse.lLastX;
-						m_mouseRelativeMovement.Y += raw->data.mouse.lLastY;
-					}
+					m_mouseRelativeMovement.X += raw->data.mouse.lLastX;
+					m_mouseRelativeMovement.Y += raw->data.mouse.lLastY;
 				}
 			}
 			return DefWindowProc(m_hWnd, uMsg, wParam, lParam);

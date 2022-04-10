@@ -1,6 +1,9 @@
 #include "OrbitingSmallCube.h"
 
-OrbitingSmallCube::OrbitingSmallCube() : m_elapsedTime(0) {}
+OrbitingSmallCube::OrbitingSmallCube() :
+	m_elapsedTime(0),
+	m_padding()
+{}
 
 void OrbitingSmallCube::Update(_In_ FLOAT deltaTime)
 {
