@@ -154,7 +154,7 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	ComPtr<ID3D11InputLayout>& Renderable::GetVertexLayout()
 	{
-		return m_vertexShader->GetVertexLayout(); // TODO is this right
+		return m_vertexShader->GetVertexLayout();
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

@@ -241,10 +241,7 @@ namespace library {
 	HRESULT Renderer::AddRenderable(_In_ PCWSTR pszRenderableName, _In_ const std::shared_ptr<Renderable>& renderable)
 	{
 		if (m_renderables.count(pszRenderableName) > 0) return E_FAIL;
-
-		std::shared_ptr<Renderable> newItem(renderable);
-		m_renderables.insert({ pszRenderableName, newItem });
-		// TODO Is this even right??
+		m_renderables.insert({ pszRenderableName, renderable });
 
 		return S_OK;
 	}
@@ -267,10 +264,7 @@ namespace library {
 	HRESULT Renderer::AddVertexShader(_In_ PCWSTR pszVertexShaderName, _In_ const std::shared_ptr<VertexShader>& vertexShader)
 	{
 		if (m_vertexShaders.count(pszVertexShaderName) > 0) return E_FAIL;
-
-		std::shared_ptr<VertexShader> newItem(vertexShader);
-		m_vertexShaders.insert({ pszVertexShaderName, newItem });
-		// TODO Is this even right??
+		m_vertexShaders.insert({ pszVertexShaderName, vertexShader });
 
 		return S_OK;
 	}
@@ -293,10 +287,7 @@ namespace library {
 	HRESULT Renderer::AddPixelShader(_In_ PCWSTR pszPixelShaderName, _In_ const std::shared_ptr<PixelShader>& pixelShader)
 	{
 		if (m_pixelShaders.count(pszPixelShaderName) > 0) return E_FAIL;
-
-		std::shared_ptr<PixelShader> newItem(pixelShader);
-		m_pixelShaders.insert({ pszPixelShaderName, newItem });
-		// TODO Is this even right??
+		m_pixelShaders.insert({ pszPixelShaderName, pixelShader });
 
 		return S_OK;
 	}
