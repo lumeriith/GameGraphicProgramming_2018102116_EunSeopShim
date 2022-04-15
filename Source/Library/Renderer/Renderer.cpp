@@ -23,6 +23,8 @@ namespace library {
 		m_renderTargetView(),
 		m_depthStencil(),
 		m_depthStencilView(),
+		m_cbChangeOnResize(),
+		m_padding(),
 		m_camera(XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f)),
 		m_projection(),
 		m_renderables(),
@@ -188,13 +190,35 @@ namespace library {
 		);
 #pragma endregion
 
-#pragma region CreateProjectionMatrix
-		// Initialize the projection matrix
+#pragma region CreateCBChangeOnResizeAndSetB1
 		float fovAngleY = XM_PIDIV2;
 		float nearZ = 0.01f;
 		float farZ = 100.0f;
-
 		m_projection = XMMatrixPerspectiveFovLH(fovAngleY, (float)bbDesc.Width / (float)bbDesc.Height, nearZ, farZ);
+
+
+		D3D11_BUFFER_DESC cBufferDesc = {
+			.ByteWidth = sizeof(CBChangeOnResize),
+			.Usage = D3D11_USAGE_DEFAULT,
+			.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+			.CPUAccessFlags = 0,
+			.MiscFlags = 0,
+			.StructureByteStride = 0
+		};
+
+		CBChangeOnResize cb = {};
+		cb.Projection = m_projection;
+
+		D3D11_SUBRESOURCE_DATA cData = {
+			.pSysMem = &cb,
+			.SysMemPitch = 0,
+			.SysMemSlicePitch = 0
+		};
+
+		hr = m_d3dDevice->CreateBuffer(&cBufferDesc, &cData, &m_cbChangeOnResize);
+		if (FAILED(hr)) return hr;
+
+		m_immediateContext->VSSetConstantBuffers(1, 1, m_cbChangeOnResize.GetAddressOf());
 #pragma endregion
 
 #pragma region InitializeShadersAndRenderables
