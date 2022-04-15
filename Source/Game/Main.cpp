@@ -17,6 +17,7 @@
 #include <source_location>
 
 #include "Cube/Cube.h"
+#include "Cube/CustomCube.h"
 #include "Game/Game.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -74,6 +75,22 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	}
 
 	if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"Cube", L"MainShader")))
+	{
+		return 0;
+	}
+
+	std::shared_ptr<CustomCube> customCube = std::make_shared<CustomCube>("portal.dds");
+	if (FAILED(game->GetRenderer()->AddRenderable(L"CustomCube", customCube)))
+	{
+		return 0;
+	}
+
+	if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"CustomCube", L"MainShader")))
+	{
+		return 0;
+	}
+
+	if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"CustomCube", L"MainShader")))
 	{
 		return 0;
 	}
