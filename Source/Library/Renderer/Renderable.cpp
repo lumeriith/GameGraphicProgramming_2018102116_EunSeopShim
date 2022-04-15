@@ -87,7 +87,7 @@ namespace library
 
 		// Create the constant buffer
 		D3D11_BUFFER_DESC cBufferDesc = {
-			.ByteWidth = sizeof(ConstantBuffer),
+			.ByteWidth = sizeof(CBChangesEveryFrame),
 			.Usage = D3D11_USAGE_DEFAULT,
 			.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
 			.CPUAccessFlags = 0,
@@ -95,7 +95,7 @@ namespace library
 			.StructureByteStride = 0
 		};
 
-		ConstantBuffer cb = {};
+		CBChangesEveryFrame cb = {};
 
 		D3D11_SUBRESOURCE_DATA cData = {
 			.pSysMem = &cb,
@@ -109,13 +109,26 @@ namespace library
 		// Initialize the world matrix (Use identity matrix)
 		m_world = XMMatrixIdentity();
 
-		// Create Sampler State
+		// Create texture resource device
 		hr = CreateDDSTextureFromFile(
 			pDevice,
 			m_textureFilePath.filename().wstring().c_str(),
 			nullptr,
 			&m_textureRV
 		);
+		if (FAILED(hr)) return hr;
+
+		// Create sampler state
+		D3D11_SAMPLER_DESC sampDesc = {
+		.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+			.AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
+			.AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
+			.AddressW = D3D11_TEXTURE_ADDRESS_WRAP,
+			.ComparisonFunc = D3D11_COMPARISON_NEVER,
+			.MinLOD = 0,
+			.MaxLOD = D3D11_FLOAT32_MAX
+		};
+		hr = pDevice->CreateSamplerState(&sampDesc, &m_samplerLinear);
 		if (FAILED(hr)) return hr;
 
 		return S_OK;

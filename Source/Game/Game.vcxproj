@@ -96,17 +96,11 @@
   <ItemGroup>
     <ClCompile Include="Cube\BaseCube.cpp" />
     <ClCompile Include="Cube\Cube.cpp" />
-    <ClCompile Include="Cube\DrillingCube.cpp" />
-    <ClCompile Include="Cube\OrbitingSmallCube.cpp" />
-    <ClCompile Include="Cube\RotatingCube.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h" />
     <ClInclude Include="Cube\Cube.h" />
-    <ClInclude Include="Cube\DrillingCube.h" />
-    <ClInclude Include="Cube\OrbitingSmallCube.h" />
-    <ClInclude Include="Cube\RotatingCube.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PS.hlsl">

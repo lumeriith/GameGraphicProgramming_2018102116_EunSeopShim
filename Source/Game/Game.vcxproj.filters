@@ -16,13 +16,13 @@
     <Filter Include="Header Files\Cube">
       <UniqueIdentifier>{5903a100-8cd4-4277-b0e0-1f9e90ea6969}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Shader">
-      <UniqueIdentifier>{dab8c955-522b-4e0d-ab1a-066e5667b6b5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Cube">
       <UniqueIdentifier>{c8915c57-1aca-48fb-a491-353447f7223e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Shader">
+    <Filter Include="Header Files\Shaders">
+      <UniqueIdentifier>{dab8c955-522b-4e0d-ab1a-066e5667b6b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shaders">
       <UniqueIdentifier>{c2d4f5fa-2365-4cce-9a9d-95c8c5cb82bc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -33,15 +33,6 @@
     <ClCompile Include="Cube\BaseCube.cpp">
       <Filter>Source Files\Cube</Filter>
     </ClCompile>
-    <ClCompile Include="Cube\OrbitingSmallCube.cpp">
-      <Filter>Source Files\Cube</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube\RotatingCube.cpp">
-      <Filter>Source Files\Cube</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube\DrillingCube.cpp">
-      <Filter>Source Files\Cube</Filter>
-    </ClCompile>
     <ClCompile Include="Cube\Cube.cpp">
       <Filter>Source Files\Cube</Filter>
     </ClCompile>
@@ -50,30 +41,21 @@
     <ClInclude Include="Cube\BaseCube.h">
       <Filter>Header Files\Cube</Filter>
     </ClInclude>
-    <ClInclude Include="Cube\OrbitingSmallCube.h">
-      <Filter>Header Files\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube\RotatingCube.h">
-      <Filter>Header Files\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube\DrillingCube.h">
-      <Filter>Header Files\Cube</Filter>
-    </ClInclude>
     <ClInclude Include="Cube\Cube.h">
       <Filter>Header Files\Cube</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PS.hlsl">
-      <Filter>Source Files\Shader</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\VS.hlsl">
-      <Filter>Source Files\Shader</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Shaders.fxh">
-      <Filter>Header Files\Shader</Filter>
+      <Filter>Header Files\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

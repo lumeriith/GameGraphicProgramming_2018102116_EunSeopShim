@@ -13,6 +13,7 @@ namespace library
 				 m_eye, m_at, m_up, m_rotation, m_view].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	Camera::Camera(_In_ const XMVECTOR& position) :
+		m_cbChangeOnCameraMovement(),
 		m_yaw(0.0f),
 		m_pitch(0.0f),
 		m_moveLeftRight(),
@@ -93,9 +94,7 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	ComPtr<ID3D11Buffer>& Camera::GetConstantBuffer()
 	{
-		/*--------------------------------------------------------------------
-		  TODO: Camera::GetConstantBuffer definition (remove the comment)
-		--------------------------------------------------------------------*/
+		return m_cbChangeOnCameraMovement;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -171,9 +170,27 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Camera::Initialize(_In_ ID3D11Device* device)
 	{
-		/*--------------------------------------------------------------------
-		  TODO: Camera::Initialize definition (remove the comment)
-		--------------------------------------------------------------------*/
+		D3D11_BUFFER_DESC cBufferDesc = {
+			.ByteWidth = sizeof(CBChangeOnResize),
+			.Usage = D3D11_USAGE_DEFAULT,
+			.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+			.CPUAccessFlags = 0,
+			.MiscFlags = 0,
+			.StructureByteStride = 0
+		};
+
+		CBChangeOnCameraMovement cb = {};
+		cb.View = m_view;
+
+		D3D11_SUBRESOURCE_DATA cData = {
+			.pSysMem = &cb,
+			.SysMemPitch = 0,
+			.SysMemSlicePitch = 0
+		};
+
+		HRESULT hr;
+		hr = device->CreateBuffer(&cBufferDesc, &cData, &m_cbChangeOnCameraMovement);
+		if (FAILED(hr)) return hr;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

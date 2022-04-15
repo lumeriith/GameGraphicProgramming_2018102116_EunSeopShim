@@ -206,8 +206,9 @@ namespace library {
 			.StructureByteStride = 0
 		};
 
-		CBChangeOnResize cb = {};
-		cb.Projection = m_projection;
+		CBChangeOnResize cb = {
+			.Projection = XMMatrixTranspose(m_projection)
+		};
 
 		D3D11_SUBRESOURCE_DATA cData = {
 			.pSysMem = &cb,
@@ -240,6 +241,9 @@ namespace library {
 			if (FAILED(hr)) return hr;
 		}
 #pragma endregion
+
+		// Initialize Camera
+		m_camera.Initialize(m_d3dDevice.Get());
 
 		// Set primitive topology
 		m_immediateContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -369,6 +373,21 @@ namespace library {
 		// Clear the depth buffer to 1.0 (maximum depth)
 		m_immediateContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+		// Create camera constant buffer and update
+		CBChangeOnCameraMovement cbCamera = {
+			.View = XMMatrixTranspose(m_camera.GetView())
+		};
+
+		m_immediateContext->UpdateSubresource(
+			m_camera.GetConstantBuffer().Get(),
+			0u,
+			nullptr,
+			&cbCamera,
+			0u,
+			0u
+		);
+		m_immediateContext->VSSetConstantBuffers(0, 1, m_camera.GetConstantBuffer().GetAddressOf());
+
 		// For each renderables
 		for (auto& pair : m_renderables)
 		{
@@ -392,28 +411,26 @@ namespace library {
 			// Set the input layout
 			m_immediateContext->IASetInputLayout(renderable->GetVertexLayout().Get());
 
-			// Update constant buffers
+			// Create and update renderable constant buffer
+			CBChangesEveryFrame cbRenderable = {
+				.World = XMMatrixTranspose(renderable->GetWorldMatrix())
+			};
 
-			//ConstantBuffer cb = {
-			//	.World = renderable->GetWorldMatrix(),
-			//	.View = m_camera.GetView(),
-			//	.Projection = m_projection,
-			//};
-			//cb.World = XMMatrixTranspose(cb.World);
-			//cb.View = XMMatrixTranspose(cb.View);
-			//cb.Projection = XMMatrixTranspose(cb.Projection);
+			m_immediateContext->UpdateSubresource(
+				renderable->GetConstantBuffer().Get(),
+				0u,
+				nullptr,
+				&cbRenderable,
+				0u,
+				0u
+			);
 
-			//m_immediateContext->UpdateSubresource(
-			//	renderable->GetConstantBuffer().Get(),
-			//	0u,
-			//	nullptr,
-			//	&cb,
-			//	0u,
-			//	0u
-			//);
+			// Set shaders
+			m_immediateContext->VSSetShader(renderable->GetVertexShader().Get(), nullptr, 0);
+			m_immediateContext->PSSetShader(renderable->GetPixelShader().Get(), nullptr, 0);
 
-			// Set constant buffers
-			// m_immediateContext->VSSetConstantBuffers(0, 1, renderable->GetConstantBuffer().GetAddressOf());
+			// Set renderable constant buffer
+			m_immediateContext->VSSetConstantBuffers(2, 1, renderable->GetConstantBuffer().GetAddressOf());
 
 			// Set texture resource view of the renderable into the pixel shader
 			m_immediateContext->PSSetShaderResources(0, 1, renderable->GetTextureResourceView().GetAddressOf());
@@ -421,9 +438,7 @@ namespace library {
 			// Set sampler state of the renderable into the pixel shader
 			m_immediateContext->PSSetSamplers(0, 1, renderable->GetSamplerState().GetAddressOf());
 
-			// Render the triangles
-			m_immediateContext->VSSetShader(renderable->GetVertexShader().Get(), nullptr, 0);
-			m_immediateContext->PSSetShader(renderable->GetPixelShader().Get(), nullptr, 0);
+			// Render
 			m_immediateContext->DrawIndexed(renderable->GetNumIndices(), 0, 0);
 		}
 
