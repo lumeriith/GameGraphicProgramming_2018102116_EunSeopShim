@@ -368,27 +368,34 @@ namespace library {
 			// Set the input layout
 			m_immediateContext->IASetInputLayout(renderable->GetVertexLayout().Get());
 
-			// Update constant buffer
-			ConstantBuffer cb = {
-				.World = renderable->GetWorldMatrix(),
-				.View = m_camera.GetView(),
-				.Projection = m_projection,
-			};
-			cb.World = XMMatrixTranspose(cb.World);
-			cb.View = XMMatrixTranspose(cb.View);
-			cb.Projection = XMMatrixTranspose(cb.Projection);
+			// Update constant buffers
 
-			m_immediateContext->UpdateSubresource(
-				renderable->GetConstantBuffer().Get(),
-				0u,
-				nullptr,
-				&cb,
-				0u,
-				0u
-			);
+			//ConstantBuffer cb = {
+			//	.World = renderable->GetWorldMatrix(),
+			//	.View = m_camera.GetView(),
+			//	.Projection = m_projection,
+			//};
+			//cb.World = XMMatrixTranspose(cb.World);
+			//cb.View = XMMatrixTranspose(cb.View);
+			//cb.Projection = XMMatrixTranspose(cb.Projection);
 
-			// Set constant buffer
-			m_immediateContext->VSSetConstantBuffers(0, 1, renderable->GetConstantBuffer().GetAddressOf());
+			//m_immediateContext->UpdateSubresource(
+			//	renderable->GetConstantBuffer().Get(),
+			//	0u,
+			//	nullptr,
+			//	&cb,
+			//	0u,
+			//	0u
+			//);
+
+			// Set constant buffers
+			// m_immediateContext->VSSetConstantBuffers(0, 1, renderable->GetConstantBuffer().GetAddressOf());
+
+			// Set texture resource view of the renderable into the pixel shader
+			m_immediateContext->PSSetShaderResources(0, 1, renderable->GetTextureResourceView().GetAddressOf());
+
+			// Set sampler state of the renderable into the pixel shader
+			m_immediateContext->PSSetSamplers(0, 1, renderable->GetSamplerState().GetAddressOf());
 
 			// Render the triangles
 			m_immediateContext->VSSetShader(renderable->GetVertexShader().Get(), nullptr, 0);
