@@ -84,6 +84,21 @@ namespace library
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Camera::GetConstantBuffer
+
+	  Summary:  Returns the constant buffer
+
+	  Returns:  ComPtr<ID3D11Buffer>&
+				  The constant buffer
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	ComPtr<ID3D11Buffer>& Camera::GetConstantBuffer()
+	{
+		/*--------------------------------------------------------------------
+		  TODO: Camera::GetConstantBuffer definition (remove the comment)
+		--------------------------------------------------------------------*/
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Camera::HandleInput
 
 	  Summary:  Sets the camera state according to the given input
@@ -142,6 +157,23 @@ namespace library
 			if (m_pitch > XM_PIDIV2) m_pitch = XM_PIDIV2;
 			else if (m_pitch < -XM_PIDIV2) m_pitch = -XM_PIDIV2;
 		}
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Camera::Initialize
+
+	  Summary:  Initialize the view matrix constant buffers
+
+	  Args:     ID3D11Device* pDevice
+				  Pointer to a Direct3D 11 device
+
+	  Modifies: [m_cbChangeOnCameraMovement].
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	HRESULT Camera::Initialize(_In_ ID3D11Device* device)
+	{
+		/*--------------------------------------------------------------------
+		  TODO: Camera::Initialize definition (remove the comment)
+		--------------------------------------------------------------------*/
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

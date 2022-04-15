@@ -6,20 +6,49 @@
 //--------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------
+// Global Variables
+//--------------------------------------------------------------------------------------
+/*--------------------------------------------------------------------
+  TODO: Declare a diffuse texture and a sampler state (remove the comment)
+--------------------------------------------------------------------*/
+
+//--------------------------------------------------------------------------------------
 // Constant Buffer Variables
 //--------------------------------------------------------------------------------------
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
-  Cbuffer:  ConstantBuffer
+  Cbuffer:  cbChangeOnCameraMovement
 
-  Summary:  Constant buffer used for space transformations
+  Summary:  Constant buffer used for view transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
+/*--------------------------------------------------------------------
+  TODO: cbChangeOnCameraMovement definition (remove the comment)
+--------------------------------------------------------------------*/
+
+/*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
+  Cbuffer:  cbChangeOnResize
+
+  Summary:  Constant buffer used for projection transformation
+C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
+/*--------------------------------------------------------------------
+  TODO: cbChangeOnResize definition (remove the comment)
+--------------------------------------------------------------------*/
+
+/*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
+  Cbuffer:  cbChangesEveryFrame
+
+  Summary:  Constant buffer used for world transformation
+C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
+/*--------------------------------------------------------------------
+  TODO: cbChangesEveryFrame definition (remove the comment)
+--------------------------------------------------------------------*/
+
+// Deprecated
 cbuffer ConstantBuffer : register(b0)
 {
 	matrix World;
 	matrix View;
 	matrix Projection;
 };
-
 
 //--------------------------------------------------------------------------------------
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
@@ -35,14 +64,13 @@ struct VS_INPUT
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Struct:   PS_INPUT
 
-  Summary:  Used as the input to the pixel shader, output of the
-			vertex shader
+  Summary:  Used as the input to the pixel shader, output of the 
+            vertex shader
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct PS_INPUT
 {
 	float4 Pos : SV_POSITION;
 };
-
 
 //--------------------------------------------------------------------------------------
 // Vertex Shader
@@ -56,7 +84,6 @@ PS_INPUT VS(VS_INPUT input)
 	output.Pos = mul(output.Pos, Projection);
 	return output;
 }
-
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader

@@ -113,6 +113,7 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
     <ClCompile Include="Shader\PixelShader.cpp" />
     <ClCompile Include="Shader\Shader.cpp" />
     <ClCompile Include="Shader\VertexShader.cpp" />
+    <ClCompile Include="Texture\DDSTextureLoader.cpp" />
     <ClCompile Include="Window\MainWindow.cpp" />
     <ClCompile Include="Game\Game.cpp" />
   </ItemGroup>
@@ -124,6 +125,7 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
     <ClInclude Include="Shader\PixelShader.h" />
     <ClInclude Include="Shader\Shader.h" />
     <ClInclude Include="Shader\VertexShader.h" />
+    <ClInclude Include="Texture\DDSTextureLoader.h" />
     <ClInclude Include="Window\MainWindow.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Game\Game.h" />
