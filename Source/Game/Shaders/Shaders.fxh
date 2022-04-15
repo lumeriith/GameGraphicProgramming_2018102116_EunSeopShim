@@ -59,6 +59,7 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct VS_INPUT
 {
 	float4 Pos : POSITION;
+    float2 Tex : TEXCOORD;
 };
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
@@ -70,6 +71,7 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct PS_INPUT
 {
 	float4 Pos : SV_POSITION;
+    float2 Tex : TEXCOORD;
 };
 
 //--------------------------------------------------------------------------------------
@@ -82,6 +84,8 @@ PS_INPUT VS(VS_INPUT input)
 	output.Pos = mul(output.Pos, World);
 	output.Pos = mul(output.Pos, View);
 	output.Pos = mul(output.Pos, Projection);
+	output.Tex = input.Tex;
+
 	return output;
 }
 
@@ -90,5 +94,5 @@ PS_INPUT VS(VS_INPUT input)
 //--------------------------------------------------------------------------------------
 float4 PS(PS_INPUT input) : SV_Target
 {
-	return float4(1.0f, 0.0f, 0.0f, 1.0f);
+	return txDiffuse.Sample(samLinear, input.Tex);
 }
