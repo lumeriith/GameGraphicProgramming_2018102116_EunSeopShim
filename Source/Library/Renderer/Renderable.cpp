@@ -1,5 +1,7 @@
 #include "Renderer/Renderable.h"
 
+#include "Texture/DDSTextureLoader.h"
+
 namespace library
 {
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -14,9 +16,17 @@ namespace library
 				 m_textureRV, m_samplerLinear, m_vertexShader,
 				 m_pixelShader, m_textureFilePath, m_world].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	Renderable::Renderable(_In_ const std::filesystem::path& textureFilePath)
-	{
-	}
+	Renderable::Renderable(_In_ const std::filesystem::path& textureFilePath) :
+		m_vertexBuffer(),
+		m_indexBuffer(),
+		m_constantBuffer(),
+		m_textureRV(),
+		m_samplerLinear(),
+		m_vertexShader(),
+		m_pixelShader(),
+		m_textureFilePath(textureFilePath),
+		m_world()
+	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderable::initialize
@@ -41,7 +51,7 @@ namespace library
 
 		// Create the vertex buffer
 		D3D11_BUFFER_DESC vBufferDesc = {
-			.ByteWidth = sizeof(SimpleVertex) * GetNumVertices(),
+			.ByteWidth = static_cast<UINT>(sizeof(SimpleVertex)) * GetNumVertices(),
 			.Usage = D3D11_USAGE_DEFAULT,
 			.BindFlags = D3D11_BIND_VERTEX_BUFFER,
 			.CPUAccessFlags = 0,
@@ -59,7 +69,7 @@ namespace library
 
 		// Create the index buffer
 		D3D11_BUFFER_DESC iBufferDesc = {
-			.ByteWidth = sizeof(WORD) * GetNumIndices(),
+			.ByteWidth = static_cast<UINT>(sizeof(WORD)) * GetNumIndices(),
 			.Usage = D3D11_USAGE_DEFAULT,
 			.BindFlags = D3D11_BIND_INDEX_BUFFER,
 			.CPUAccessFlags = 0,
@@ -98,6 +108,15 @@ namespace library
 
 		// Initialize the world matrix (Use identity matrix)
 		m_world = XMMatrixIdentity();
+
+		// Create Sampler State
+		hr = CreateDDSTextureFromFile(
+			pDevice,
+			m_textureFilePath.filename().wstring().c_str(),
+			nullptr,
+			&m_textureRV
+		);
+		if (FAILED(hr)) return hr;
 
 		return S_OK;
 	}
