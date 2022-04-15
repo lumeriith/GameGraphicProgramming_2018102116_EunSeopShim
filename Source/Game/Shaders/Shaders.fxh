@@ -8,9 +8,8 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Declare a diffuse texture and a sampler state (remove the comment)
---------------------------------------------------------------------*/
+Texture2D txDiffuse : register( t0 );
+SamplerState samLinear : register( s0 );
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
@@ -20,34 +19,29 @@
 
   Summary:  Constant buffer used for view transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangeOnCameraMovement definition (remove the comment)
---------------------------------------------------------------------*/
+cbuffer cbChangeOnCameraMovement : register( b0 )
+{
+	matrix View;
+};
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbChangeOnResize
 
   Summary:  Constant buffer used for projection transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangeOnResize definition (remove the comment)
---------------------------------------------------------------------*/
+cbuffer cbChangeOnResize : register( b1 )
+{
+	matrix Projection;
+};
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbChangesEveryFrame
 
   Summary:  Constant buffer used for world transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangesEveryFrame definition (remove the comment)
---------------------------------------------------------------------*/
-
-// Deprecated
-cbuffer ConstantBuffer : register(b0)
+cbuffer cbChangesEveryFrame : register( b2 )
 {
 	matrix World;
-	matrix View;
-	matrix Projection;
 };
 
 //--------------------------------------------------------------------------------------
