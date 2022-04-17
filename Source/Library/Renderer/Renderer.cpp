@@ -243,7 +243,8 @@ namespace library {
 #pragma endregion
 
 		// Initialize Camera
-		m_camera.Initialize(m_d3dDevice.Get());
+		hr = m_camera.Initialize(m_d3dDevice.Get());
+		if (FAILED(hr)) return hr;
 
 		// Set primitive topology
 		m_immediateContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

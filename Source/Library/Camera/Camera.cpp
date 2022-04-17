@@ -191,6 +191,8 @@ namespace library
 		HRESULT hr;
 		hr = device->CreateBuffer(&cBufferDesc, &cData, &m_cbChangeOnCameraMovement);
 		if (FAILED(hr)) return hr;
+
+		return S_OK;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
