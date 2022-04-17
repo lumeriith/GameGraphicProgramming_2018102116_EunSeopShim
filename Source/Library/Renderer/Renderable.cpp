@@ -120,7 +120,7 @@ namespace library
 
 		// Create sampler state
 		D3D11_SAMPLER_DESC sampDesc = {
-		.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+			.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
 			.AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
 			.AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
 			.AddressW = D3D11_TEXTURE_ADDRESS_WRAP,

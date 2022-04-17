@@ -33,7 +33,7 @@ namespace library {
 	  Returns:  HRESULT
 				Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT library::Game::Initialize(_In_ HINSTANCE hInstance, _In_ INT nCmdShow) {
+	HRESULT Game::Initialize(_In_ HINSTANCE hInstance, _In_ INT nCmdShow) {
 		HRESULT hr;
 
 		hr = m_mainWindow->Initialize(hInstance, nCmdShow, L"Game Graphics Programming Lab 04: 3D Spaces and Transformations");
