@@ -7,9 +7,11 @@ namespace library {
 	  Summary:  Constructor
 
 	  Modifies: [m_driverType, m_featureLevel, m_d3dDevice, m_d3dDevice1,
-				  m_immediateContext, m_immediateContext1, m_swapChain,
-				  m_swapChain1, m_renderTargetView, m_vertexShader,
-				  m_pixelShader, m_vertexLayout, m_vertexBuffer].
+				 m_immediateContext, m_immediateContext1, m_swapChain,
+				 m_swapChain1, m_renderTargetView, m_depthStencil,
+				 m_depthStencilView, m_cbChangeOnResize, m_camera,
+				 m_projection, m_renderables, m_vertexShaders,
+				 m_pixelShaders].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	Renderer::Renderer() :
 		m_driverType(D3D_DRIVER_TYPE_HARDWARE),
@@ -24,10 +26,11 @@ namespace library {
 		m_depthStencil(),
 		m_depthStencilView(),
 		m_cbChangeOnResize(),
-		m_padding(),
+		m_cbLights(),
 		m_camera(XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f)),
 		m_projection(),
 		m_renderables(),
+		m_aPointLights(),
 		m_vertexShaders(),
 		m_pixelShaders()
 	{}

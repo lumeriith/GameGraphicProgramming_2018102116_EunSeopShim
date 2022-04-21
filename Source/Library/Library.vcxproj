@@ -108,6 +108,7 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Light\PointLight.cpp" />
     <ClCompile Include="Renderer\Renderable.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
     <ClCompile Include="Shader\PixelShader.cpp" />
@@ -119,6 +120,7 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h" />
+    <ClInclude Include="Light\PointLight.h" />
     <ClInclude Include="Renderer\DataTypes.h" />
     <ClInclude Include="Renderer\Renderable.h" />
     <ClInclude Include="Renderer\Renderer.h" />

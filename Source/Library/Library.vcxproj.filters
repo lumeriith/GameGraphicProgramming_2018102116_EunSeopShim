@@ -49,6 +49,12 @@
     <Filter Include="Source Files\Texture">
       <UniqueIdentifier>{05faf1dd-1dbf-4189-943b-61a397a4ae6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Light">
+      <UniqueIdentifier>{44a5e0ea-731c-40e8-bc19-c6d53ec770ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Light">
+      <UniqueIdentifier>{401e63be-d092-435d-80ff-8a5cd460a0f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h">
@@ -90,6 +96,9 @@
     <ClInclude Include="Texture\DDSTextureLoader.h">
       <Filter>Header Files\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="Light\PointLight.h">
+      <Filter>Header Files\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\Game.cpp">
@@ -118,6 +127,9 @@
     </ClCompile>
     <ClCompile Include="Texture\DDSTextureLoader.cpp">
       <Filter>Source Files\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Light\PointLight.cpp">
+      <Filter>Source Files\Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

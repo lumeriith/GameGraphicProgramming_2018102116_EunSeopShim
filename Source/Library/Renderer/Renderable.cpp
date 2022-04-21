@@ -14,7 +14,8 @@ namespace library
 
 	  Modifies: [m_vertexBuffer, m_indexBuffer, m_constantBuffer,
 				 m_textureRV, m_samplerLinear, m_vertexShader,
-				 m_pixelShader, m_textureFilePath, m_world].
+				 m_pixelShader, m_textureFilePath, m_outputColor,
+				 m_world].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	Renderable::Renderable(_In_ const std::filesystem::path& textureFilePath) :
 		m_vertexBuffer(),
@@ -25,8 +26,27 @@ namespace library
 		m_vertexShader(),
 		m_pixelShader(),
 		m_textureFilePath(textureFilePath),
+		m_outputColor(),
+		m_bHasTextures(),
 		m_world()
 	{}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderable::Renderable
+
+	  Summary:  Constructor
+
+	  Args:     const XMFLOAT4* outputColor
+				  Default color of the renderable
+
+	  Modifies: [m_vertexBuffer, m_indexBuffer, m_constantBuffer,
+				 m_textureRV, m_samplerLinear, m_vertexShader,
+				 m_pixelShader, m_textureFilePath, m_outputColor,
+				 m_world].
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: Renderable::Renderable definition (remove the comment)
+	--------------------------------------------------------------------*/
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderable::initialize
@@ -282,4 +302,28 @@ namespace library
 	{
 		return m_samplerLinear;
 	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderable::GetOutputColor
+
+	  Summary:  Returns the output color
+
+	  Returns:  const XMFLOAT4&
+				  The output color
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: Renderable::GetOutputColor definition (remove the comment)
+	--------------------------------------------------------------------*/
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderable::HasTexture
+
+	  Summary:  Returns whether the renderable has texture
+
+	  Returns:  BOOL
+				  Whether the renderable has texture
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: Renderable::HasTexture definition (remove the comment)
+	--------------------------------------------------------------------*/
 }
