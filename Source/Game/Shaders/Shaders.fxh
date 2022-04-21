@@ -22,6 +22,7 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 cbuffer cbChangeOnCameraMovement : register( b0 )
 {
 	matrix View;
+	float4 CameraPosition;
 };
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C

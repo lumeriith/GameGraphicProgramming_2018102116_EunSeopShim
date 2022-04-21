@@ -21,36 +21,42 @@
 
   Summary:  Constant buffer used for view transformation and shading
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangeOnCameraMovement definition (remove the comment)
---------------------------------------------------------------------*/
+cbuffer cbChangeOnCameraMovement : register( b0 )
+{
+	matrix View;
+	float4 CameraPosition;
+};
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbChangeOnResize
 
   Summary:  Constant buffer used for projection transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangeOnResize definition (remove the comment)
---------------------------------------------------------------------*/
+cbuffer cbChangeOnResize : register( b1 )
+{
+	matrix Projection;
+};
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbChangesEveryFrame
 
   Summary:  Constant buffer used for world transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangesEveryFrame definition (remove the comment)
---------------------------------------------------------------------*/
+cbuffer cbChangesEveryFrame : register( b2 )
+{
+	matrix World;
+};
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbLights
 
   Summary:  Constant buffer used for shading
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbLights definition (remove the comment)
---------------------------------------------------------------------*/
+cbuffer cbLights : register( b3 )
+{
+	float4 LightPositions[NUM_LIGHTS];
+	float4 LightColors[NUM_LIGHTS];
+};
 
 //--------------------------------------------------------------------------------------
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
@@ -58,9 +64,12 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 
   Summary:  Used as the input to the vertex shader
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: VS_PHONG_INPUT definition (remove the comment)
---------------------------------------------------------------------*/
+struct VS_PHONG_INPUT
+{
+	float4 Position : POSITION;
+	float2 TexCoord : TEXCOORD0;
+	float3 Normal : NORMAL;
+}
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Struct:   PS_PHONG_INPUT
