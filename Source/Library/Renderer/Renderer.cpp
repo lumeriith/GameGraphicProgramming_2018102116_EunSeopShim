@@ -44,9 +44,10 @@ namespace library {
 				  Handle to the window
 
 	  Modifies: [m_d3dDevice, m_featureLevel, m_immediateContext,
-				  m_d3dDevice1, m_immediateContext1, m_swapChain1,
-				  m_swapChain, m_renderTargetView, m_vertexShader,
-				  m_vertexLayout, m_pixelShader, m_vertexBuffer].
+				 m_d3dDevice1, m_immediateContext1, m_swapChain1,
+				 m_swapChain, m_renderTargetView, m_cbChangeOnResize,
+				 m_projection, m_cbLights, m_camera, m_vertexShaders,
+				 m_pixelShaders, m_renderables].
 
 	  Returns:  HRESULT
 				  Status code
@@ -258,12 +259,12 @@ namespace library {
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::AddRenderable
 
-	  Summary:  Add a renderable object and initialize the object
+	  Summary:  Add a renderable object
 
 	  Args:     PCWSTR pszRenderableName
 				  Key of the renderable object
 				const std::shared_ptr<Renderable>& renderable
-				  Unique pointer to the renderable object
+				  Shared pointer to the renderable object
 
 	  Modifies: [m_renderables].
 
@@ -277,6 +278,25 @@ namespace library {
 
 		return S_OK;
 	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderer::AddPointLight
+
+	  Summary:  Add a point light
+
+	  Args:     size_t index
+				  Index of the point light
+				const std::shared_ptr<PointLight>& pointLight
+				  Shared pointer to the point light object
+
+	  Modifies: [m_aPointLights].
+
+	  Returns:  HRESULT
+				  Status code.
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: Renderer::AddPointLight definition (remove the comment)
+	--------------------------------------------------------------------*/
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::AddVertexShader
