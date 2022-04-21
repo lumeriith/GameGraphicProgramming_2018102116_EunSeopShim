@@ -27,7 +27,7 @@ namespace library
 		m_pixelShader(),
 		m_textureFilePath(textureFilePath),
 		m_outputColor(),
-		m_bHasTextures(),
+		m_bHasTextures(TRUE),
 		m_world()
 	{}
 
@@ -44,9 +44,19 @@ namespace library
 				 m_pixelShader, m_textureFilePath, m_outputColor,
 				 m_world].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderable::Renderable definition (remove the comment)
-	--------------------------------------------------------------------*/
+	Renderable::Renderable(_In_ const XMFLOAT4& outputColor) :
+		m_vertexBuffer(),
+		m_indexBuffer(),
+		m_constantBuffer(),
+		m_textureRV(),
+		m_samplerLinear(),
+		m_vertexShader(),
+		m_pixelShader(),
+		m_textureFilePath(),
+		m_outputColor(outputColor),
+		m_bHasTextures(FALSE),
+		m_world()
+	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderable::initialize
@@ -311,9 +321,10 @@ namespace library
 	  Returns:  const XMFLOAT4&
 				  The output color
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderable::GetOutputColor definition (remove the comment)
-	--------------------------------------------------------------------*/
+	const XMFLOAT4& Renderable::GetOutputColor() const
+	{
+		return m_outputColor;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderable::HasTexture
@@ -323,7 +334,88 @@ namespace library
 	  Returns:  BOOL
 				  Whether the renderable has texture
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderable::HasTexture definition (remove the comment)
-	--------------------------------------------------------------------*/
+	BOOL Renderable::HasTexture() const
+	{
+		return m_bHasTextures;
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderable::RotateX
+	  Summary:  Rotates around the x-axis
+	  Args:     FLOAT angle
+				  Angle of rotation around the x-axis, in radians
+	  Modifies: [m_world].
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	void Renderable::RotateX(_In_ FLOAT angle)
+	{
+		m_world *= XMMatrixRotationX(angle);
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderable::RotateY
+	  Summary:  Rotates around the y-axis
+	  Args:     FLOAT angle
+				  Angle of rotation around the y-axis, in radians
+	  Modifies: [m_world].
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	void Renderable::RotateY(_In_ FLOAT angle)
+	{
+		m_world *= XMMatrixRotationY(angle);
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderable::RotateZ
+	  Summary:  Rotates around the z-axis
+	  Args:     FLOAT angle
+				  Angle of rotation around the z-axis, in radians
+	  Modifies: [m_world].
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	void Renderable::RotateZ(_In_ FLOAT angle)
+	{
+		m_world *= XMMatrixRotationZ(angle);
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderable::RotateRollPitchYaw
+	  Summary:  Rotates based on a given pitch, yaw, and roll (Euler angles)
+	  Args:     FLOAT pitch
+				  Angle of rotation around the x-axis, in radians
+				FLOAT yaw
+				  Angle of rotation around the y-axis, in radians
+				FLOAT roll
+				  Angle of rotation around the z-axis, in radians
+	  Modifies: [m_world].
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	void Renderable::RotateRollPitchYaw(_In_ FLOAT pitch, _In_ FLOAT yaw, _In_ FLOAT roll)
+	{
+		m_world *= XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderable::Scale
+	  Summary:  Scales along the x-axis, y-axis, and z-axis
+	  Args:     FLOAT scaleX
+				  Scaling factor along the x-axis.
+				FLOAT scaleY
+				  Scaling factor along the y-axis.
+				FLOAT scaleZ
+				  Scaling factor along the z-axis.
+	  Modifies: [m_world].
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	void Renderable::Scale(_In_ FLOAT scaleX, _In_ FLOAT scaleY, _In_ FLOAT scaleZ)
+	{
+		m_world *= XMMatrixScaling(scaleX, scaleY, scaleZ);
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderable::Translate
+	  Summary:  Translates matrix from a vector
+	  Args:     const XMVECTOR& offset
+				  3D vector describing the translations along the x-axis, y-axis, and z-axis
+	  Modifies: [m_world].
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	void Renderable::Translate(_In_ const XMVECTOR& offset)
+	{
+		m_world *= XMMatrixTranslationFromVector(offset);
+	}
 }
