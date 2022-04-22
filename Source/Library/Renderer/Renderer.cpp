@@ -412,6 +412,11 @@ namespace library {
 			renderable.second->Update(deltaTime);
 		}
 
+		for (auto& light : m_aPointLights)
+		{
+			light->Update(deltaTime);
+		}
+
 		m_camera.Update(deltaTime);
 	}
 
@@ -446,6 +451,7 @@ namespace library {
 			0u
 		);
 		m_immediateContext->VSSetConstantBuffers(0, 1, m_camera.GetConstantBuffer().GetAddressOf());
+		m_immediateContext->PSSetConstantBuffers(0, 1, m_camera.GetConstantBuffer().GetAddressOf());
 
 		// Create light constant buffer and update
 		CBLights cbLights = { };
@@ -465,7 +471,7 @@ namespace library {
 			0u,
 			0u
 		);
-		m_immediateContext->VSSetConstantBuffers(3, 1, m_cbLights.GetAddressOf());
+
 		m_immediateContext->PSSetConstantBuffers(3, 1, m_cbLights.GetAddressOf());
 
 		// For each renderables
@@ -493,7 +499,8 @@ namespace library {
 
 			// Create and update renderable constant buffer
 			CBChangesEveryFrame cbRenderable = {
-				.World = XMMatrixTranspose(renderable->GetWorldMatrix())
+				.World = XMMatrixTranspose(renderable->GetWorldMatrix()),
+				.OutputColor = renderable->GetOutputColor()
 			};
 
 			m_immediateContext->UpdateSubresource(
@@ -511,12 +518,16 @@ namespace library {
 
 			// Set renderable constant buffer
 			m_immediateContext->VSSetConstantBuffers(2, 1, renderable->GetConstantBuffer().GetAddressOf());
+			m_immediateContext->PSSetConstantBuffers(2, 1, renderable->GetConstantBuffer().GetAddressOf());
 
-			// Set texture resource view of the renderable into the pixel shader
-			m_immediateContext->PSSetShaderResources(0, 1, renderable->GetTextureResourceView().GetAddressOf());
+			if (renderable->HasTexture())
+			{
+				// Set texture resource view of the renderable into the pixel shader
+				m_immediateContext->PSSetShaderResources(0, 1, renderable->GetTextureResourceView().GetAddressOf());
 
-			// Set sampler state of the renderable into the pixel shader
-			m_immediateContext->PSSetSamplers(0, 1, renderable->GetSamplerState().GetAddressOf());
+				// Set sampler state of the renderable into the pixel shader
+				m_immediateContext->PSSetSamplers(0, 1, renderable->GetSamplerState().GetAddressOf());
+			}
 
 			// Render
 			m_immediateContext->DrawIndexed(renderable->GetNumIndices(), 0, 0);

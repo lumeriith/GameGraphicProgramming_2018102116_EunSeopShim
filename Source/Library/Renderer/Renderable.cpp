@@ -28,7 +28,7 @@ namespace library
 		m_textureFilePath(textureFilePath),
 		m_outputColor(),
 		m_bHasTextures(TRUE),
-		m_world()
+		m_world(XMMatrixIdentity())
 	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -55,7 +55,7 @@ namespace library
 		m_textureFilePath(),
 		m_outputColor(outputColor),
 		m_bHasTextures(FALSE),
-		m_world()
+		m_world(XMMatrixIdentity())
 	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -125,7 +125,10 @@ namespace library
 			.StructureByteStride = 0
 		};
 
-		CBChangesEveryFrame cb = {};
+		CBChangesEveryFrame cb = {
+			.World = XMMatrixTranspose(m_world),
+			.OutputColor = m_outputColor
+		};
 
 		D3D11_SUBRESOURCE_DATA cData = {
 			.pSysMem = &cb,
@@ -136,30 +139,30 @@ namespace library
 		hr = pDevice->CreateBuffer(&cBufferDesc, &cData, &m_constantBuffer);
 		if (FAILED(hr)) return hr;
 
-		// Initialize the world matrix (Use identity matrix)
-		m_world = XMMatrixIdentity();
+		if (m_bHasTextures)
+		{
+			// Create texture resource device
+			hr = CreateDDSTextureFromFile(
+				pDevice,
+				m_textureFilePath.filename().wstring().c_str(),
+				nullptr,
+				&m_textureRV
+			);
+			if (FAILED(hr)) return hr;
 
-		// Create texture resource device
-		hr = CreateDDSTextureFromFile(
-			pDevice,
-			m_textureFilePath.filename().wstring().c_str(),
-			nullptr,
-			&m_textureRV
-		);
-		if (FAILED(hr)) return hr;
-
-		// Create sampler state
-		D3D11_SAMPLER_DESC sampDesc = {
-			.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-			.AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
-			.AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
-			.AddressW = D3D11_TEXTURE_ADDRESS_WRAP,
-			.ComparisonFunc = D3D11_COMPARISON_NEVER,
-			.MinLOD = 0,
-			.MaxLOD = D3D11_FLOAT32_MAX
-		};
-		hr = pDevice->CreateSamplerState(&sampDesc, &m_samplerLinear);
-		if (FAILED(hr)) return hr;
+			// Create sampler state
+			D3D11_SAMPLER_DESC sampDesc = {
+				.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+				.AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
+				.AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
+				.AddressW = D3D11_TEXTURE_ADDRESS_WRAP,
+				.ComparisonFunc = D3D11_COMPARISON_NEVER,
+				.MinLOD = 0,
+				.MaxLOD = D3D11_FLOAT32_MAX
+			};
+			hr = pDevice->CreateSamplerState(&sampDesc, &m_samplerLinear);
+			if (FAILED(hr)) return hr;
+		}
 
 		return S_OK;
 	}
