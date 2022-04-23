@@ -8,7 +8,7 @@
   Args:     const std::filesystem::path& textureFilePath
 			  Path to the texture to use
 M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-Cube::Cube(const std::filesystem::path& textureFilePath) :
+Cube::Cube(_In_ const std::filesystem::path& textureFilePath) :
 	BaseCube(textureFilePath)
 {}
 
@@ -36,5 +36,6 @@ Cube::Cube(_In_ const XMFLOAT4& outputColor)
 M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 void Cube::Update(_In_ FLOAT deltaTime)
 {
+	UNREFERENCED_PARAMETER(deltaTime);
 	// Does nothing
 }

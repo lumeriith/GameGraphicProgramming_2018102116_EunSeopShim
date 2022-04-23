@@ -321,7 +321,7 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderer::AddPointLight(_In_ size_t index, _In_ const std::shared_ptr<PointLight>& pPointLight)
 	{
-		if (index < 0 || index >= NUM_LIGHTS || !pPointLight)
+		if (index >= NUM_LIGHTS || !pPointLight)
 		{
 			return E_FAIL;
 		}
