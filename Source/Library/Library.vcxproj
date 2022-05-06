@@ -56,7 +56,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\External\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -66,7 +66,8 @@
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)..\Library\x64\Debug"
-copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Debug"</Command>
+copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Debug"
+xcopy /y /d "$(SolutionDir)..\External\assimp\bin\Debug\assimp-vc143-mtd.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Lib />
     <FxCompile>
@@ -75,6 +76,9 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Debug"</Command>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
     </FxCompile>
+    <Lib>
+      <AdditionalDependencies>$(SolutionDir)..\External\assimp\lib\Debug\assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -84,7 +88,7 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Debug"</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\External\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -96,7 +100,8 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Debug"</Command>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)..\Library\x64\Release"
-copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
+copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"
+xcopy /y /d "$(SolutionDir)..\External\assimp\bin\Release\assimp-vc143-mt.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Lib />
     <FxCompile>
@@ -105,6 +110,9 @@ copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
     </FxCompile>
+    <Lib>
+      <AdditionalDependencies>$(SolutionDir)..\External\assimp\lib\Release\assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
