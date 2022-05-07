@@ -2,14 +2,15 @@
 
 namespace library
 {
-    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-      Method:   Material::Material
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Material::Material
 
-      Summary:  Constructor
+	  Summary:  Constructor
 
-      Modifies: [pDiffuse, pSpecular].
-    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Material::Material definition (remove the comment)
-    --------------------------------------------------------------------*/
+	  Modifies: [pDiffuse, pSpecular].
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	Material::Material() :
+		pDiffuse(),
+		pSpecular()
+	{}
 }

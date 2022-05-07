@@ -23,20 +23,19 @@ namespace library
 		m_vertexBuffer(),
 		m_indexBuffer(),
 		m_constantBuffer(),
-		m_textureRV(),
-		m_samplerLinear(),
+		m_aMeshes(),
+		m_aMaterials(),
 		m_vertexShader(),
 		m_pixelShader(),
-		m_textureFilePath(),
 		m_outputColor(outputColor),
-		m_bHasTextures(FALSE),
+		m_padding(),
 		m_world(XMMatrixIdentity())
 	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderable::initialize
 
-	  Summary:  Initializes the buffers, texture, and the world matrix
+	  Summary:  Initializes the buffers, and the world matrix
 
 	  Args:     ID3D11Device* pDevice
 				  The Direct3D device to create the buffers
@@ -112,31 +111,6 @@ namespace library
 
 		hr = pDevice->CreateBuffer(&cBufferDesc, &cData, &m_constantBuffer);
 		if (FAILED(hr)) return hr;
-
-		if (m_bHasTextures)
-		{
-			// Create texture resource device
-			hr = CreateDDSTextureFromFile(
-				pDevice,
-				m_textureFilePath.filename().wstring().c_str(),
-				nullptr,
-				&m_textureRV
-			);
-			if (FAILED(hr)) return hr;
-
-			// Create sampler state
-			D3D11_SAMPLER_DESC sampDesc = {
-				.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-				.AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
-				.AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
-				.AddressW = D3D11_TEXTURE_ADDRESS_WRAP,
-				.ComparisonFunc = D3D11_COMPARISON_NEVER,
-				.MinLOD = 0,
-				.MaxLOD = D3D11_FLOAT32_MAX
-			};
-			hr = pDevice->CreateSamplerState(&sampDesc, &m_samplerLinear);
-			if (FAILED(hr)) return hr;
-		}
 
 		return S_OK;
 	}
@@ -287,7 +261,7 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	BOOL Renderable::HasTexture() const
 	{
-		return m_bHasTextures;
+		return !m_aMaterials.empty();
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
