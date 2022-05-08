@@ -67,9 +67,19 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		return 0;
 	}
 
-	/*--------------------------------------------------------------------
-	  TODO: Add a model and its vertex/pixel shader (remove the comment)
-	--------------------------------------------------------------------*/
+	std::shared_ptr<library::Model> model = std::make_shared<library::Model>("../../Content/nanosuit/nanosuit.obj");
+	if (FAILED(game->GetRenderer()->AddRenderable(L"Model", model)))
+	{
+		return 0;
+	}
+	if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"Model", L"LightShader")))
+	{
+		return 0;
+	}
+	if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"Model", L"LightShader")))
+	{
+		return 0;
+	}
 
 	XMFLOAT4 color;
 	XMStoreFloat4(&color, Colors::White);

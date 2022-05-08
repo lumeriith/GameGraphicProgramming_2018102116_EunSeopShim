@@ -169,7 +169,7 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void Model::initAllMeshes(_In_ const aiScene* pScene)
 	{
-		for (UINT i = 0u; i < m_aMeshes.size(); ++i)
+		for (UINT i = 0u; i < pScene->mNumMeshes; ++i)
 		{
 			const aiMesh* pMesh = pScene->mMeshes[i];
 			initSingleMesh(pMesh);
@@ -204,7 +204,7 @@ namespace library
 
 		UINT uNumOfVertices = 0, uNumOfIndices = 0;
 
-		countVerticesAndIndices(uNumOfIndices, uNumOfIndices, pScene);
+		countVerticesAndIndices(uNumOfVertices, uNumOfIndices, pScene);
 		reserveSpace(uNumOfVertices, uNumOfIndices);
 
 		initAllMeshes(pScene);
@@ -252,6 +252,7 @@ namespace library
 		{
 			const aiMaterial* pMaterial = pScene->mMaterials[i];
 
+			m_aMaterials.push_back(Material());
 			loadTextures(pDevice, pImmediateContext, parentDirectory, pMaterial, i);
 		}
 
@@ -269,6 +270,13 @@ namespace library
 	void Model::initSingleMesh(_In_ const aiMesh* pMesh)
 	{
 		XMFLOAT2 zeroVec(0.0f, 0.0f);
+
+		BasicMeshEntry newEntry;
+		newEntry.uNumIndices = 0;
+		newEntry.uBaseVertex = m_aVertices.size();
+		newEntry.uBaseIndex = m_aIndices.size();
+		newEntry.uMaterialIndex = pMesh->mMaterialIndex;
+
 
 		// Push back SimpleVertex to the vertices vector
 		for (int i = 0; i < pMesh->mNumVertices; i++)
@@ -300,8 +308,11 @@ namespace library
 			for (int j = 0; j < 3; j++)
 			{
 				m_aIndices.push_back(static_cast<WORD>(face.mIndices[j]));
+				newEntry.uNumIndices++;
 			}
 		}
+
+		m_aMeshes.push_back(newEntry);
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

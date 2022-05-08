@@ -520,17 +520,19 @@ namespace library {
 			m_immediateContext->VSSetConstantBuffers(2, 1, renderable->GetConstantBuffer().GetAddressOf());
 			m_immediateContext->PSSetConstantBuffers(2, 1, renderable->GetConstantBuffer().GetAddressOf());
 
-			if (renderable->HasTexture())
+			const UINT numOfMesh = renderable->GetNumMeshes();
+			for (int i = 0; i < numOfMesh; i++)
 			{
-				// Set texture resource view of the renderable into the pixel shader
-				m_immediateContext->PSSetShaderResources(0, 1, renderable->GetTextureResourceView().GetAddressOf());
+				const auto& mesh = renderable->GetMesh(i);
+				const auto& material = renderable->GetMaterial(mesh.uMaterialIndex);
+				const auto& diffuseView = material.pDiffuse->GetTextureResourceView();
+				const auto& diffuseSampler = material.pDiffuse->GetSamplerState();
 
-				// Set sampler state of the renderable into the pixel shader
-				m_immediateContext->PSSetSamplers(0, 1, renderable->GetSamplerState().GetAddressOf());
+				m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
+				m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
+
+				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, mesh.uBaseVertex);
 			}
-
-			// Render
-			m_immediateContext->DrawIndexed(renderable->GetNumIndices(), 0, 0);
 		}
 
 		// Present
