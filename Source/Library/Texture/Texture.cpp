@@ -57,6 +57,8 @@ namespace library
 		};
 		hr = pDevice->CreateSamplerState(&sampDesc, &m_samplerLinear);
 		if (FAILED(hr)) return hr;
+
+		return S_OK;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

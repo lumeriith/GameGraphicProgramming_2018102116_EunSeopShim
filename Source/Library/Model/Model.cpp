@@ -124,7 +124,7 @@ namespace library
 		uOutNumVertices = 0;
 		uOutNumIndices = 0;
 
-		for (int i = 0; i < pScene->mNumMeshes; i++)
+		for (UINT i = 0; i < pScene->mNumMeshes; i++)
 		{
 			const auto& mesh = pScene->mMeshes[i];
 			uOutNumVertices += mesh->mNumVertices;
@@ -273,13 +273,13 @@ namespace library
 
 		BasicMeshEntry newEntry;
 		newEntry.uNumIndices = 0;
-		newEntry.uBaseVertex = m_aVertices.size();
-		newEntry.uBaseIndex = m_aIndices.size();
+		newEntry.uBaseVertex = static_cast<UINT>(m_aVertices.size());
+		newEntry.uBaseIndex = static_cast<UINT>(m_aIndices.size());
 		newEntry.uMaterialIndex = pMesh->mMaterialIndex;
 
 
 		// Push back SimpleVertex to the vertices vector
-		for (int i = 0; i < pMesh->mNumVertices; i++)
+		for (UINT i = 0; i < pMesh->mNumVertices; i++)
 		{
 			const auto& pos = pMesh->mVertices[i];
 			const auto& norm = pMesh->mNormals[i];
@@ -300,7 +300,7 @@ namespace library
 		}
 
 		// Push back indices of faces to the indices vector
-		for (int i = 0; i < pMesh->mNumFaces; i++)
+		for (UINT i = 0; i < pMesh->mNumFaces; i++)
 		{
 			const auto& face = pMesh->mFaces[i];
 			assert(face.mNumIndices == 3u);

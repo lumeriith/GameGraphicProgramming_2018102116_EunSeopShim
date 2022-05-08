@@ -521,7 +521,7 @@ namespace library {
 			m_immediateContext->PSSetConstantBuffers(2, 1, renderable->GetConstantBuffer().GetAddressOf());
 
 			const UINT numOfMesh = renderable->GetNumMeshes();
-			for (int i = 0; i < numOfMesh; i++)
+			for (UINT i = 0; i < numOfMesh; i++)
 			{
 				const auto& mesh = renderable->GetMesh(i);
 
@@ -535,7 +535,7 @@ namespace library {
 					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
 				}
 
-				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, mesh.uBaseVertex);
+				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, static_cast<INT>(mesh.uBaseVertex));
 			}
 		}
 

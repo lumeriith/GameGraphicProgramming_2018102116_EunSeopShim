@@ -82,6 +82,8 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 		hr = renderer->SetPixelShaderOfRenderable(pszName, pszShader);
 		if (FAILED(hr)) return hr;
+
+		return S_OK;
 	};
 
 
