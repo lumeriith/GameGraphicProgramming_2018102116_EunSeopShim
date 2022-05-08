@@ -524,12 +524,16 @@ namespace library {
 			for (int i = 0; i < numOfMesh; i++)
 			{
 				const auto& mesh = renderable->GetMesh(i);
-				const auto& material = renderable->GetMaterial(mesh.uMaterialIndex);
-				const auto& diffuseView = material.pDiffuse->GetTextureResourceView();
-				const auto& diffuseSampler = material.pDiffuse->GetSamplerState();
 
-				m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
-				m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
+				if (renderable->HasTexture())
+				{
+					const auto& material = renderable->GetMaterial(mesh.uMaterialIndex);
+					const auto& diffuseView = material.pDiffuse->GetTextureResourceView();
+					const auto& diffuseSampler = material.pDiffuse->GetSamplerState();
+
+					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
+					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
+				}
 
 				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, mesh.uBaseVertex);
 			}
