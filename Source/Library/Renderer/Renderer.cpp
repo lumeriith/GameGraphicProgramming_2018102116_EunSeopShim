@@ -347,7 +347,7 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderer::AddVertexShader(_In_ PCWSTR pszVertexShaderName, _In_ const std::shared_ptr<VertexShader>& vertexShader)
 	{
-		if (m_vertexShaders.count(pszVertexShaderName) > 0) return E_FAIL;
+		if (m_vertexShaders.contains(pszVertexShaderName)) return E_FAIL;
 		m_vertexShaders.insert({ pszVertexShaderName, vertexShader });
 
 		return S_OK;
@@ -370,7 +370,7 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderer::AddPixelShader(_In_ PCWSTR pszPixelShaderName, _In_ const std::shared_ptr<PixelShader>& pixelShader)
 	{
-		if (m_pixelShaders.count(pszPixelShaderName) > 0) return E_FAIL;
+		if (m_pixelShaders.contains(pszPixelShaderName)) return E_FAIL;
 		m_pixelShaders.insert({ pszPixelShaderName, pixelShader });
 
 		return S_OK;
@@ -391,9 +391,15 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::AddScene definition (remove the comment)
-	--------------------------------------------------------------------*/
+	HRESULT Renderer::AddScene(_In_ PCWSTR pszSceneName, const std::filesystem::path& sceneFilePath)
+	{
+		if (m_scenes.contains(pszSceneName)) return E_FAIL;
+
+		std::shared_ptr<Scene> newScene = std::make_shared<Scene>(sceneFilePath);
+		m_scenes.insert({ pszSceneName, newScene });
+
+		return S_OK;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::SetMainScene
@@ -408,9 +414,13 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::SetMainScene definition (remove the comment)
-	--------------------------------------------------------------------*/
+	HRESULT Renderer::SetMainScene(_In_ PCWSTR pszSceneName)
+	{
+		if (!m_scenes.contains(pszSceneName)) return E_FAIL;
+		m_pszMainSceneName = pszSceneName;
+
+		return S_OK;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::HandleInput
@@ -599,11 +609,11 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderer::SetVertexShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszVertexShaderName)
 	{
-		if (m_renderables.count(pszRenderableName) == 0 || m_vertexShaders.count(pszVertexShaderName) == 0)
+		if (!m_renderables.contains(pszRenderableName) || !m_vertexShaders.contains(pszVertexShaderName))
 		{
 			return E_INVALIDARG;
 		}
-		auto& vs = m_vertexShaders[pszVertexShaderName];
+		const auto& vs = m_vertexShaders[pszVertexShaderName];
 		m_renderables[pszRenderableName]->SetVertexShader(vs);
 		return S_OK;
 	}
@@ -625,11 +635,11 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderer::SetPixelShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszPixelShaderName)
 	{
-		if (m_renderables.count(pszRenderableName) == 0 || m_pixelShaders.count(pszPixelShaderName) == 0)
+		if (!m_renderables.contains(pszRenderableName) || !m_pixelShaders.contains(pszPixelShaderName))
 		{
 			return E_INVALIDARG;
 		}
-		auto& ps = m_pixelShaders[pszPixelShaderName];
+		const auto& ps = m_pixelShaders[pszPixelShaderName];
 		m_renderables[pszRenderableName]->SetPixelShader(ps);
 		return S_OK;
 	}
@@ -649,9 +659,16 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::SetVertexShaderOfScene definition (remove the comment)
-	--------------------------------------------------------------------*/
+	HRESULT Renderer::SetVertexShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszVertexShaderName)
+	{
+		if (!m_scenes.contains(pszSceneName) || !m_vertexShaders.contains(pszVertexShaderName))
+		{
+			return E_INVALIDARG;
+		}
+		const auto& vs = m_vertexShaders[pszVertexShaderName];
+		// TODO
+		return S_OK;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::SetPixelShaderOfScene
@@ -668,9 +685,16 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::SetPixelShaderOfScene definition (remove the comment)
-	--------------------------------------------------------------------*/
+	HRESULT Renderer::SetPixelShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszPixelShaderName)
+	{
+		if (!m_scenes.contains(pszSceneName) || !m_pixelShaders.contains(pszPixelShaderName))
+		{
+			return E_INVALIDARG;
+		}
+		const auto& ps = m_pixelShaders[pszPixelShaderName];
+		// TODO
+		return S_OK;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::GetDriverType

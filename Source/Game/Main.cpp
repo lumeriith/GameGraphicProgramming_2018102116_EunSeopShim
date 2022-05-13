@@ -15,7 +15,10 @@
 #include <fstream>
 #include <memory>
 
+#include "Cube/Cube.h"
+#include "Cube/RotatingCube.h"
 #include "Game/Game.h"
+#include "Light/RotatingPointLight.h"
 #include "Scene/Voxel.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
