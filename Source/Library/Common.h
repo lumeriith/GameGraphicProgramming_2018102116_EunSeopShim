@@ -47,6 +47,10 @@
 
 constexpr LPCWSTR PSZ_COURSE_TITLE = L"Game Graphics Programming";
 
+#ifndef NUM_LIGHTS
+#define NUM_LIGHTS (2)
+#endif
+
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
