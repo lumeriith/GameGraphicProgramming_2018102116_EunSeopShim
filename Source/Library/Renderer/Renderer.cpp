@@ -377,6 +377,42 @@ namespace library {
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderer::AddScene
+
+	  Summary:  Add a scene
+
+	  Args:     PCWSTR pszSceneName
+				  Key of a scene
+				const std::filesystem::path& sceneFilePath
+				  File path to initialize a scene
+
+	  Modifies: [m_scenes].
+
+	  Returns:  HRESULT
+				  Status code
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: Renderer::AddScene definition (remove the comment)
+	--------------------------------------------------------------------*/
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderer::SetMainScene
+
+	  Summary:  Set the main scene
+
+	  Args:     PCWSTR pszSceneName
+				  Name of the scene to set as the main scene
+
+	  Modifies: [m_pszMainSceneName].
+
+	  Returns:  HRESULT
+				  Status code
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: Renderer::SetMainScene definition (remove the comment)
+	--------------------------------------------------------------------*/
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::HandleInput
 
 	  Summary:  Add the pixel shader into the renderer and initialize it
@@ -597,6 +633,44 @@ namespace library {
 		m_renderables[pszRenderableName]->SetPixelShader(ps);
 		return S_OK;
 	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderer::SetVertexShaderOfScene
+
+	  Summary:  Sets the vertex shader for the voxels in a scene
+
+	  Args:     PCWSTR pszSceneName
+				  Key of the scene
+				PCWSTR pszVertexShaderName
+				  Key of the vertex shader
+
+	  Modifies: [m_scenes].
+
+	  Returns:  HRESULT
+				  Status code
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: Renderer::SetVertexShaderOfScene definition (remove the comment)
+	--------------------------------------------------------------------*/
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Renderer::SetPixelShaderOfScene
+
+	  Summary:  Sets the pixel shader for the voxels in a scene
+
+	  Args:     PCWSTR pszRenderableName
+				  Key of the renderable
+				PCWSTR pszPixelShaderName
+				  Key of the pixel shader
+
+	  Modifies: [m_renderables].
+
+	  Returns:  HRESULT
+				  Status code
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: Renderer::SetPixelShaderOfScene definition (remove the comment)
+	--------------------------------------------------------------------*/
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::GetDriverType

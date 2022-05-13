@@ -84,6 +84,9 @@
     <None Include="Shaders\PhongShaders.fxh">
       <Filter>Header Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\VoxelShaders.fxh">
+      <Filter>Header Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="seafloor.dds">

@@ -125,6 +125,7 @@
   <ItemGroup>
     <None Include="Shaders\PhongShaders.fxh" />
     <None Include="Shaders\Shaders.fxh" />
+    <None Include="Shaders\VoxelShaders.fxh" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="portal.dds" />
