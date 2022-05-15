@@ -27,13 +27,14 @@ namespace library {
 		m_depthStencilView(),
 		m_cbChangeOnResize(),
 		m_cbLights(),
+		m_pszMainSceneName(),
 		m_camera(XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f)),
 		m_projection(),
 		m_renderables(),
 		m_aPointLights(),
 		m_vertexShaders(),
 		m_pixelShaders(),
-		m_pszMainSceneName()
+		m_scenes()
 	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -600,10 +601,10 @@ namespace library {
 			UINT vtxOffset = 0;
 
 			m_immediateContext->IASetVertexBuffers(
-				0,												// the first input slot for binding
-				1,												// the number of buffers in the array
-				vox->GetVertexBuffer().GetAddressOf(),	// the array of vertex buffers
-				&vtxStride,										// array of stride values, one for each buffer
+				0,										// the first input slot
+				1,										// the number of buffers
+				vox->GetVertexBuffer().GetAddressOf(),
+				&vtxStride,								// array of stride values, one for each buffer
 				&vtxOffset
 			);
 
@@ -613,7 +614,7 @@ namespace library {
 
 			m_immediateContext->IASetVertexBuffers(
 				1, // second slot
-				1, // num of buffers in array
+				1,
 				vox->GetInstanceBuffer().GetAddressOf(),
 				&insStride,
 				&insOffset
