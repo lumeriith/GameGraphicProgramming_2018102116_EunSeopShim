@@ -69,6 +69,7 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct VS_INPUT
 {
     float4 Position : POSITION;
+    float3 Normal : NORMAL;
     row_major matrix Transform : INSTANCE_TRANSFORM;
 };
 
@@ -81,7 +82,9 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct PS_INPUT
 {
     float4 Position : SV_POSITION;
+    float4 WorldPos : POSITION;
     float3 Color : COLOR;
+    float3 Norm : NORMAL;
 };
 
 //--------------------------------------------------------------------------------------
@@ -91,12 +94,13 @@ PS_INPUT VSVoxel(VS_INPUT input)
 {
     PS_INPUT output = (PS_INPUT) 0;
     output.Position = input.Position;
-
-    output.Position = mul(output.Position, World);
     output.Position = mul(output.Position, input.Transform);
+    output.Position = mul(output.Position, World);
+    output.WorldPos = output.Position;
     output.Position = mul(output.Position, View);
     output.Position = mul(output.Position, Projection);
     output.Color = OutputColor;
+    output.Norm = normalize(mul(float4(input.Normal, 1), World).xyz);
     return output;
 }
 
@@ -105,5 +109,22 @@ PS_INPUT VSVoxel(VS_INPUT input)
 //--------------------------------------------------------------------------------------
 float4 PSVoxel(PS_INPUT input) : SV_Target
 {
-    return float4(input.Color, 1.0f);
+    float3 toViewDir = normalize((CameraPosition - input.WorldPos).xyz);
+    float3 normal = normalize(input.Norm);
+	
+    float3 ambient = float3(0.1f, 0.1f, 0.1f);
+    float3 diffuse = float3(0, 0, 0);
+    float3 specular = float3(0, 0, 0);
+		
+    for (uint i = 0; i < NUM_LIGHTS; ++i)
+    {
+        float3 fromLightDir = normalize((input.WorldPos - LightPositions[i]).xyz);
+	
+        diffuse += max(dot(normal, -fromLightDir), 0) * LightColors[i].xyz;
+		
+        float3 refDir = reflect(fromLightDir, normal);
+        specular += pow(max(dot(refDir, toViewDir), 0), 20) * LightColors[i].xyz;
+    }
+
+    return float4(saturate(ambient + diffuse + specular) * input.Color, 1);
 }
