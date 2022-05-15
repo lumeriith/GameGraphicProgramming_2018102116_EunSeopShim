@@ -69,7 +69,6 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct VS_INPUT
 {
     float4 Position : POSITION;
-    float3 InstancedColor : INSTANCED_COLOR;
     row_major matrix Transform : INSTANCE_TRANSFORM;
 };
 
@@ -88,18 +87,23 @@ struct PS_INPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-PS_INPUT VSInstanced(VS_INPUT input)
+PS_INPUT VSVoxel(VS_INPUT input)
 {
     PS_INPUT output = (PS_INPUT) 0;
-    ¡¦
-    output.Color = input.InstancedColor;
+    output.Position = input.Position;
+
+    output.Position = mul(output.Position, World);
+    output.Position = mul(output.Position, input.Transform);
+    output.Position = mul(output.Position, View);
+    output.Position = mul(output.Position, Projection);
+    output.Color = OutputColor;
     return output;
 }
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 PSInstanced(PS_INPUT input) : SV_Target
+float4 PSVoxel(PS_INPUT input) : SV_Target
 {
     return float4(input.Color, 1.0f);
 }

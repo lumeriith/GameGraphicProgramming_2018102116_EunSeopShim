@@ -74,7 +74,7 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	UINT InstancedRenderable::GetNumInstances() const
 	{
-		return m_aInstanceData.size();
+		return static_cast<UINT>(m_aInstanceData.size());
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

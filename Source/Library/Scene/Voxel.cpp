@@ -27,8 +27,8 @@ namespace library
 				  Color of the voxel
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	Voxel::Voxel(_In_ std::vector<InstanceData>&& aInstanceData, _In_ const XMFLOAT4& outputColor) :
-		InstancedRenderable(aInstanceData, outputColor)
-	{}
+		InstancedRenderable(std::move(aInstanceData), outputColor)
+	{ }
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Voxel::Initialize
@@ -45,7 +45,15 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Voxel::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
 	{
-		// TODO
+		HRESULT hr;
+
+		hr = initialize(pDevice, pImmediateContext);
+		if (FAILED(hr)) return hr;
+
+		hr = initializeInstance(pDevice);
+		if (FAILED(hr)) return hr;
+
+		return hr;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -58,7 +66,7 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void Voxel::Update(_In_ FLOAT deltaTime)
 	{
-		// TODO
+		UNREFERENCED_PARAMETER(deltaTime);
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -71,7 +79,7 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	UINT Voxel::GetNumVertices() const
 	{
-		// TODO
+		return NUM_VERTICES;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -84,7 +92,7 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	UINT Voxel::GetNumIndices() const
 	{
-		// TODO
+		return NUM_INDICES;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -97,7 +105,7 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	const SimpleVertex* Voxel::getVertices() const
 	{
-		// TODO
+		return VERTICES;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -110,6 +118,6 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	const WORD* Voxel::getIndices() const
 	{
-		// TODO
+		return INDICES;
 	}
 }

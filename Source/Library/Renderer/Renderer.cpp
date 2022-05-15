@@ -32,7 +32,8 @@ namespace library {
 		m_renderables(),
 		m_aPointLights(),
 		m_vertexShaders(),
-		m_pixelShaders()
+		m_pixelShaders(),
+		m_pszMainSceneName()
 	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -267,6 +268,12 @@ namespace library {
 		for (auto& renderable : m_renderables)
 		{
 			hr = renderable.second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
+			if (FAILED(hr)) return hr;
+		}
+
+		for (auto& scene : m_scenes)
+		{
+			hr = scene.second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
 			if (FAILED(hr)) return hr;
 		}
 #pragma endregion
@@ -585,6 +592,71 @@ namespace library {
 			}
 		}
 
+		auto& voxels = m_scenes[m_pszMainSceneName]->GetVoxels();
+		for (auto& vox : voxels)
+		{
+			// Set the vertex buffer
+			UINT vtxStride = sizeof(SimpleVertex);
+			UINT vtxOffset = 0;
+
+			m_immediateContext->IASetVertexBuffers(
+				0,												// the first input slot for binding
+				1,												// the number of buffers in the array
+				vox->GetVertexBuffer().GetAddressOf(),	// the array of vertex buffers
+				&vtxStride,										// array of stride values, one for each buffer
+				&vtxOffset
+			);
+
+			// Set the instance buffer
+			UINT insStride = sizeof(InstanceData);
+			UINT insOffset = 0;
+
+			m_immediateContext->IASetVertexBuffers(
+				1, // second slot
+				1, // num of buffers in array
+				vox->GetInstanceBuffer().GetAddressOf(),
+				&insStride,
+				&insOffset
+			);
+
+			// Set the index buffer
+			m_immediateContext->IASetIndexBuffer(vox->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0);
+
+			// Set the input layout
+			m_immediateContext->IASetInputLayout(vox->GetVertexLayout().Get());
+
+			// Create and update voxel constant buffer
+			CBChangesEveryFrame cbVoxel = {
+				.World = XMMatrixTranspose(vox->GetWorldMatrix()),
+				.OutputColor = vox->GetOutputColor()
+			};
+
+			m_immediateContext->UpdateSubresource(
+				vox->GetConstantBuffer().Get(),
+				0u,
+				nullptr,
+				&cbVoxel,
+				0u,
+				0u
+			);
+
+			// Set shaders
+			m_immediateContext->VSSetShader(vox->GetVertexShader().Get(), nullptr, 0);
+			m_immediateContext->PSSetShader(vox->GetPixelShader().Get(), nullptr, 0);
+
+			// Set constant buffer
+			m_immediateContext->VSSetConstantBuffers(2, 1, vox->GetConstantBuffer().GetAddressOf());
+			m_immediateContext->PSSetConstantBuffers(2, 1, vox->GetConstantBuffer().GetAddressOf());
+
+			m_immediateContext->DrawIndexedInstanced(
+				vox->GetNumIndices(),
+				vox->GetNumInstances(),
+				0,
+				0,
+				0
+			);
+		}
+
 		// Present
 		m_swapChain->Present(0, 0);
 
@@ -666,7 +738,13 @@ namespace library {
 			return E_INVALIDARG;
 		}
 		const auto& vs = m_vertexShaders[pszVertexShaderName];
-		// TODO
+		const auto& voxels = m_scenes[pszSceneName]->GetVoxels();
+
+		for (const auto& vox : voxels)
+		{
+			vox->SetVertexShader(vs);
+		}
+
 		return S_OK;
 	}
 
@@ -692,7 +770,13 @@ namespace library {
 			return E_INVALIDARG;
 		}
 		const auto& ps = m_pixelShaders[pszPixelShaderName];
-		// TODO
+		const auto& voxels = m_scenes[pszSceneName]->GetVoxels();
+
+		for (const auto& vox : voxels)
+		{
+			vox->SetPixelShader(ps);
+		}
+
 		return S_OK;
 	}
 
