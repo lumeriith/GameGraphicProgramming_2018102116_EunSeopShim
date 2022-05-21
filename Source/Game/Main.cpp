@@ -21,6 +21,8 @@
 #include "Scene/Voxel.h"
 #include "Shader/SkinningVertexShader.h"
 
+using namespace library;
+
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Function: wWinMain
 
@@ -111,7 +113,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	XMFLOAT4 color;
 	XMStoreFloat4(&color, Colors::White);
 
-	std::shared_ptr<library::PointLight> directionalLight = std::make_shared<library::PointLight>(
+	std::shared_ptr<PointLight> directionalLight = std::make_shared<PointLight>(
 		XMFLOAT4(-5.77f, 5.77f, -5.77f, 1.0f),
 		color
 		);
@@ -121,7 +123,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	}
 
 	XMStoreFloat4(&color, Colors::Red);
-	std::shared_ptr<library::RotatingPointLight> rotatingDirectionalLight = std::make_shared<library::RotatingPointLight>(
+	std::shared_ptr<RotatingPointLight> rotatingDirectionalLight = std::make_shared<RotatingPointLight>(
 		XMFLOAT4(0.0f, 0.0f, -5.0f, 1.0f),
 		color
 		);

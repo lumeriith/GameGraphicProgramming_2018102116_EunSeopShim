@@ -79,9 +79,18 @@ namespace library
 	Model::Model(_In_ const std::filesystem::path& filePath) :
 		Renderable(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)),
 		m_filePath(filePath),
+		m_animationBuffer(),
+		m_skinningConstantBuffer(),
 		m_aVertices(),
+		m_aAnimationData(),
 		m_aIndices(),
-		m_padding()
+		m_aBoneData(),
+		m_aBoneInfo(),
+		m_aTransforms(),
+		m_boneNameToIndexMap(),
+		m_pScene(),
+		m_timeSinceLoaded(),
+		m_globalInverseTransform()
 	{}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -106,28 +115,67 @@ namespace library
 
 		// Create the buffers for the vertices attributes
 
-		Assimp::Importer importer;
-
-		const aiScene* pScene = importer.ReadFile(
+		m_pScene = sm_pImporter->ReadFile(
 			m_filePath.string().c_str(),
 			ASSIMP_LOAD_FLAGS
 		);
 
-		if (pScene)
+		if (!m_pScene)
 		{
-			hr = initFromScene(pDevice, pImmediateContext, pScene, m_filePath);
-		}
-		else
-		{
-			hr = E_FAIL;
 			OutputDebugString(L"Error parsing ");
 			OutputDebugString(m_filePath.c_str());
 			OutputDebugString(L": ");
-			OutputDebugStringA(importer.GetErrorString());
+			OutputDebugStringA(sm_pImporter->GetErrorString());
 			OutputDebugString(L"\n");
+
+			return E_FAIL;
 		}
 
-		return hr;
+		auto transformation = ConvertMatrix(m_pScene->mRootNode->mTransformation);
+		auto determinant = XMMatrixDeterminant(transformation);
+
+		m_globalInverseTransform = XMMatrixInverse(&determinant, transformation);
+		hr = initFromScene(pDevice, pImmediateContext, m_pScene, m_filePath);
+		if (FAILED(hr)) return hr;
+
+		// Create animation vertex buffer
+		D3D11_BUFFER_DESC vBufferDesc =
+		{
+			.ByteWidth = static_cast<UINT>(sizeof(AnimationData) * m_aAnimationData.size()),
+			.Usage = D3D11_USAGE_DEFAULT,
+			.BindFlags = D3D11_BIND_VERTEX_BUFFER,
+			.CPUAccessFlags = 0
+		};
+
+		D3D11_SUBRESOURCE_DATA vData =
+		{
+			.pSysMem = m_aAnimationData.data()
+		};
+
+		hr = pDevice->CreateBuffer(&vBufferDesc, &vData, &m_animationBuffer);
+		if (FAILED(hr)) return hr;
+
+		// Create skinning constant buffer
+		D3D11_BUFFER_DESC cBufferDesc = {
+			.ByteWidth = sizeof(CBSkinning),
+			.Usage = D3D11_USAGE_DEFAULT,
+			.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+			.CPUAccessFlags = 0,
+			.MiscFlags = 0,
+			.StructureByteStride = 0
+		};
+
+		CBSkinning cb = {};
+
+		D3D11_SUBRESOURCE_DATA cData = {
+			.pSysMem = &cb,
+			.SysMemPitch = 0,
+			.SysMemSlicePitch = 0
+		};
+
+		hr = pDevice->CreateBuffer(&cBufferDesc, &cData, &m_constantBuffer);
+		if (FAILED(hr)) return hr;
+
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -142,7 +190,18 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void Model::Update(_In_ FLOAT deltaTime)
 	{
-		UNREFERENCED_PARAMETER(deltaTime);
+		m_timeSinceLoaded += deltaTime;
+
+		if (!m_pScene->HasAnimations()) return;
+		// Calculate the current animation time to play,
+		// using ticks per second and duration of animation
+		if (!m_pScene->mRootNode) return;
+		// Calculate bone transform matrices starting with root node
+		readNodeHierarchy(animationTimeTicks, m_pScene->mRootNode, parentTransform); // TODO
+		// Resize m_aTransforms same as m_aBoneInfo
+		m_aTransforms.resize(m_aBoneInfo.size());
+		// Store each final transformations in the bone information to the m_aTransforms
+		// TODO
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -436,7 +495,7 @@ namespace library
 		for (UINT i = 0u; i < pScene->mNumMeshes; ++i)
 		{
 			const aiMesh* pMesh = pScene->mMeshes[i];
-			initSingleMesh(pMesh);
+			initSingleMesh(i, pMesh);
 		}
 	}
 
@@ -475,6 +534,24 @@ namespace library
 
 		hr = initMaterials(pDevice, pImmediateContext, pScene, filePath);
 		if (FAILED(hr)) return hr;
+
+		for (UINT i = 0; i < m_aBoneData.size(); i++)
+		{
+			const auto& boneData = m_aBoneData[i];
+			AnimationData animData;
+
+			animData.aBoneWeights.x = boneData.aWeights[0];
+			animData.aBoneWeights.y = boneData.aWeights[1];
+			animData.aBoneWeights.z = boneData.aWeights[2];
+			animData.aBoneWeights.w = boneData.aWeights[3];
+
+			animData.aBoneIndices.x = boneData.aBoneIds[0];
+			animData.aBoneIndices.y = boneData.aBoneIds[1];
+			animData.aBoneIndices.z = boneData.aBoneIds[2];
+			animData.aBoneIndices.w = boneData.aBoneIds[3];
+
+			m_aAnimationData.push_back(animData); // TODO
+		}
 
 		hr = initialize(pDevice, pImmediateContext);
 		if (FAILED(hr)) return hr;
@@ -530,9 +607,13 @@ namespace library
 	  Args:     const aiScene* pScene
 				  Assimp scene
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Model::initMeshBones definition (remove the comment)
-	--------------------------------------------------------------------*/
+	void Model::initMeshBones(_In_ UINT uMeshIndex, _In_ const aiMesh* pMesh)
+	{
+		for (UINT i = 0u; i < pMesh->mNumBones; i++)
+		{
+			initMeshSingleBone(i, pMesh->mBones[i]);
+		}
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Model::initMeshSingleBone
@@ -568,7 +649,7 @@ namespace library
 	  Args:     const aiMesh* pMesh
 				  Point to an assimp mesh object
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	void Model::initSingleMesh(_In_ const aiMesh* pMesh)
+	void Model::initSingleMesh(_In_ UINT uMeshIndex, _In_ const aiMesh* pMesh)
 	{
 		XMFLOAT2 zeroVec(0.0f, 0.0f);
 
@@ -614,6 +695,8 @@ namespace library
 		}
 
 		m_aMeshes.push_back(newEntry);
+
+		initMeshBones(uMeshIndex, pMesh);
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -663,9 +746,29 @@ namespace library
 				const aiNodeAnim* pNodeAnim
 				  Pointer to an assimp node anim object
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Model::interpolateRotation definition (remove the comment)
-	--------------------------------------------------------------------*/
+	void Model::interpolateRotation(_Inout_ XMVECTOR& outQuaternion, _In_ FLOAT animationTimeTicks, _In_ const aiNodeAnim* pNodeAnim)
+	{
+		if (pNodeAnim->mNumRotationKeys == 1)
+		{
+			outQuaternion = ConvertQuaternionToVector(pNodeAnim->mRotationKeys[0].mValue);
+			return;
+		}
+
+		UINT uRotationIndex = findRotation(animationTimeTicks, pNodeAnim);
+		UINT uNextRotationIndex = uRotationIndex + 1u;
+		assert(uNextRotationIndex < pNodeAnim->mNumRotationKeys);
+
+		FLOAT t1 = static_cast<FLOAT>(pNodeAnim->mRotationKeys[uRotationIndex].mTime);
+		FLOAT t2 = static_cast<FLOAT>(pNodeAnim->mRotationKeys[uNextRotationIndex].mTime);
+		FLOAT deltaTime = t2 - t1;
+		FLOAT factor = (animationTimeTicks - t1) / deltaTime;
+		assert(factor >= 0.0f && factor <= 1.0f);
+		const aiQuaternion& start = pNodeAnim->mRotationKeys[uRotationIndex].mValue;
+		const aiQuaternion& end = pNodeAnim->mRotationKeys[uNextRotationIndex].mValue;
+		aiQuaternion result;
+		aiQuaternion::Interpolate(result, start, end, factor);
+		outQuaternion = ConvertQuaternionToVector(result);
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Model::interpolateScaling
@@ -679,9 +782,28 @@ namespace library
 				const aiNodeAnim* pNodeAnim
 				  Pointer to an assimp node anim object
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Model::interpolateScaling definition (remove the comment)
-	--------------------------------------------------------------------*/
+	void Model::interpolateScaling(_Inout_ XMFLOAT3& outScale, _In_ FLOAT animationTimeTicks, _In_ const aiNodeAnim* pNodeAnim)
+	{
+		if (pNodeAnim->mNumScalingKeys == 1)
+		{
+			outScale = ConvertVector3dToFloat3(pNodeAnim->mScalingKeys[0].mValue);
+			return;
+		}
+
+		UINT uScalingIndex = findScaling(animationTimeTicks, pNodeAnim);
+		UINT uNextScalingIndex = uScalingIndex + 1u;
+		assert(uNextScalingIndex < pNodeAnim->mNumScalingKeys);
+
+		FLOAT t1 = static_cast<FLOAT>(pNodeAnim->mScalingKeys[uScalingIndex].mTime);
+		FLOAT t2 = static_cast<FLOAT>(pNodeAnim->mScalingKeys[uNextScalingIndex].mTime);
+		FLOAT deltaTime = t2 - t1;
+		FLOAT factor = (animationTimeTicks - t1) / deltaTime;
+		assert(factor >= 0.0f && factor <= 1.0f);
+		const aiVector3D& start = pNodeAnim->mScalingKeys[uScalingIndex].mValue;
+		const aiVector3D& end = pNodeAnim->mScalingKeys[uNextScalingIndex].mValue;
+		aiVector3D delta = end - start;
+		outScale = ConvertVector3dToFloat3(start + factor * delta);
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Model::loadDiffuseTexture
@@ -860,9 +982,43 @@ namespace library
 				const XMMATRIX& parentTransform
 				  Parent transform in hierarchy
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Model::readNodeHierarchy definition (remove the comment)
-	--------------------------------------------------------------------*/
+	void Model::readNodeHierarchy(
+		_In_ FLOAT animationTimeTicks,
+		_In_ const aiNode* pNode,
+		_In_ const XMMATRIX& parentTransform
+	)
+	{
+		XMMATRIX nodeTransform = ConvertMatrix(pNode->mTransformation);
+		const auto& anim = m_pScene->mAnimations[0];
+
+		const auto currentNodeAnim = findNodeAnimOrNull(anim, pNode->mName.C_Str());
+		if (!currentNodeAnim) {
+			XMFLOAT3 vecScale = {};
+			XMVECTOR vecRot = {};
+			XMFLOAT3 vecTrans = {};
+			interpolateScaling(vecScale, animationTimeTicks, currentNodeAnim);
+			interpolateRotation(vecRot, animationTimeTicks, currentNodeAnim);
+			interpolatePosition(vecTrans, animationTimeTicks, currentNodeAnim);
+
+			const XMMATRIX matScale = XMMatrixScaling(vecScale.x, vecScale.y, vecScale.z);
+			const XMMATRIX matRot = XMMatrixRotationQuaternion(vecRot);
+			const XMMATRIX matTrans = XMMatrixTranslation(vecTrans.x, vecTrans.y, vecTrans.z);
+			nodeTransform = matScale * matRot * matTrans;
+		}
+		const XMMATRIX globalTransform = nodeTransform * parentTransform;
+		if (m_boneNameToIndexMap.contains(pNode->mName.C_Str()))
+		{
+			const UINT index = m_boneNameToIndexMap[pNode->mName.C_Str()];
+			auto& boneInfo = m_aBoneInfo[index];
+			boneInfo.FinalTransformation = boneInfo.OffsetMatrix * globalTransform * m_globalInverseTransform;
+		}
+
+		for (UINT i = 0u; i < pNode->mNumChildren; i++)
+		{
+			const auto& child = pNode->mChildren[i];
+			readNodeHierarchy(animationTimeTicks, child, globalTransform);
+		}
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Model::reserveSpace
