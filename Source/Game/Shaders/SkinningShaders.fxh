@@ -102,20 +102,41 @@ struct PS_PHONG_INPUT
 PS_PHONG_INPUT VSPhong(VS_PHONG_INPUT input)
 {
     PS_PHONG_INPUT output = (PS_PHONG_INPUT) 0;
-    output.Pos = input.Position;
     
+    // Calculate Skin Matrix
     matrix skin = BoneTransforms[input.BoneIndices.x] * input.BoneWeights.x;
     skin += BoneTransforms[input.BoneIndices.y] * input.BoneWeights.y;
     skin += BoneTransforms[input.BoneIndices.z] * input.BoneWeights.z;
     skin += BoneTransforms[input.BoneIndices.w] * input.BoneWeights.w;
     
+    // Calculate Position
+    output.Pos = input.Position;
     output.Pos = mul(output.Pos, skin);
     output.Pos = mul(output.Pos, World);
     output.Pos = mul(output.Pos, View);
     output.Pos = mul(output.Pos, Projection);
+    
+    // Calculate Normal
+    float4x4 skinNoTranslation = skin;
+    skinNoTranslation[0].w = 0;
+    skinNoTranslation[1].w = 0;
+    skinNoTranslation[2].w = 0;
+    skinNoTranslation[3].x = 0;
+    skinNoTranslation[3].y = 0;
+    skinNoTranslation[3].z = 0;
+    skinNoTranslation[3].w = 1;
+
+    float4 normal = float4(input.Normal, 1);
+
+    normal = mul(normal, skinNoTranslation);
+    normal = mul(normal, World);
+    output.Norm = normalize(normal.xyz);
+    
+    // Others...
     output.Tex = input.TexCoord;
-    output.Norm = normalize(mul(float4(input.Normal, 1), World).xyz);
-    output.WorldPos = mul(input.Position, World);
+    
+    output.WorldPos = mul(input.Position, skin);
+    output.WorldPos = mul(output.WorldPos, World);
 
     return output;
 }
