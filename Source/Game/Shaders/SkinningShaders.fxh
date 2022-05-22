@@ -64,7 +64,7 @@ cbuffer cbLights : register(b3)
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 cbuffer cbSkinning : register(b4)
 {
-    matrix BoneTransforms[MAX_NUM_BONES];
+    row_major matrix BoneTransforms[MAX_NUM_BONES];
 };
 
 //--------------------------------------------------------------------------------------
@@ -103,6 +103,13 @@ PS_PHONG_INPUT VSPhong(VS_PHONG_INPUT input)
 {
     PS_PHONG_INPUT output = (PS_PHONG_INPUT) 0;
     output.Pos = input.Position;
+    
+    matrix skin = BoneTransforms[input.BoneIndices.x] * input.BoneWeights.x;
+    skin += BoneTransforms[input.BoneIndices.y] * input.BoneWeights.y;
+    skin += BoneTransforms[input.BoneIndices.z] * input.BoneWeights.z;
+    skin += BoneTransforms[input.BoneIndices.w] * input.BoneWeights.w;
+    
+    output.Pos = mul(output.Pos, skin);
     output.Pos = mul(output.Pos, World);
     output.Pos = mul(output.Pos, View);
     output.Pos = mul(output.Pos, Projection);
