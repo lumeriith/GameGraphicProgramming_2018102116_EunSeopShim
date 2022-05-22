@@ -31,6 +31,7 @@ namespace library {
 		m_camera(XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f)),
 		m_projection(),
 		m_renderables(),
+		m_models(),
 		m_aPointLights(),
 		m_vertexShaders(),
 		m_pixelShaders(),
@@ -272,6 +273,12 @@ namespace library {
 			if (FAILED(hr)) return hr;
 		}
 
+		for (auto& model : m_models)
+		{
+			hr = model.second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
+			if (FAILED(hr)) return hr;
+		}
+
 		for (auto& scene : m_scenes)
 		{
 			hr = scene.second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
@@ -306,7 +313,7 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Renderer::AddRenderable(_In_ PCWSTR pszRenderableName, _In_ const std::shared_ptr<Renderable>& renderable)
 	{
-		if (m_renderables.count(pszRenderableName) > 0) return E_FAIL;
+		if (m_renderables.contains(pszRenderableName)) return E_FAIL;
 		m_renderables.insert({ pszRenderableName, renderable });
 
 		return S_OK;
@@ -327,9 +334,13 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code.
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::AddModel definition (remove the comment)
-	--------------------------------------------------------------------*/
+	HRESULT Renderer::AddModel(_In_ PCWSTR pszModelName, _In_ const std::shared_ptr<Model>& pModel)
+	{
+		if (m_models.contains(pszModelName)) return E_FAIL;
+		m_models.insert({ pszModelName, pModel });
+
+		return S_OK;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::AddPointLight
@@ -480,12 +491,17 @@ namespace library {
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void Renderer::Update(_In_ FLOAT deltaTime)
 	{
-		for (auto& renderable : m_renderables)
+		for (const auto& renderable : m_renderables)
 		{
 			renderable.second->Update(deltaTime);
 		}
 
-		for (auto& light : m_aPointLights)
+		for (const auto& model : m_models)
+		{
+			model.second->Update(deltaTime);
+		}
+
+		for (const auto& light : m_aPointLights)
 		{
 			light->Update(deltaTime);
 		}
@@ -501,8 +517,8 @@ namespace library {
 	void Renderer::Render()
 	{
 		// Clear the backbuffer
-		const float ClearColor[4] = { 0.0f, 0.125f, 0.6f, 1.0f }; // RGBA
-		m_immediateContext->ClearRenderTargetView(m_renderTargetView.Get(), ClearColor);
+		constexpr float clearColor[4] = { 0.0f, 0.125f, 0.6f, 1.0f }; // RGBA
+		m_immediateContext->ClearRenderTargetView(m_renderTargetView.Get(), clearColor);
 
 		// Clear the depth buffer to 1.0 (maximum depth)
 		m_immediateContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -677,6 +693,102 @@ namespace library {
 			);
 		}
 
+		// For each models
+		for (auto& pair : m_models)
+		{
+			auto& model = pair.second;
+
+			// Set the vertex buffer
+
+			// First slot
+			UINT stride0 = sizeof(SimpleVertex);
+			UINT offset0 = 0;
+			m_immediateContext->IASetVertexBuffers(
+				0,
+				1,
+				model->GetVertexBuffer().GetAddressOf(),
+				&stride0,
+				&offset0
+			);
+
+			// Second slot
+			UINT stride1 = sizeof(AnimationData);
+			UINT offset1 = 0;
+			m_immediateContext->IASetVertexBuffers(
+				1,
+				1,
+				model->GetAnimationBuffer().GetAddressOf(),
+				&stride1,
+				&offset1
+			);
+
+			// Set the index buffer
+			m_immediateContext->IASetIndexBuffer(model->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0);
+
+			// Set the input layout
+			m_immediateContext->IASetInputLayout(model->GetVertexLayout().Get());
+
+			// Create and update renderable constant buffer
+			CBChangesEveryFrame cbRenderable = {
+				.World = XMMatrixTranspose(model->GetWorldMatrix()),
+				.OutputColor = model->GetOutputColor()
+			};
+
+			m_immediateContext->UpdateSubresource(
+				model->GetConstantBuffer().Get(),
+				0u,
+				nullptr,
+				&cbRenderable,
+				0u,
+				0u
+			);
+
+			// Create and update skinning constant buffer
+			CBSkinning cbSkinning = {};
+			auto& transforms = model->GetBoneTransforms();
+			for (UINT i = 0u; i < transforms.size(); i++)
+			{
+				cbSkinning.BoneTransforms[i] = transforms[i];
+			}
+
+			m_immediateContext->UpdateSubresource(
+				model->GetSkinningConstantBuffer().Get(),
+				0u,
+				nullptr,
+				&cbSkinning,
+				0u,
+				0u
+			);
+
+			// Set shaders
+			m_immediateContext->VSSetShader(model->GetVertexShader().Get(), nullptr, 0);
+			m_immediateContext->PSSetShader(model->GetPixelShader().Get(), nullptr, 0);
+
+			// Set renderable constant buffer
+			m_immediateContext->VSSetConstantBuffers(2, 1, model->GetConstantBuffer().GetAddressOf());
+			m_immediateContext->VSSetConstantBuffers(4, 1, model->GetSkinningConstantBuffer().GetAddressOf());
+			m_immediateContext->PSSetConstantBuffers(2, 1, model->GetConstantBuffer().GetAddressOf());
+
+
+			const UINT numOfMesh = model->GetNumMeshes();
+			for (UINT i = 0; i < numOfMesh; i++)
+			{
+				const auto& mesh = model->GetMesh(i);
+
+				if (model->HasTexture())
+				{
+					const auto& material = model->GetMaterial(mesh.uMaterialIndex);
+					const auto& diffuseView = material.pDiffuse->GetTextureResourceView();
+					const auto& diffuseSampler = material.pDiffuse->GetSamplerState();
+
+					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
+					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
+				}
+
+				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, static_cast<INT>(mesh.uBaseVertex));
+			}
+		}
+
 		// Present
 		m_swapChain->Present(0, 0);
 
@@ -751,10 +863,16 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::SetVertexShaderOfModel definition (remove the comment)
-	--------------------------------------------------------------------*/
-
+	HRESULT Renderer::SetVertexShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszVertexShaderName)
+	{
+		if (!m_models.contains(pszModelName) || !m_vertexShaders.contains(pszVertexShaderName))
+		{
+			return E_INVALIDARG;
+		}
+		const auto& vs = m_vertexShaders[pszVertexShaderName];
+		m_models[pszModelName]->SetVertexShader(vs);
+		return S_OK;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::SetPixelShaderOfModel
@@ -771,9 +889,16 @@ namespace library {
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Renderer::SetPixelShaderOfModel definition (remove the comment)
-	--------------------------------------------------------------------*/
+	HRESULT Renderer::SetPixelShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszPixelShaderName)
+	{
+		if (!m_models.contains(pszModelName) || !m_pixelShaders.contains(pszPixelShaderName))
+		{
+			return E_INVALIDARG;
+		}
+		const auto& ps = m_pixelShaders[pszPixelShaderName];
+		m_models[pszModelName]->SetPixelShader(ps);
+		return S_OK;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::SetVertexShaderOfScene

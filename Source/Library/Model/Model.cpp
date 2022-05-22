@@ -173,7 +173,7 @@ namespace library
 			.SysMemSlicePitch = 0
 		};
 
-		hr = pDevice->CreateBuffer(&cBufferDesc, &cData, &m_constantBuffer);
+		hr = pDevice->CreateBuffer(&cBufferDesc, &cData, &m_skinningConstantBuffer);
 		if (FAILED(hr)) return hr;
 
 	}
@@ -193,15 +193,22 @@ namespace library
 		m_timeSinceLoaded += deltaTime;
 
 		if (!m_pScene->HasAnimations()) return;
-		// Calculate the current animation time to play,
-		// using ticks per second and duration of animation
 		if (!m_pScene->mRootNode) return;
-		// Calculate bone transform matrices starting with root node
-		readNodeHierarchy(animationTimeTicks, m_pScene->mRootNode, parentTransform); // TODO
+
+		auto& anim = m_pScene->mAnimations[0];
+		FLOAT tps = static_cast<FLOAT>(anim->mTicksPerSecond);
+		if (tps == 0.0f) tps = 25.0f;
+		FLOAT ticks = m_timeSinceLoaded * tps;
+		ticks = fmod(ticks, static_cast<FLOAT>(anim->mDuration));
+
+		readNodeHierarchy(ticks, m_pScene->mRootNode, XMMatrixIdentity());
 		// Resize m_aTransforms same as m_aBoneInfo
 		m_aTransforms.resize(m_aBoneInfo.size());
 		// Store each final transformations in the bone information to the m_aTransforms
-		// TODO
+		for (UINT i = 0u; i < m_aBoneInfo.size(); i++)
+		{
+			m_aTransforms[i] = m_aBoneInfo[i].FinalTransformation;
+		}
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -550,7 +557,7 @@ namespace library
 			animData.aBoneIndices.z = boneData.aBoneIds[2];
 			animData.aBoneIndices.w = boneData.aBoneIds[3];
 
-			m_aAnimationData.push_back(animData); // TODO
+			m_aAnimationData.push_back(animData);
 		}
 
 		hr = initialize(pDevice, pImmediateContext);
@@ -592,7 +599,7 @@ namespace library
 		for (UINT i = 0u; i < pScene->mNumMaterials; ++i)
 		{
 			const aiMaterial* pMaterial = pScene->mMaterials[i];
-
+			m_aMaterials.push_back(Material());
 			loadTextures(pDevice, pImmediateContext, parentDirectory, pMaterial, i);
 		}
 
@@ -611,7 +618,7 @@ namespace library
 	{
 		for (UINT i = 0u; i < pMesh->mNumBones; i++)
 		{
-			initMeshSingleBone(i, pMesh->mBones[i]);
+			initMeshSingleBone(uMeshIndex, pMesh->mBones[i]);
 		}
 	}
 
@@ -992,7 +999,7 @@ namespace library
 		const auto& anim = m_pScene->mAnimations[0];
 
 		const auto currentNodeAnim = findNodeAnimOrNull(anim, pNode->mName.C_Str());
-		if (!currentNodeAnim) {
+		if (currentNodeAnim) {
 			XMFLOAT3 vecScale = {};
 			XMVECTOR vecRot = {};
 			XMFLOAT3 vecTrans = {};
@@ -1034,5 +1041,6 @@ namespace library
 	{
 		m_aVertices.reserve(uNumVertices);
 		m_aIndices.reserve(uNumIndices);
+		m_aBoneData.resize(uNumVertices);
 	}
 }
