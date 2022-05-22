@@ -176,6 +176,7 @@ namespace library
 		hr = pDevice->CreateBuffer(&cBufferDesc, &cData, &m_skinningConstantBuffer);
 		if (FAILED(hr)) return hr;
 
+		return S_OK;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -998,14 +999,14 @@ namespace library
 		XMMATRIX nodeTransform = ConvertMatrix(pNode->mTransformation);
 		const auto& anim = m_pScene->mAnimations[0];
 
-		const auto currentNodeAnim = findNodeAnimOrNull(anim, pNode->mName.C_Str());
-		if (currentNodeAnim) {
+		const auto nodeAnim = findNodeAnimOrNull(anim, pNode->mName.C_Str());
+		if (nodeAnim) {
 			XMFLOAT3 vecScale = {};
 			XMVECTOR vecRot = {};
 			XMFLOAT3 vecTrans = {};
-			interpolateScaling(vecScale, animationTimeTicks, currentNodeAnim);
-			interpolateRotation(vecRot, animationTimeTicks, currentNodeAnim);
-			interpolatePosition(vecTrans, animationTimeTicks, currentNodeAnim);
+			interpolateScaling(vecScale, animationTimeTicks, nodeAnim);
+			interpolateRotation(vecRot, animationTimeTicks, nodeAnim);
+			interpolatePosition(vecTrans, animationTimeTicks, nodeAnim);
 
 			const XMMATRIX matScale = XMMatrixScaling(vecScale.x, vecScale.y, vecScale.z);
 			const XMMATRIX matRot = XMMatrixRotationQuaternion(vecRot);
