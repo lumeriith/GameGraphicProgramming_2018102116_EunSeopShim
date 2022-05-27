@@ -64,7 +64,8 @@ namespace library
 		HRESULT AddVertexShader(_In_ PCWSTR pszVertexShaderName, _In_ const std::shared_ptr<VertexShader>& vertexShader);
 		HRESULT AddPixelShader(_In_ PCWSTR pszPixelShaderName, _In_ const std::shared_ptr<PixelShader>& pixelShader);
 
-		HRESULT AddScene(_In_ PCWSTR pszSceneName, const std::filesystem::path& sceneFileDirectory);
+		HRESULT AddScene(_In_ PCWSTR pszSceneName, _In_ const std::shared_ptr<Scene>& scene);
+		std::shared_ptr<Scene> GetSceneOrNull(_In_ PCWSTR pszSceneName);
 		HRESULT SetMainScene(_In_ PCWSTR pszSceneName);
 
 		void HandleInput(_In_ const DirectionsInput& directions, _In_ const MouseRelativeMovement& mouseRelativeMovement, _In_ FLOAT deltaTime);
@@ -108,6 +109,7 @@ namespace library
 		std::unordered_map<PCWSTR, std::shared_ptr<VertexShader>> m_vertexShaders;
 		std::unordered_map<PCWSTR, std::shared_ptr<PixelShader>> m_pixelShaders;
 		std::unordered_map<std::wstring, std::shared_ptr<Scene>> m_scenes;
+		std::shared_ptr<Texture> m_invalidTexture;
 	};
 
 }

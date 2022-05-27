@@ -9,6 +9,9 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
+/*--------------------------------------------------------------------
+  TODO: Declare texture array and sampler state array for diffuse texture and normal texture (remove the comment)
+--------------------------------------------------------------------*/
 Texture2D txDiffuse : register( t0 );
 SamplerState samLinear : register( s0 );
 
