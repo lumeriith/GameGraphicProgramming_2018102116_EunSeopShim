@@ -610,7 +610,8 @@ namespace library {
 			// Create and update renderable constant buffer
 			CBChangesEveryFrame cbRenderable = {
 				.World = XMMatrixTranspose(renderable->GetWorldMatrix()),
-				.OutputColor = renderable->GetOutputColor()
+				.OutputColor = renderable->GetOutputColor(),
+				.HasNormalMap = renderable->HasNormalMap()
 			};
 
 			m_immediateContext->UpdateSubresource(
@@ -664,12 +665,24 @@ namespace library {
 				&vtxOffset
 			);
 
+			// Set the normal buffer
+			UINT norStride = sizeof(NormalData);
+			UINT norOffset = 0;
+
+			m_immediateContext->IASetVertexBuffers(
+				1, // second slot
+				1,
+				vox->GetNormalBuffer().GetAddressOf(),
+				&norStride,
+				&norOffset
+			);
+
 			// Set the instance buffer
 			UINT insStride = sizeof(InstanceData);
 			UINT insOffset = 0;
 
 			m_immediateContext->IASetVertexBuffers(
-				1, // second slot
+				2, // third slot
 				1,
 				vox->GetInstanceBuffer().GetAddressOf(),
 				&insStride,
@@ -685,7 +698,8 @@ namespace library {
 			// Create and update voxel constant buffer
 			CBChangesEveryFrame cbVoxel = {
 				.World = XMMatrixTranspose(vox->GetWorldMatrix()),
-				.OutputColor = vox->GetOutputColor()
+				.OutputColor = vox->GetOutputColor(),
+				.HasNormalMap = vox->HasNormalMap()
 			};
 
 			m_immediateContext->UpdateSubresource(
@@ -722,25 +736,36 @@ namespace library {
 			// Set the vertex buffer
 
 			// First slot
-			UINT stride0 = sizeof(SimpleVertex);
-			UINT offset0 = 0;
+			UINT vtxStride = sizeof(SimpleVertex);
+			UINT vtxOffset = 0;
 			m_immediateContext->IASetVertexBuffers(
 				0,
 				1,
 				model->GetVertexBuffer().GetAddressOf(),
-				&stride0,
-				&offset0
+				&vtxStride,
+				&vtxOffset
 			);
 
 			// Second slot
-			UINT stride1 = sizeof(AnimationData);
-			UINT offset1 = 0;
+			UINT norStride = sizeof(NormalData);
+			UINT norOffset = 0;
 			m_immediateContext->IASetVertexBuffers(
 				1,
 				1,
+				model->GetNormalBuffer().GetAddressOf(),
+				&norStride,
+				&norOffset
+			);
+
+			// Third slot
+			UINT animStride = sizeof(AnimationData);
+			UINT animOffset = 0;
+			m_immediateContext->IASetVertexBuffers(
+				2,
+				1,
 				model->GetAnimationBuffer().GetAddressOf(),
-				&stride1,
-				&offset1
+				&animStride,
+				&animOffset
 			);
 
 			// Set the index buffer
@@ -752,7 +777,8 @@ namespace library {
 			// Create and update renderable constant buffer
 			CBChangesEveryFrame cbRenderable = {
 				.World = XMMatrixTranspose(model->GetWorldMatrix()),
-				.OutputColor = model->GetOutputColor()
+				.OutputColor = model->GetOutputColor(),
+				.HasNormalMap = model->HasNormalMap()
 			};
 
 			m_immediateContext->UpdateSubresource(

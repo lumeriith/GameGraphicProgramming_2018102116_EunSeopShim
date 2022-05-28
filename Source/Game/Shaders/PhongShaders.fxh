@@ -12,8 +12,8 @@
 /*--------------------------------------------------------------------
   TODO: Declare texture array and sampler state array for diffuse texture and normal texture (remove the comment)
 --------------------------------------------------------------------*/
-Texture2D txDiffuse : register( t0 );
-SamplerState samLinear : register( s0 );
+Texture2D aTextures[2] : register( t0 );
+SamplerState aSamplers[2] : register( s0 );
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
@@ -48,6 +48,7 @@ cbuffer cbChangesEveryFrame : register( b2 )
 {
 	matrix World;
 	float4 OutputColor;
+    bool HasNormalMap;
 };
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
@@ -72,6 +73,9 @@ struct VS_PHONG_INPUT
 	float4 Position : POSITION;
 	float2 TexCoord : TEXCOORD0;
 	float3 Normal : NORMAL;
+    float3 Tangent : TANGENT;
+    float3 Bitangent : BITANGENT;
+    row_major matrix mTransform : INSTANCE_TRANSFORM;
 };
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
@@ -86,6 +90,8 @@ struct PS_PHONG_INPUT
 	float2 Tex : TEXCOORD;
 	float3 Norm : NORMAL;
 	float4 WorldPos : POSITION;
+    float3 Tangent : TANGENT;
+    float3 Bitangent : BITANGENT;
 };
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C

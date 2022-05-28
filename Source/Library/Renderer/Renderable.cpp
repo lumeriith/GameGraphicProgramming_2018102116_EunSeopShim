@@ -29,8 +29,10 @@ namespace library
 		m_pixelShader(),
 		m_outputColor(outputColor),
 		m_padding(),
-		m_world(XMMatrixIdentity())
-	{}
+		m_world(XMMatrixIdentity()),
+		m_bHasNormalMap()
+	{
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderable::initialize
@@ -71,6 +73,31 @@ namespace library
 		};
 
 		hr = pDevice->CreateBuffer(&vBufferDesc, &vData, &m_vertexBuffer);
+		if (FAILED(hr)) return hr;
+
+		// TODO check if right
+		// If renderable has texture and m_aNormalData is empty
+		if (m_aMaterials.size() > 0 && m_aNormalData.size() == 0)
+		{
+			calculateNormalMapVectors();
+		}
+
+		// Create the normal vertex buffer
+		D3D11_BUFFER_DESC nBufferDesc = {
+			.ByteWidth = static_cast<UINT>(sizeof(NormalData) * m_aNormalData.size()),
+			.Usage = D3D11_USAGE_DEFAULT,
+			.BindFlags = D3D11_BIND_VERTEX_BUFFER,
+			.CPUAccessFlags = 0,
+			.MiscFlags = 0
+		};
+
+		D3D11_SUBRESOURCE_DATA nData = {
+			.pSysMem = m_aNormalData.data(),
+			.SysMemPitch = 0,
+			.SysMemSlicePitch = 0
+		};
+
+		hr = pDevice->CreateBuffer(&nBufferDesc, &nData, &m_normalBuffer);
 		if (FAILED(hr)) return hr;
 
 		// Create the index buffer
@@ -127,6 +154,17 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void Renderable::calculateNormalMapVectors()
 	{
+		const auto indices = getIndices();
+		const auto numOfIndices = GetNumIndices();
+		const auto vertices = getVertices();
+
+		for (UINT i = 0u; i < numOfIndices / 3; i++)
+		{
+			XMFLOAT3 tangent = {};
+			XMFLOAT3 bitangent = {};
+			calculateTangentBitangent(vertices[indices[i]], vertices[indices[i + 1]], vertices[indices[i + 2]], tangent, bitangent);
+			m_aNormalData.push_back(NormalData{ .Tangent = tangent, .Bitangent = bitangent });
+		}
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

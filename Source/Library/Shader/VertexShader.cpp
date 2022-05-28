@@ -78,10 +78,28 @@ namespace library
 				0
 			},
 			{
+				"TANGENT",
+				0,
+				DXGI_FORMAT_R32G32B32_FLOAT,
+				1,
+				0,
+				D3D11_INPUT_PER_VERTEX_DATA,
+				1
+			},
+			{
+				"BITANGENT",
+				0,
+				DXGI_FORMAT_R32G32B32_FLOAT,
+				1,
+				D3D11_APPEND_ALIGNED_ELEMENT,
+				D3D11_INPUT_PER_VERTEX_DATA,
+				1
+			},
+			{
 				"INSTANCE_TRANSFORM",
 				0,
 				DXGI_FORMAT_R32G32B32A32_FLOAT,
-				1,
+				2,
 				0,
 				D3D11_INPUT_PER_INSTANCE_DATA,
 				1
@@ -90,7 +108,7 @@ namespace library
 				"INSTANCE_TRANSFORM",
 				1,
 				DXGI_FORMAT_R32G32B32A32_FLOAT,
-				1,
+				2,
 				D3D11_APPEND_ALIGNED_ELEMENT,
 				D3D11_INPUT_PER_INSTANCE_DATA,
 				1
@@ -99,7 +117,7 @@ namespace library
 				"INSTANCE_TRANSFORM",
 				2,
 				DXGI_FORMAT_R32G32B32A32_FLOAT,
-				1,
+				2,
 				D3D11_APPEND_ALIGNED_ELEMENT,
 				D3D11_INPUT_PER_INSTANCE_DATA,
 				1
@@ -108,13 +126,13 @@ namespace library
 				"INSTANCE_TRANSFORM",
 				3,
 				DXGI_FORMAT_R32G32B32A32_FLOAT,
-				1,
+				2,
 				D3D11_APPEND_ALIGNED_ELEMENT,
 				D3D11_INPUT_PER_INSTANCE_DATA,
 				1
 			},
 		};
-		UINT numElements = ARRAYSIZE(layout);
+		const UINT numElements = ARRAYSIZE(layout);
 
 		hr = pDevice->CreateInputLayout(layout, numElements, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_vertexLayout);
 		if (FAILED(hr)) return hr;
