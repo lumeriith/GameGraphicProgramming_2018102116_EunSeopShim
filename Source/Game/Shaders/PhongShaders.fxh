@@ -111,15 +111,25 @@ struct PS_LIGHT_CUBE_INPUT
 PS_PHONG_INPUT VSPhong(VS_PHONG_INPUT input)
 {
 	PS_PHONG_INPUT output = (PS_PHONG_INPUT)0;
+	
 	output.Pos = input.Position;
 	output.Pos = mul(output.Pos, World);
 	output.Pos = mul(output.Pos, View);
 	output.Pos = mul(output.Pos, Projection);
-	output.Tex = input.TexCoord;
-	output.Norm = normalize(mul(float4(input.Normal, 1), World).xyz);
-	output.WorldPos = mul(input.Position, World);
 
-	return output;
+    // output.Norm = normalize(mul(float4(input.Normal, 1), World).xyz);
+    output.Norm = normalize(input.Normal); // Already world space...
+    output.Tex = input.TexCoord;
+	
+	output.WorldPos = mul(input.Position, World);
+	
+    if (HasNormalMap)
+    {
+        output.Tangent = normalize(mul(float4(input.Tangent, 0), World).xyz);
+        output.Bitangent = normalize(mul(float4(input.Bitangent, 0), World).xyz);
+    }
+
+    return output;
 }
 
 PS_LIGHT_CUBE_INPUT VSLightCube(VS_PHONG_INPUT input)
@@ -142,6 +152,16 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
 	float3 toViewDir = normalize((CameraPosition - input.WorldPos).xyz);
 	float3 normal = normalize(input.Norm);
 	
+    if (HasNormalMap)
+    {
+        float4 bumpMap = aTextures[1].Sample(aSamplers[1], input.Tex);
+        
+        bumpMap = (bumpMap * 2.0f) - 1.0f;
+        
+        float3 bumpNormal = bumpMap.x * input.Tangent + bumpMap.y * input.Bitangent + bumpMap.z * normal;
+        normal = normalize(bumpNormal);
+    }
+	
 	float3 ambient = float3(0.1f, 0.1f, 0.1f);
 	float3 diffuse = float3(0, 0, 0);
 	float3 specular = float3(0, 0, 0);
@@ -154,9 +174,9 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
 		
 		float3 refDir = reflect(fromLightDir, normal);
 		specular += pow(max(dot(refDir, toViewDir), 0), 20) * LightColors[i].xyz;
-	}
+    }
 
-	return float4(saturate(ambient + diffuse + specular), 1) * aTextures[0].Sample(aSamplers[0], input.Tex);
+    return float4(ambient + diffuse + specular, 1) * aTextures[0].Sample(aSamplers[0], input.Tex);
 }
 
 float4 PSLightCube(PS_LIGHT_CUBE_INPUT input) : SV_Target

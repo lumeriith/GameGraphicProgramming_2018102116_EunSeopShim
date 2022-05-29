@@ -162,7 +162,7 @@ namespace library
 		{
 			XMFLOAT3 tangent = {};
 			XMFLOAT3 bitangent = {};
-			calculateTangentBitangent(vertices[indices[i]], vertices[indices[i + 1]], vertices[indices[i + 2]], tangent, bitangent);
+			calculateTangentBitangent(vertices[indices[i * 3]], vertices[indices[i * 3 + 1]], vertices[indices[i * 3 + 2]], tangent, bitangent);
 			m_aNormalData.push_back(NormalData{ .Tangent = tangent, .Bitangent = bitangent });
 		}
 	}

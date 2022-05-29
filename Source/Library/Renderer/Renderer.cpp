@@ -243,7 +243,7 @@ namespace library
 		// Set primitive topology
 		m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		// Create the constant buffers
+		// Projection Constant Buffer
 		D3D11_BUFFER_DESC bd =
 		{
 			.ByteWidth = sizeof(CBChangeOnResize),
@@ -257,7 +257,6 @@ namespace library
 			return hr;
 		}
 
-		// Initialize the projection matrix
 		m_projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, static_cast<FLOAT>(uWidth) / static_cast<FLOAT>(uHeight), 0.01f, 1000.0f);
 
 		CBChangeOnResize cbChangesOnResize =
@@ -265,7 +264,9 @@ namespace library
 			.Projection = XMMatrixTranspose(m_projection)
 		};
 		m_immediateContext->UpdateSubresource(m_cbChangeOnResize.Get(), 0, nullptr, &cbChangesOnResize, 0, 0);
+		m_immediateContext->VSSetConstantBuffers(1, 1, m_cbChangeOnResize.GetAddressOf());
 
+		// Light Constant Buffer
 		bd.ByteWidth = sizeof(CBLights);
 		bd.Usage = D3D11_USAGE_DEFAULT;
 		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -276,6 +277,11 @@ namespace library
 		{
 			return hr;
 		}
+
+		m_immediateContext->VSSetConstantBuffers(3, 1, m_cbLights.GetAddressOf());
+		m_immediateContext->PSSetConstantBuffers(3, 1, m_cbLights.GetAddressOf());
+
+		// Initialize
 
 		m_camera.Initialize(m_d3dDevice.Get());
 
@@ -682,7 +688,7 @@ namespace library
 			UINT stride2 = sizeof(AnimationData);
 			UINT offset2 = 0;
 			m_immediateContext->IASetVertexBuffers(
-				1,
+				2,
 				1,
 				model->GetAnimationBuffer().GetAddressOf(),
 				&stride2,

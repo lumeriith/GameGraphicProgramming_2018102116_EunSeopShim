@@ -103,14 +103,27 @@ struct PS_INPUT
 PS_INPUT VSVoxel(VS_INPUT input)
 {
     PS_INPUT output = (PS_INPUT) 0;
+    
     output.Position = input.Position;
     output.Position = mul(output.Position, input.Transform);
     output.Position = mul(output.Position, World);
-    output.WorldPos = output.Position;
     output.Position = mul(output.Position, View);
     output.Position = mul(output.Position, Projection);
+    
     output.Color = OutputColor;
     output.Norm = normalize(mul(float4(input.Normal, 1), World).xyz);
+    output.TexCoord = input.TexCoord;
+    
+    output.WorldPos = mul(input.Position, input.Transform);
+    output.WorldPos = mul(output.WorldPos, World);
+    
+    if (HasNormalMap)
+    {
+        // Already world space
+        output.Tangent = input.Tangent;
+        output.Bitangent = input.Bitangent;
+    }
+    
     return output;
 }
 
@@ -119,8 +132,21 @@ PS_INPUT VSVoxel(VS_INPUT input)
 //--------------------------------------------------------------------------------------
 float4 PSVoxel(PS_INPUT input) : SV_Target
 {
-    float3 toViewDir = normalize((CameraPosition - input.WorldPos).xyz);
+    float3 sampledAlbedo = aTextures[0].Sample(aSamplers[0], input.TexCoord);
     float3 normal = normalize(input.Norm);
+    
+    if (HasNormalMap)
+    {
+        float4 bumpMap = aTextures[1].Sample(aSamplers[1], input.TexCoord);
+        
+        bumpMap = (bumpMap * 2.0f) - 1.0f;
+        
+        float3 bumpNormal = bumpMap.x * input.Tangent + bumpMap.y * input.Bitangent + bumpMap.z * normal;
+        normal = normalize(bumpNormal);
+    }
+    
+    float3 toViewDir = normalize((CameraPosition - input.WorldPos).xyz);
+
 	
     float3 ambient = float3(0.1f, 0.1f, 0.1f);
     float3 diffuse = float3(0, 0, 0);
@@ -136,5 +162,5 @@ float4 PSVoxel(PS_INPUT input) : SV_Target
         specular += pow(max(dot(refDir, toViewDir), 0), 20) * LightColors[i].xyz;
     }
 
-    return float4(saturate(ambient + diffuse + specular) * input.Color, 1);
+    return float4((ambient + diffuse + specular) * sampledAlbedo, 1);
 }
