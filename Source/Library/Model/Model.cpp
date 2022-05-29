@@ -533,7 +533,7 @@ namespace library
 	{
 		HRESULT hr = S_OK;
 
-		m_aMeshes.resize(pScene->mNumMeshes);
+		m_aMeshes.reserve(pScene->mNumMeshes);
 
 		UINT uNumVertices = 0u;
 		UINT uNumIndices = 0u;
@@ -848,7 +848,7 @@ namespace library
 	)
 	{
 		HRESULT hr = S_OK;
-		m_aMaterials[uIndex].pDiffuse = nullptr;
+		m_aMaterials[uIndex]->pDiffuse = nullptr;
 
 		if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0)
 		{
@@ -865,9 +865,9 @@ namespace library
 
 				std::filesystem::path fullPath = parentDirectory / szPath;
 
-				m_aMaterials[uIndex].pDiffuse = std::make_shared<Texture>(fullPath);
+				m_aMaterials[uIndex]->pDiffuse = std::make_shared<Texture>(fullPath);
 
-				hr = m_aMaterials[uIndex].pDiffuse->Initialize(pDevice, pImmediateContext);
+				hr = m_aMaterials[uIndex]->pDiffuse->Initialize(pDevice, pImmediateContext);
 				if (FAILED(hr))
 				{
 					OutputDebugString(L"Error loading diffuse texture \"");
@@ -911,7 +911,7 @@ namespace library
 	)
 	{
 		HRESULT hr = S_OK;
-		m_aMaterials[uIndex].pSpecular = nullptr;
+		m_aMaterials[uIndex]->pSpecularExponent = nullptr;
 
 		if (pMaterial->GetTextureCount(aiTextureType_SHININESS) > 0)
 		{
@@ -928,9 +928,9 @@ namespace library
 
 				std::filesystem::path fullPath = parentDirectory / szPath;
 
-				m_aMaterials[uIndex].pSpecular = std::make_shared<Texture>(fullPath);
+				m_aMaterials[uIndex]->pSpecularExponent = std::make_shared<Texture>(fullPath);
 
-				hr = m_aMaterials[uIndex].pSpecular->Initialize(pDevice, pImmediateContext);
+				hr = m_aMaterials[uIndex]->pSpecularExponent->Initialize(pDevice, pImmediateContext);
 				if (FAILED(hr))
 				{
 					OutputDebugString(L"Error loading specular texture \"");

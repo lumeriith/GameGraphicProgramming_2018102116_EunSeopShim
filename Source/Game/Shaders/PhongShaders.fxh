@@ -156,7 +156,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
 		specular += pow(max(dot(refDir, toViewDir), 0), 20) * LightColors[i].xyz;
 	}
 
-	return float4(saturate(ambient + diffuse + specular), 1) * txDiffuse.Sample(samLinear, input.Tex);
+	return float4(saturate(ambient + diffuse + specular), 1) * aTextures[0].Sample(aSamplers[0], input.Tex);
 }
 
 float4 PSLightCube(PS_LIGHT_CUBE_INPUT input) : SV_Target

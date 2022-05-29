@@ -1,6 +1,8 @@
 #include "Renderer/Renderer.h"
 
-namespace library {
+namespace library
+{
+
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::Renderer
 
@@ -32,6 +34,7 @@ namespace library {
 		, m_invalidTexture(std::make_shared<Texture>(L"Content/Common/InvalidTexture.png"))
 	{
 	}
+
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::Initialize
@@ -161,7 +164,8 @@ namespace library {
 				.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
 				.BufferCount = 1u,
 				.OutputWindow = hWnd,
-				.Windowed = TRUE
+				.Windowed = TRUE,
+				.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL
 			};
 
 			hr = dxgiFactory->CreateSwapChain(m_d3dDevice.Get(), &sd, m_swapChain.GetAddressOf());
@@ -295,123 +299,6 @@ namespace library {
 		return S_OK;
 	}
 
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::AddRenderable
-
-	  Summary:  Add a renderable object
-
-	  Args:     PCWSTR pszRenderableName
-				  Key of the renderable object
-				const std::shared_ptr<Renderable>& renderable
-				  Shared pointer to the renderable object
-
-	  Modifies: [m_renderables].
-
-	  Returns:  HRESULT
-				  Status code.
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::AddRenderable(_In_ PCWSTR pszRenderableName, _In_ const std::shared_ptr<Renderable>& renderable)
-	{
-		if (m_renderables.contains(pszRenderableName)) return E_FAIL;
-		m_renderables.insert({ pszRenderableName, renderable });
-
-		return S_OK;
-	}
-
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::AddModel
-
-	  Summary:  Add a model object
-
-	  Args:     PCWSTR pszModelName
-				  Key of the model object
-				const std::shared_ptr<Model>& pModel
-				  Shared pointer to the model object
-
-	  Modifies: [m_models].
-
-	  Returns:  HRESULT
-				  Status code.
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::AddModel(_In_ PCWSTR pszModelName, _In_ const std::shared_ptr<Model>& pModel)
-	{
-		if (m_models.contains(pszModelName)) return E_FAIL;
-		m_models.insert({ pszModelName, pModel });
-
-		return S_OK;
-	}
-
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::AddPointLight
-
-	  Summary:  Add a point light
-
-	  Args:     size_t index
-				  Index of the point light
-				const std::shared_ptr<PointLight>& pointLight
-				  Shared pointer to the point light object
-
-	  Modifies: [m_aPointLights].
-
-	  Returns:  HRESULT
-				  Status code.
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::AddPointLight(_In_ size_t index, _In_ const std::shared_ptr<PointLight>& pPointLight)
-	{
-		if (index >= NUM_LIGHTS || !pPointLight)
-		{
-			return E_FAIL;
-		}
-
-		m_aPointLights[index] = pPointLight;
-		return S_OK;
-	}
-
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::AddVertexShader
-
-	  Summary:  Add the vertex shader into the renderer
-
-	  Args:     PCWSTR pszVertexShaderName
-				  Key of the vertex shader
-				const std::shared_ptr<VertexShader>&
-				  Vertex shader to add
-
-	  Modifies: [m_vertexShaders].
-
-	  Returns:  HRESULT
-				  Status code
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::AddVertexShader(_In_ PCWSTR pszVertexShaderName, _In_ const std::shared_ptr<VertexShader>& vertexShader)
-	{
-		if (m_vertexShaders.contains(pszVertexShaderName)) return E_FAIL;
-		m_vertexShaders.insert({ pszVertexShaderName, vertexShader });
-
-		return S_OK;
-	}
-
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::AddPixelShader
-
-	  Summary:  Add the pixel shader into the renderer
-
-	  Args:     PCWSTR pszPixelShaderName
-				  Key of the pixel shader
-				const std::shared_ptr<PixelShader>&
-				  Pixel shader to add
-
-	  Modifies: [m_pixelShaders].
-
-	  Returns:  HRESULT
-				  Status code
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::AddPixelShader(_In_ PCWSTR pszPixelShaderName, _In_ const std::shared_ptr<PixelShader>& pixelShader)
-	{
-		if (m_pixelShaders.contains(pszPixelShaderName)) return E_FAIL;
-		m_pixelShaders.insert({ pszPixelShaderName, pixelShader });
-
-		return S_OK;
-	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::AddScene
@@ -440,6 +327,7 @@ namespace library {
 		return S_OK;
 	}
 
+
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::GetSceneOrNull
 
@@ -460,6 +348,7 @@ namespace library {
 
 		return nullptr;
 	}
+
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::SetMainScene
@@ -486,6 +375,7 @@ namespace library {
 		return S_OK;
 	}
 
+
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::HandleInput
 
@@ -500,35 +390,22 @@ namespace library {
 		m_camera.HandleInput(directions, mouseRelativeMovement, deltaTime);
 	}
 
+
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::Update
 
-	  Summary:  Update the renderables and models each frame
+	  Summary:  Update the renderables each frame
 
 	  Args:     FLOAT deltaTime
 				  Time difference of a frame
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void Renderer::Update(_In_ FLOAT deltaTime)
 	{
-		for (const auto& renderable : m_renderables)
-		{
-			renderable.second->Update(deltaTime);
-		}
-
-		for (const auto& model : m_models)
-		{
-			model.second->Update(deltaTime);
-		}
-
-		for (const auto& light : m_aPointLights)
-		{
-			light->Update(deltaTime);
-		}
-
 		m_scenes[m_pszMainSceneName]->Update(deltaTime);
 
 		m_camera.Update(deltaTime);
 	}
+
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::Render
@@ -563,14 +440,17 @@ namespace library {
 		m_immediateContext->VSSetConstantBuffers(0, 1, m_camera.GetConstantBuffer().GetAddressOf());
 		m_immediateContext->PSSetConstantBuffers(0, 1, m_camera.GetConstantBuffer().GetAddressOf());
 
+		const auto& mainScene = m_scenes[m_pszMainSceneName];
+
 		// Create light constant buffer and update
 		CBLights cbLights = { };
 
 		for (int i = 0; i < NUM_LIGHTS; i++)
 		{
-			if (!m_aPointLights[i]) continue;
-			cbLights.LightPositions[i] = m_aPointLights[i]->GetPosition();
-			cbLights.LightColors[i] = m_aPointLights[i]->GetColor();
+			const auto light = mainScene->GetPointLight(i);
+			if (!light) continue;
+			cbLights.LightPositions[i] = light->GetPosition();
+			cbLights.LightColors[i] = light->GetColor();
 		}
 
 		m_immediateContext->UpdateSubresource(
@@ -585,9 +465,9 @@ namespace library {
 		m_immediateContext->PSSetConstantBuffers(3, 1, m_cbLights.GetAddressOf());
 
 		// For each renderables
-		for (auto& pair : m_renderables)
+		for (const auto& pair : mainScene->GetRenderables())
 		{
-			auto& renderable = pair.second;
+			const auto& renderable = pair.second;
 
 			// Set the vertex buffer
 			UINT stride = sizeof(SimpleVertex);
@@ -599,6 +479,18 @@ namespace library {
 				renderable->GetVertexBuffer().GetAddressOf(),	// the array of vertex buffers
 				&stride,										// array of stride values, one for each buffer
 				&offset
+			);
+
+			// Set the normal buffer
+			UINT norStride = sizeof(NormalData);
+			UINT norOffset = 0;
+
+			m_immediateContext->IASetVertexBuffers(
+				1, // second slot
+				1,
+				renderable->GetNormalBuffer().GetAddressOf(),
+				&norStride,
+				&norOffset
 			);
 
 			// Set the index buffer
@@ -639,19 +531,25 @@ namespace library {
 				if (renderable->HasTexture())
 				{
 					const auto& material = renderable->GetMaterial(mesh.uMaterialIndex);
+
 					const auto& diffuseView = material->pDiffuse->GetTextureResourceView();
 					const auto& diffuseSampler = material->pDiffuse->GetSamplerState();
 
+					const auto& normalView = material->pNormal->GetTextureResourceView();
+					const auto& normalSampler = material->pNormal->GetSamplerState();
+
 					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
 					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
+
+					m_immediateContext->PSSetShaderResources(1, 1, normalView.GetAddressOf());
+					m_immediateContext->PSSetSamplers(1, 1, normalSampler.GetAddressOf());
 				}
 
 				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, static_cast<INT>(mesh.uBaseVertex));
 			}
 		}
 
-		auto& voxels = m_scenes[m_pszMainSceneName]->GetVoxels();
-		for (auto& vox : voxels)
+		for (auto& vox : mainScene->GetVoxels())
 		{
 			// Set the vertex buffer
 			UINT vtxStride = sizeof(SimpleVertex);
@@ -719,53 +617,76 @@ namespace library {
 			m_immediateContext->VSSetConstantBuffers(2, 1, vox->GetConstantBuffer().GetAddressOf());
 			m_immediateContext->PSSetConstantBuffers(2, 1, vox->GetConstantBuffer().GetAddressOf());
 
-			m_immediateContext->DrawIndexedInstanced(
-				vox->GetNumIndices(),
-				vox->GetNumInstances(),
-				0,
-				0,
-				0
-			);
+
+			const UINT numOfMesh = vox->GetNumMeshes();
+			for (UINT i = 0; i < numOfMesh; i++)
+			{
+				const auto& mesh = vox->GetMesh(i);
+
+				if (vox->HasTexture())
+				{
+					const auto& material = vox->GetMaterial(mesh.uMaterialIndex);
+
+					const auto& diffuseView = material->pDiffuse->GetTextureResourceView();
+					const auto& diffuseSampler = material->pDiffuse->GetSamplerState();
+
+					const auto& normalView = material->pNormal->GetTextureResourceView();
+					const auto& normalSampler = material->pNormal->GetSamplerState();
+
+					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
+					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
+
+					m_immediateContext->PSSetShaderResources(1, 1, normalView.GetAddressOf());
+					m_immediateContext->PSSetSamplers(1, 1, normalSampler.GetAddressOf());
+				}
+
+				m_immediateContext->DrawIndexedInstanced(
+					mesh.uNumIndices,
+					vox->GetNumInstances(),
+					mesh.uBaseIndex,
+					mesh.uBaseVertex,
+					0
+				);
+			}
 		}
 
-		// For each models
-		for (auto& pair : m_models)
+		for (auto& pair : mainScene->GetModels())
 		{
 			auto& model = pair.second;
 
 			// Set the vertex buffer
 
 			// First slot
-			UINT vtxStride = sizeof(SimpleVertex);
-			UINT vtxOffset = 0;
+			UINT stride0 = sizeof(SimpleVertex);
+			UINT offset0 = 0;
 			m_immediateContext->IASetVertexBuffers(
 				0,
 				1,
 				model->GetVertexBuffer().GetAddressOf(),
-				&vtxStride,
-				&vtxOffset
+				&stride0,
+				&offset0
 			);
 
 			// Second slot
-			UINT norStride = sizeof(NormalData);
-			UINT norOffset = 0;
+			UINT stride1 = sizeof(NormalData);
+			UINT offset1 = 0;
 			m_immediateContext->IASetVertexBuffers(
 				1,
 				1,
 				model->GetNormalBuffer().GetAddressOf(),
-				&norStride,
-				&norOffset
+				&stride1,
+				&offset1
 			);
 
 			// Third slot
-			UINT animStride = sizeof(AnimationData);
-			UINT animOffset = 0;
+			UINT stride2 = sizeof(AnimationData);
+			UINT offset2 = 0;
 			m_immediateContext->IASetVertexBuffers(
-				2,
+				1,
 				1,
 				model->GetAnimationBuffer().GetAddressOf(),
-				&animStride,
-				&animOffset
+				&stride2,
+				&offset2
 			);
 
 			// Set the index buffer
@@ -825,16 +746,24 @@ namespace library {
 				if (model->HasTexture())
 				{
 					const auto& material = model->GetMaterial(mesh.uMaterialIndex);
+
 					const auto& diffuseView = material->pDiffuse->GetTextureResourceView();
 					const auto& diffuseSampler = material->pDiffuse->GetSamplerState();
 
+					const auto& normalView = material->pNormal->GetTextureResourceView();
+					const auto& normalSampler = material->pNormal->GetSamplerState();
+
 					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
 					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
+
+					m_immediateContext->PSSetShaderResources(1, 1, normalView.GetAddressOf());
+					m_immediateContext->PSSetSamplers(1, 1, normalSampler.GetAddressOf());
 				}
 
 				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, static_cast<INT>(mesh.uBaseVertex));
 			}
 		}
+
 
 		// Present
 		m_swapChain->Present(0, 0);
@@ -843,173 +772,6 @@ namespace library {
 		m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 	}
 
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::SetVertexShaderOfRenderable
-
-	  Summary:  Sets the vertex shader for a renderable
-
-	  Args:     PCWSTR pszRenderableName
-				  Key of the renderable
-				PCWSTR pszVertexShaderName
-				  Key of the vertex shader
-
-	  Modifies: [m_renderables].
-
-	  Returns:  HRESULT
-				  Status code
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::SetVertexShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszVertexShaderName)
-	{
-		if (!m_renderables.contains(pszRenderableName) || !m_vertexShaders.contains(pszVertexShaderName))
-		{
-			return E_INVALIDARG;
-		}
-		const auto& vs = m_vertexShaders[pszVertexShaderName];
-		m_renderables[pszRenderableName]->SetVertexShader(vs);
-		return S_OK;
-	}
-
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::SetPixelShaderOfRenderable
-
-	  Summary:  Sets the pixel shader for a renderable
-
-	  Args:     PCWSTR pszRenderableName
-				  Key of the renderable
-				PCWSTR pszPixelShaderName
-				  Key of the pixel shader
-
-	  Modifies: [m_renderables].
-
-	  Returns:  HRESULT
-				  Status code
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::SetPixelShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszPixelShaderName)
-	{
-		if (!m_renderables.contains(pszRenderableName) || !m_pixelShaders.contains(pszPixelShaderName))
-		{
-			return E_INVALIDARG;
-		}
-		const auto& ps = m_pixelShaders[pszPixelShaderName];
-		m_renderables[pszRenderableName]->SetPixelShader(ps);
-		return S_OK;
-	}
-
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::SetVertexShaderOfModel
-
-	  Summary:  Sets the pixel shader for a model
-
-	  Args:     PCWSTR pszModelName
-				  Key of the model
-				PCWSTR pszVertexShaderName
-				  Key of the vertex shader
-
-	  Modifies: [m_renderables].
-
-	  Returns:  HRESULT
-				  Status code
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::SetVertexShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszVertexShaderName)
-	{
-		if (!m_models.contains(pszModelName) || !m_vertexShaders.contains(pszVertexShaderName))
-		{
-			return E_INVALIDARG;
-		}
-		const auto& vs = m_vertexShaders[pszVertexShaderName];
-		m_models[pszModelName]->SetVertexShader(vs);
-		return S_OK;
-	}
-
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::SetPixelShaderOfModel
-
-	  Summary:  Sets the pixel shader for a model
-
-	  Args:     PCWSTR pszModelName
-				  Key of the model
-				PCWSTR pszPixelShaderName
-				  Key of the pixel shader
-
-	  Modifies: [m_renderables].
-
-	  Returns:  HRESULT
-				  Status code
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::SetPixelShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszPixelShaderName)
-	{
-		if (!m_models.contains(pszModelName) || !m_pixelShaders.contains(pszPixelShaderName))
-		{
-			return E_INVALIDARG;
-		}
-		const auto& ps = m_pixelShaders[pszPixelShaderName];
-		m_models[pszModelName]->SetPixelShader(ps);
-		return S_OK;
-	}
-
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::SetVertexShaderOfScene
-
-	  Summary:  Sets the vertex shader for the voxels in a scene
-
-	  Args:     PCWSTR pszSceneName
-				  Key of the scene
-				PCWSTR pszVertexShaderName
-				  Key of the vertex shader
-
-	  Modifies: [m_scenes].
-
-	  Returns:  HRESULT
-				  Status code
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::SetVertexShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszVertexShaderName)
-	{
-		if (!m_scenes.contains(pszSceneName) || !m_vertexShaders.contains(pszVertexShaderName))
-		{
-			return E_INVALIDARG;
-		}
-		const auto& vs = m_vertexShaders[pszVertexShaderName];
-		const auto& voxels = m_scenes[pszSceneName]->GetVoxels();
-
-		for (const auto& vox : voxels)
-		{
-			vox->SetVertexShader(vs);
-		}
-
-		return S_OK;
-	}
-
-	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::SetPixelShaderOfScene
-
-	  Summary:  Sets the pixel shader for the voxels in a scene
-
-	  Args:     PCWSTR pszRenderableName
-				  Key of the renderable
-				PCWSTR pszPixelShaderName
-				  Key of the pixel shader
-
-	  Modifies: [m_renderables].
-
-	  Returns:  HRESULT
-				  Status code
-	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Renderer::SetPixelShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszPixelShaderName)
-	{
-		if (!m_scenes.contains(pszSceneName) || !m_pixelShaders.contains(pszPixelShaderName))
-		{
-			return E_INVALIDARG;
-		}
-		const auto& ps = m_pixelShaders[pszPixelShaderName];
-		const auto& voxels = m_scenes[pszSceneName]->GetVoxels();
-
-		for (const auto& vox : voxels)
-		{
-			vox->SetPixelShader(ps);
-		}
-
-		return S_OK;
-	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Renderer::GetDriverType
@@ -1024,10 +786,3 @@ namespace library {
 		return m_driverType;
 	}
 }
-
-
-
-
-
-
-

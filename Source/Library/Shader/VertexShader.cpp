@@ -84,7 +84,7 @@ namespace library
 				1,
 				0,
 				D3D11_INPUT_PER_VERTEX_DATA,
-				1
+				0
 			},
 			{
 				"BITANGENT",
@@ -93,7 +93,7 @@ namespace library
 				1,
 				D3D11_APPEND_ALIGNED_ELEMENT,
 				D3D11_INPUT_PER_VERTEX_DATA,
-				1
+				0
 			},
 			{
 				"INSTANCE_TRANSFORM",
