@@ -4,10 +4,10 @@ namespace library
 {
 	Material::Material(_In_ std::wstring szName)
 		: m_padding{ '\0', }
+		, m_szName(szName)
 		, pDiffuse()
 		, pSpecularExponent()
 		, pNormal()
-		, m_szName(szName)
 	{
 	}
 

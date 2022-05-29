@@ -451,7 +451,7 @@ namespace library
 		// Create light constant buffer and update
 		CBLights cbLights = { };
 
-		for (int i = 0; i < NUM_LIGHTS; i++)
+		for (UINT i = 0u; i < NUM_LIGHTS; i++)
 		{
 			const auto light = mainScene->GetPointLight(i);
 			if (!light) continue;
@@ -650,7 +650,7 @@ namespace library
 					mesh.uNumIndices,
 					vox->GetNumInstances(),
 					mesh.uBaseIndex,
-					mesh.uBaseVertex,
+					static_cast<INT>(mesh.uBaseVertex),
 					0
 				);
 			}

@@ -202,7 +202,7 @@ namespace library
 				return hr;
 			}
 
-			for (int i = 0; i < it->second->GetNumMaterials(); ++i)
+			for (UINT i = 0u; i < it->second->GetNumMaterials(); ++i)
 			{
 				AddMaterial(it->second->GetMaterial(i));
 			}

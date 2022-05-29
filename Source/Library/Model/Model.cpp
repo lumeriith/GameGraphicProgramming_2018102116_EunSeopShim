@@ -967,6 +967,9 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Model::loadNormalTexture(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext, _In_ const std::filesystem::path& parentDirectory, _In_ const aiMaterial* pMaterial, _In_ UINT uIndex)
 	{
+		UNREFERENCED_PARAMETER(pDevice);
+		UNREFERENCED_PARAMETER(pImmediateContext);
+
 		HRESULT hr = S_OK;
 		m_aMaterials[uIndex]->pNormal = nullptr;
 
