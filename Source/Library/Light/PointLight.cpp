@@ -9,17 +9,43 @@ namespace library
 
 	  Summary:  Constructor
 
-	  Args:     const XMFLOAT4& position
-				  Position of the light
-				const XMFLOAT4& color
-				  Position of the color
-
-	  Modifies: [m_position, m_color].
+	  Modifies: [m_position, m_color, m_eye, m_at,
+				 m_up, m_view, m_projection].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	PointLight::PointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color) :
 		m_position(position),
-		m_color(color)
-	{ }
+		m_color(color),
+		m_eye(),
+		m_at(),
+		m_up(),
+		m_view(),
+		m_projection()
+	{
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   PointLight::GetViewMatrix
+
+	  Summary:  Return the view matrix
+
+	  Returns:  XMMATRIX
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	const XMMATRIX& PointLight::GetViewMatrix() const
+	{
+		return m_view;
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   PointLight::GetProjectionMatrix
+
+	  Summary:  Return the projection matrix
+
+	  Returns:  XMMATRIX
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	const XMMATRIX& PointLight::GetProjectionMatrix() const
+	{
+		return m_projection;
+	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   PointLight::GetPosition
@@ -45,6 +71,21 @@ namespace library
 	const XMFLOAT4& PointLight::GetColor() const
 	{
 		return m_color;
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   PointLight::Initialize
+
+	  Summary:  Initialize the projection matrix
+
+	  Args:     UINT uWidth
+				UINT uHeight
+
+	  Modifies: [m_projection]
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	void PointLight::Initialize(_In_ UINT uWidth, _In_ UINT uHeight)
+	{
+		// TODO
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

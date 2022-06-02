@@ -4,7 +4,9 @@
 // Copyright (c) Kyung Hee University.
 //--------------------------------------------------------------------------------------
 
-#define NUM_LIGHTS (2)
+#define NUM_LIGHTS (1)
+#define NEAR_PLANE (0.01f)
+#define FAR_PLANE (1000.0f)
 
 //--------------------------------------------------------------------------------------
 // Global Variables
@@ -14,6 +16,9 @@
 --------------------------------------------------------------------*/
 Texture2D aTextures[2] : register( t0 );
 SamplerState aSamplers[2] : register( s0 );
+
+Texture2D shadowMapTexture : register(t2);
+SamplerState shadowMapSampler : register(s2);
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
@@ -56,10 +61,12 @@ cbuffer cbChangesEveryFrame : register( b2 )
 
   Summary:  Constant buffer used for shading
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-cbuffer cbLights : register( b3 )
+cbuffer cbLights : register(b3)
 {
-	float4 LightPositions[NUM_LIGHTS];
-	float4 LightColors[NUM_LIGHTS];
+    float4 LightPositions[NUM_LIGHTS];
+    float4 LightColors[NUM_LIGHTS];
+    matrix LightViews[NUM_LIGHTS];
+    matrix LightProjections[NUM_LIGHTS];
 };
 
 //--------------------------------------------------------------------------------------
@@ -86,12 +93,13 @@ struct VS_PHONG_INPUT
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct PS_PHONG_INPUT
 {
-	float4 Pos : SV_POSITION;
-	float2 Tex : TEXCOORD;
-	float3 Norm : NORMAL;
-	float4 WorldPos : POSITION;
+    float4 Position : SV_POSITION;
+    float2 TexCoord : TEXCOORD0;
+    float3 Normal : NORMAL;
+    float3 WorldPosition : WORLDPOS;
     float3 Tangent : TANGENT;
     float3 Bitangent : BITANGENT;
+    float4 LightViewPosition : TEXCOORD1;
 };
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
@@ -143,6 +151,11 @@ PS_LIGHT_CUBE_INPUT VSLightCube(VS_PHONG_INPUT input)
 	return output;
 }
 
+float LinearizeDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0;
+    return ((2.0 * NEAR_PLANE * FAR_PLANE) / (FAR_PLANE + NEAR_PLANE - z * (FAR_PLANE - NEAR_PLANE))) / FAR_PLANE;
+}
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
