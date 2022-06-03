@@ -19,7 +19,8 @@ namespace library
 		m_at(),
 		m_up(DEFAULT_UP),
 		m_view(),
-		m_projection()
+		m_projection(),
+		m_attenuationDistance()
 	{
 	}
 
@@ -71,6 +72,19 @@ namespace library
 	const XMFLOAT4& PointLight::GetColor() const
 	{
 		return m_color;
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   PointLight::GetAttenuationDistance
+
+	  Summary:  Returns the attenuation distance
+
+	  Returns:  FLOAT
+				  Attenuation distance
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	FLOAT PointLight::GetAttenuationDistance() const
+	{
+		return m_attenuationDistance;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

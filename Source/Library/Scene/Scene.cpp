@@ -156,6 +156,20 @@ namespace library
 		}
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::Initialize
+
+	  Summary:  Initializes the voxels, shaders, renderables, models,
+				and skybox
+
+	  Args:     ID3D11Device* pDevice
+				  The Direct3D device to create the buffers
+				ID3D11DeviceContext* pImmediateContext
+				  The Direct3D context to set buffers
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	/*--------------------------------------------------------------------
+	  TODO: Scene::Initialize definition (remove the comment)
+	--------------------------------------------------------------------*/
 	HRESULT Scene::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
 	{
 		for (auto voxel : m_voxels)
@@ -221,16 +235,14 @@ namespace library
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Scene::AddRenderable
+	  Method:   Scene::AddVoxel
 
-	  Summary:  Add a renderable object and initialize the object
+	  Summary:  Add a voxel object
 
-	  Args:     PCWSTR pszRenderableName
-				  Key of the renderable object
-				std::shared_ptr<Voxel>&& pRenderable
-				  Unique pointer to the renderable object
+	  Args:     const std::shared_ptr<Voxel>& voxel
+				  Shared pointer to the voxel object
 
-	  Modifies: [m_renderables].
+	  Modifies: [m_voxels].
 
 	  Returns:  HRESULT
 				  Status code.
@@ -269,6 +281,21 @@ namespace library
 		return S_OK;
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::AddModel
+
+	  Summary:  Add a model object
+
+	  Args:     PCWSTR pszModelName
+				  Key of the renderable object
+				const std::shared_ptr<Model>& model
+				  Shared pointer to the model object
+
+	  Modifies: [m_models].
+
+	  Returns:  HRESULT
+				  Status code.
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Scene::AddModel(_In_ PCWSTR pszModelName, _In_ const std::shared_ptr<Model>& pModel)
 	{
 		if (m_models.contains(pszModelName))
@@ -281,6 +308,21 @@ namespace library
 		return S_OK;
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::AddPointLight
+
+	  Summary:  Add a point light object
+
+	  Args:     size_t index
+				  Index of the point light
+				const std::shared_ptr<PointLight>& pointLight
+				  Shared pointer to the point light object
+
+	  Modifies: [m_aPointLights].
+
+	  Returns:  HRESULT
+				  Status code.
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Scene::AddPointLight(_In_ size_t index, _In_ const std::shared_ptr<PointLight>& pPointLight)
 	{
 		HRESULT hr = S_OK;
@@ -349,6 +391,27 @@ namespace library
 		return S_OK;
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::AddSkyBox
+
+	  Summary:  Add the skybox
+
+	  Args:     const std::shared_ptr<Skybox>&
+				  Skybox to use
+
+	  Modifies: [m_skyBox].
+
+	  Returns:  HRESULT
+				  Status code
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	HRESULT Scene::AddSkyBox(_In_ const std::shared_ptr<Skybox>& skybox)
+	{
+		// todo check what?
+		m_skyBox = skybox;
+
+		return S_OK;
+	}
+
 	HRESULT Scene::AddMaterial(_In_ const std::shared_ptr<Material>& material)
 	{
 		if (m_materials.contains(material->GetName()))
@@ -362,9 +425,10 @@ namespace library
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-	  Method:   Renderer::Update
+	  Method:   Scene::Update
 
-	  Summary:  Update the renderables each frame
+	  Summary:  Update the renderables, models, point lights, skybox
+				each frame
 
 	  Args:     FLOAT deltaTime
 				  Time difference of a frame
@@ -385,23 +449,61 @@ namespace library
 		{
 			m_aPointLights[lightIdx]->Update(deltaTime);
 		}
+
+		if (m_skyBox)
+			m_skyBox->Update(deltaTime);
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::GetVoxels
+
+	  Summary:  Returns the vector of voxels
+
+	  Returns:  std::vector<std::shared_ptr<Voxel>>&
+				  Voxels
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	std::vector<std::shared_ptr<Voxel>>& Scene::GetVoxels()
 	{
 		return m_voxels;
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::GetRenderables
+
+	  Summary:  Returns the vector of renderables
+
+	  Returns:  std::unordered_map<std::wstring, std::shared_ptr<Renderable>>&
+				  Renderables
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	std::unordered_map<std::wstring, std::shared_ptr<Renderable>>& Scene::GetRenderables()
 	{
 		return m_renderables;
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::GetModels
+
+	  Summary:  Returns the vector of models
+
+	  Returns:  std::unordered_map<std::wstring, std::shared_ptr<Model>>&
+				  Models
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	std::unordered_map<std::wstring, std::shared_ptr<Model>>& Scene::GetModels()
 	{
 		return m_models;
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::GetPointLight
+
+	  Summary:  Returns a point light according to the given index
+
+	  Args:     size_t index
+				  Index of the point light
+
+	  Returns:  std::shared_ptr<PointLight>&
+				  Point light
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	std::shared_ptr<PointLight>& Scene::GetPointLight(_In_ size_t index)
 	{
 		assert(index < NUM_LIGHTS);
@@ -409,11 +511,27 @@ namespace library
 		return m_aPointLights[index];
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::GetVertexShaders
+
+	  Summary:  Returns a hash map of vertex shaders
+
+	  Returns:  std::unordered_map<std::wstring, std::shared_ptr<VertexShader>>&
+				  Vertex shaders
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	std::unordered_map<std::wstring, std::shared_ptr<VertexShader>>& Scene::GetVertexShaders()
 	{
 		return m_vertexShaders;
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::GetPixelShaders
+
+	  Summary:  Returns a hash map of pixel shaders
+
+	  Returns:  std::unordered_map<std::wstring, std::shared_ptr<PixelShader>>&
+				  Pixel shaders
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	std::unordered_map<std::wstring, std::shared_ptr<PixelShader>>& Scene::GetPixelShaders()
 	{
 		return m_pixelShaders;
@@ -424,11 +542,40 @@ namespace library
 		return m_materials;
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::GetSkyBox
+
+	  Summary:  Returns a sky box
+
+	  Returns:  std::shared_ptr<Skybox>&
+				  Sky box
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+	std::shared_ptr<Skybox>& Scene::GetSkyBox()
+	{
+		return m_skyBox;
+	}
+
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::GetFilePath
+
+	  Summary:  Returns the file path to the height map
+
+	  Returns:  const std::filesystem::path&
+				  File path to the height map
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	const std::filesystem::path& Scene::GetFilePath() const
 	{
 		return m_filePath;
 	}
 
+	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+	  Method:   Scene::GetFileName
+
+	  Summary:  Returns the file name of the height map
+
+	  Returns:  PCWSTR
+				  File name of the height map
+	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	PCWSTR Scene::GetFileName() const
 	{
 		return m_filePath.c_str();
