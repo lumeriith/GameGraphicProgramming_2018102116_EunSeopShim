@@ -37,6 +37,8 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT RenderTexture::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
 	{
+		UNREFERENCED_PARAMETER(pImmediateContext);
+
 		HRESULT hr;
 
 		D3D11_TEXTURE2D_DESC texDesc = {
