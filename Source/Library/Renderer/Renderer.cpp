@@ -846,6 +846,18 @@ namespace library
 		// Unbind shadow texture so fake render can write to it
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		m_immediateContext->PSSetShaderResources(2, 1, nullSRV);
+
+
+		// Unbind vertex slots so RenderSceneToTexture doesn't complain
+		ID3D11Buffer* nullVB[3] = { nullptr, nullptr, nullptr };
+		UINT zero = 0;
+		m_immediateContext->IASetVertexBuffers(
+			0,
+			3,
+			nullVB,
+			&zero,
+			&zero
+		);
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
