@@ -842,6 +842,10 @@ namespace library
 
 		// Set Render Target View again (Present call for DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL unbinds backbuffer 0)
 		m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
+
+		// Unbind shadow texture so fake render can write to it
+		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+		m_immediateContext->PSSetShaderResources(2, 1, nullSRV);
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -936,7 +940,7 @@ namespace library
 			m_immediateContext->IASetIndexBuffer(model->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0);
 
 			// Set the input layout
-			m_immediateContext->IASetInputLayout(model->GetVertexLayout().Get());
+			m_immediateContext->IASetInputLayout(m_shadowVertexShader->GetVertexLayout().Get());
 
 			// Shadow constant buffer
 			CBShadowMatrix cbShadow = {
