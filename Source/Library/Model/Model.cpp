@@ -669,7 +669,8 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void Model::initSingleMesh(_In_ UINT uMeshIndex, _In_ const aiMesh* pMesh)
 	{
-		XMFLOAT2 zeroVec(0.0f, 0.0f);
+		XMFLOAT2 zeroVec2(0.0f, 0.0f);
+		XMFLOAT3 zeroVec3(0.0f, 0.0f, 0.0f);
 
 		BasicMeshEntry newEntry;
 		newEntry.uNumIndices = 0;
@@ -686,7 +687,7 @@ namespace library
 
 			SimpleVertex vertex = {
 				.Position = XMFLOAT3(pos.x, pos.y, pos.z),
-				.TexCoord = zeroVec,
+				.TexCoord = zeroVec2,
 				.Normal = XMFLOAT3(norm.x, norm.y, norm.z),
 			};
 
@@ -697,6 +698,22 @@ namespace library
 			}
 
 			m_aVertices.push_back(vertex);
+
+			NormalData normalData =
+			{
+				.Tangent = zeroVec3,
+				.Bitangent = zeroVec3
+			};
+
+			if (pMesh->HasTangentsAndBitangents())
+			{
+				const auto& t = pMesh->mTangents[i];
+				const auto& b = pMesh->mBitangents[i];
+				normalData.Tangent = XMFLOAT3(t.x, t.y, t.z);
+				normalData.Bitangent = XMFLOAT3(b.x, b.y, b.z);
+			}
+
+			m_aNormalData.push_back(normalData);
 		}
 
 		// Push back indices of faces to the indices vector

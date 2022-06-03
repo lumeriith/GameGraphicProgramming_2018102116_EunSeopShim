@@ -152,16 +152,31 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void Renderable::calculateNormalMapVectors()
 	{
-		const auto indices = getIndices();
-		const auto numOfIndices = GetNumIndices();
-		const auto vertices = getVertices();
+		UINT uNumFaces = GetNumIndices() / 3u;
+		const SimpleVertex* aVertices = getVertices();
+		const WORD* aIndices = getIndices();
 
-		for (UINT i = 0u; i < numOfIndices / 3; i++)
+		m_aNormalData.resize(GetNumVertices(), NormalData());
+
+		XMFLOAT3 tangent;
+		XMFLOAT3 bitangent;
+
+		for (UINT i = 0; i < uNumFaces; ++i)
 		{
-			XMFLOAT3 tangent = {};
-			XMFLOAT3 bitangent = {};
-			calculateTangentBitangent(vertices[indices[i * 3]], vertices[indices[i * 3 + 1]], vertices[indices[i * 3 + 2]], tangent, bitangent);
-			m_aNormalData.push_back(NormalData{ .Tangent = tangent, .Bitangent = bitangent });
+			calculateTangentBitangent(aVertices[aIndices[i * 3]],
+				aVertices[aIndices[i * 3 + 1]],
+				aVertices[aIndices[i * 3 + 2]],
+				tangent,
+				bitangent);
+
+			m_aNormalData[aIndices[i * 3]].Tangent = tangent;
+			m_aNormalData[aIndices[i * 3]].Bitangent = bitangent;
+
+			m_aNormalData[aIndices[i * 3 + 1]].Tangent = tangent;
+			m_aNormalData[aIndices[i * 3 + 1]].Bitangent = bitangent;
+
+			m_aNormalData[aIndices[i * 3 + 2]].Tangent = tangent;
+			m_aNormalData[aIndices[i * 3 + 2]].Bitangent = bitangent;
 		}
 	}
 
