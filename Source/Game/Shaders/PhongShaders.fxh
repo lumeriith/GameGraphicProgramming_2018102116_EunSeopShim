@@ -58,12 +58,18 @@ cbuffer cbChangesEveryFrame : register( b2 )
 
   Summary:  Constant buffer used for shading
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
+struct PointLight
+{
+    float4 Position;
+    float4 Color;
+    matrix View;
+    matrix Projection;
+    float4 AttenuationDistance;
+};
+
 cbuffer cbLights : register(b3)
 {
-    float4 LightPositions[NUM_LIGHTS];
-    float4 LightColors[NUM_LIGHTS];
-    matrix LightViews[NUM_LIGHTS];
-    matrix LightProjections[NUM_LIGHTS];
+    PointLight PointLights[NUM_LIGHTS];
 };
 
 //--------------------------------------------------------------------------------------
@@ -135,8 +141,8 @@ PS_PHONG_INPUT VSPhong(VS_PHONG_INPUT input)
     
     output.LightViewPosition = input.Position;
     output.LightViewPosition = mul(output.LightViewPosition, World);
-    output.LightViewPosition = mul(output.LightViewPosition, LightViews[0]);
-    output.LightViewPosition = mul(output.LightViewPosition, LightProjections[0]);
+    output.LightViewPosition = mul(output.LightViewPosition, PointLights[0].View);
+    output.LightViewPosition = mul(output.LightViewPosition, PointLights[0].Projection);
     
     return output;
 }
@@ -197,14 +203,23 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
         return float4(ambient * albedo.rgb, 1);
     }
     
+    float shininess = 20;
 	for (uint i = 0; i < NUM_LIGHTS; ++i)
 	{
-		float3 fromLightDir = normalize(input.WorldPosition - LightPositions[i].xyz);
+        float attEpsilon = 0.000001f;
+        float sqrDist = dot(
+            input.WorldPosition - PointLights[i].Position.xyz, 
+            input.WorldPosition - PointLights[i].Position.xyz
+        );
+        float attFactor = PointLights[i].AttenuationDistance.z / (sqrDist + attEpsilon);
+        float4 attLightColor = PointLights[i].Color * attFactor;
+        
+		float3 fromLightDir = normalize(input.WorldPosition - PointLights[i].Position.xyz);
 	
-		diffuse += max(dot(normal, -fromLightDir), 0) * LightColors[i].xyz;
+		diffuse += max(dot(normal, -fromLightDir), 0) * attLightColor.xyz;
 		
 		float3 refDir = reflect(fromLightDir, normal);
-		specular += pow(max(dot(refDir, toViewDir), 0), 20) * LightColors[i].xyz;
+        specular += pow(max(dot(refDir, toViewDir), 0), shininess) * attLightColor.xyz;
     }
 
     return float4(ambient + diffuse + specular, 1) * albedo;

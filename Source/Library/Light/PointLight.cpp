@@ -12,7 +12,7 @@ namespace library
 	  Modifies: [m_position, m_color, m_eye, m_at,
 				 m_up, m_view, m_projection].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	PointLight::PointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color) :
+	PointLight::PointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color, _In_ FLOAT attenuationDistance) :
 		m_position(position),
 		m_color(color),
 		m_eye(),
@@ -20,7 +20,7 @@ namespace library
 		m_up(DEFAULT_UP),
 		m_view(),
 		m_projection(),
-		m_attenuationDistance()
+		m_attenuationDistance(attenuationDistance)
 	{
 	}
 

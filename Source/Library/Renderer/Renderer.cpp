@@ -510,12 +510,22 @@ namespace library
 
 		for (UINT i = 0u; i < NUM_LIGHTS; i++)
 		{
-			const auto light = mainScene->GetPointLight(i);
+			const auto& light = mainScene->GetPointLight(i);
+			const float attDist = light->GetAttenuationDistance();
+			const float sqrAttDist = attDist * attDist;
+			auto& data = cbLights.PointLights[i];
 			if (!light) continue;
-			cbLights.LightPositions[i] = light->GetPosition();
-			cbLights.LightColors[i] = light->GetColor();
-			cbLights.LightViews[i] = XMMatrixTranspose(light->GetViewMatrix());
-			cbLights.LightProjections[i] = XMMatrixTranspose(light->GetProjectionMatrix());
+
+			data.Position = light->GetPosition();
+			data.Color = light->GetColor();
+			data.View = XMMatrixTranspose(light->GetViewMatrix());
+			data.Projection = XMMatrixTranspose(light->GetProjectionMatrix());
+			data.AttenuationDistance = XMFLOAT4(
+				attDist,
+				attDist,
+				sqrAttDist,
+				sqrAttDist
+			);
 		}
 
 		m_immediateContext->UpdateSubresource(
