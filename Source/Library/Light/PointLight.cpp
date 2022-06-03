@@ -17,7 +17,7 @@ namespace library
 		m_color(color),
 		m_eye(),
 		m_at(),
-		m_up(),
+		m_up(DEFAULT_UP),
 		m_view(),
 		m_projection()
 	{
@@ -85,7 +85,12 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	void PointLight::Initialize(_In_ UINT uWidth, _In_ UINT uHeight)
 	{
-		// TODO
+		m_projection = XMMatrixPerspectiveFovLH(
+			XM_PIDIV4,
+			static_cast<FLOAT>(uWidth) / static_cast<FLOAT>(uHeight),
+			0.01f,
+			1000.0f
+		);
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

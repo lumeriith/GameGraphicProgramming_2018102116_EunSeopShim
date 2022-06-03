@@ -75,9 +75,7 @@ namespace library
 		hr = pDevice->CreateBuffer(&vBufferDesc, &vData, &m_vertexBuffer);
 		if (FAILED(hr)) return hr;
 
-		// TODO check if right
-		// If renderable has texture and m_aNormalData is empty
-		if (m_aMaterials.size() > 0 && m_aNormalData.size() == 0)
+		if (m_aNormalData.empty())
 		{
 			calculateNormalMapVectors();
 		}

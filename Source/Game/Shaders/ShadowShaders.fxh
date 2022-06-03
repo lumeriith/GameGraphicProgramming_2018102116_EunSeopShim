@@ -35,9 +35,19 @@ struct PS_SHADOW_INPUT
 //--------------------------------------------------------------------------------------
 PS_SHADOW_INPUT VSShadow(VS_SHADOW_INPUT input)
 {
-	/*--------------------------------------------------------------------
-	  TODO: Vertex shader code (remove the comment)
-	--------------------------------------------------------------------*/
+    PS_SHADOW_INPUT output = (PS_SHADOW_INPUT) 0;
+    output.Position = input.Position;
+	
+	if (isVoxel)
+        output.Position = mul(output.Position, input.mTransform);
+	
+    output.Position = mul(output.Position, World);
+    output.Position = mul(output.Position, View);
+    output.Position = mul(output.Position, Projection);
+	
+    output.DepthPosition = output.Position;
+	
+    return output;
 };
 
 
@@ -46,7 +56,6 @@ PS_SHADOW_INPUT VSShadow(VS_SHADOW_INPUT input)
 //--------------------------------------------------------------------------------------
 float4 PSShadow(PS_SHADOW_INPUT input) : SV_Target
 {
-	/*--------------------------------------------------------------------
-	  TODO: Pixel shader code (remove the comment)
-	--------------------------------------------------------------------*/
+    float depthVal = input.DepthPosition.z / input.DepthPosition.w;
+    return float4(depthVal, depthVal, depthVal, 1.0f);
 };
