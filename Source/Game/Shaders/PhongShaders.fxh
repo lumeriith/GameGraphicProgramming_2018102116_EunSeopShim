@@ -122,15 +122,15 @@ PS_PHONG_INPUT VSPhong(VS_PHONG_INPUT input)
     output.Position = mul(output.Position, View);
     output.Position = mul(output.Position, Projection);
 
-    output.Normal = normalize(input.Normal);
+    output.Normal = mul(float4(input.Normal, 0.0f), World).xyz;
     output.TexCoord = input.TexCoord;
 	
     output.WorldPosition = mul(input.Position, World);
 	
     if (HasNormalMap)
     {
-        output.Tangent = normalize(mul(float4(input.Tangent, 0), World).xyz);
-        output.Bitangent = normalize(mul(float4(input.Bitangent, 0), World).xyz);
+        output.Tangent = normalize(mul(float4(input.Tangent, 0.0f), World).xyz);
+        output.Bitangent = normalize(mul(float4(input.Bitangent, 0.0f), World).xyz);
     }
     
     output.LightViewPosition = input.Position;
@@ -191,7 +191,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
     
     float currentDepth = input.LightViewPosition.z / input.LightViewPosition.w;
     currentDepth = LinearizeDepth(currentDepth);
-    
+
     if (currentDepth > closestDepth + 0.001f) // Shadow bias
     {
         return float4(ambient * albedo.rgb, 1);
@@ -207,7 +207,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
 		specular += pow(max(dot(refDir, toViewDir), 0), 20) * LightColors[i].xyz;
     }
 
-    return float4(ambient + diffuse + specular, 1) * aTextures[0].Sample(aSamplers[0], input.TexCoord);
+    return float4(ambient + diffuse + specular, 1) * albedo;
 }
 
 float4 PSLightCube(PS_LIGHT_CUBE_INPUT input) : SV_Target
