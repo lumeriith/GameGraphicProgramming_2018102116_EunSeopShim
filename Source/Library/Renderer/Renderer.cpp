@@ -514,6 +514,8 @@ namespace library
 			if (!light) continue;
 			cbLights.LightPositions[i] = light->GetPosition();
 			cbLights.LightColors[i] = light->GetColor();
+			cbLights.LightViews[i] = XMMatrixTranspose(light->GetViewMatrix());
+			cbLights.LightProjections[i] = XMMatrixTranspose(light->GetProjectionMatrix());
 		}
 
 		m_immediateContext->UpdateSubresource(
@@ -875,10 +877,10 @@ namespace library
 			UINT offset = 0;
 
 			m_immediateContext->IASetVertexBuffers(
-				0,												// the first input slot for binding
-				1,												// the number of buffers in the array
-				renderable->GetVertexBuffer().GetAddressOf(),	// the array of vertex buffers
-				&stride,										// array of stride values, one for each buffer
+				0,
+				1,
+				renderable->GetVertexBuffer().GetAddressOf(),
+				&stride,
 				&offset
 			);
 
@@ -890,9 +892,9 @@ namespace library
 
 			// Shadow constant buffer
 			CBShadowMatrix cbShadow = {
-				.World = renderable->GetWorldMatrix(),
-				.View = light->GetViewMatrix(),
-				.Projection = light->GetProjectionMatrix(),
+				.World = XMMatrixTranspose(renderable->GetWorldMatrix()),
+				.View = XMMatrixTranspose(light->GetViewMatrix()),
+				.Projection = XMMatrixTranspose(light->GetProjectionMatrix()),
 				.IsVoxel = false
 			};
 
@@ -911,6 +913,54 @@ namespace library
 			for (UINT i = 0; i < numOfMesh; i++)
 			{
 				const auto& mesh = renderable->GetMesh(i);
+				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, static_cast<INT>(mesh.uBaseVertex));
+			}
+		}
+
+		for (auto& pair : scene->GetModels())
+		{
+			auto& model = pair.second;
+
+			// Set the vertex buffer
+			UINT stride0 = sizeof(SimpleVertex);
+			UINT offset0 = 0;
+			m_immediateContext->IASetVertexBuffers(
+				0,
+				1,
+				model->GetVertexBuffer().GetAddressOf(),
+				&stride0,
+				&offset0
+			);
+
+			// Set the index buffer
+			m_immediateContext->IASetIndexBuffer(model->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0);
+
+			// Set the input layout
+			m_immediateContext->IASetInputLayout(model->GetVertexLayout().Get());
+
+			// Shadow constant buffer
+			CBShadowMatrix cbShadow = {
+				.World = XMMatrixTranspose(model->GetWorldMatrix()),
+				.View = XMMatrixTranspose(light->GetViewMatrix()),
+				.Projection = XMMatrixTranspose(light->GetProjectionMatrix()),
+				.IsVoxel = false
+			};
+
+			m_immediateContext->UpdateSubresource(
+				m_cbShadowMatrix.Get(),
+				0u,
+				nullptr,
+				&cbShadow,
+				0u,
+				0u
+			);
+
+			m_immediateContext->VSSetConstantBuffers(0, 1, m_cbShadowMatrix.GetAddressOf());
+
+			const UINT numOfMesh = model->GetNumMeshes();
+			for (UINT i = 0; i < numOfMesh; i++)
+			{
+				const auto& mesh = model->GetMesh(i);
 				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, static_cast<INT>(mesh.uBaseVertex));
 			}
 		}
