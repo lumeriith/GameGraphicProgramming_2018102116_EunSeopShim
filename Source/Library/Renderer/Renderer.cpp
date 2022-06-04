@@ -612,7 +612,7 @@ namespace library
 					const auto& material = renderable->GetMaterial(mesh.uMaterialIndex);
 
 					const auto& diffuseView = material->pDiffuse->GetTextureResourceView();
-					const auto& diffuseSampler = material->pDiffuse->GetSamplerState();
+					const auto& diffuseSampler = Texture::s_samplers[static_cast<size_t>(material->pDiffuse->GetSamplerType())];
 
 					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
 					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
@@ -620,7 +620,7 @@ namespace library
 					if (renderable->HasNormalMap())
 					{
 						const auto& normalView = material->pNormal->GetTextureResourceView();
-						const auto& normalSampler = material->pNormal->GetSamplerState();
+						const auto& normalSampler = Texture::s_samplers[static_cast<size_t>(material->pNormal->GetSamplerType())];
 
 						m_immediateContext->PSSetShaderResources(1, 1, normalView.GetAddressOf());
 						m_immediateContext->PSSetSamplers(1, 1, normalSampler.GetAddressOf());
@@ -710,10 +710,10 @@ namespace library
 					const auto& material = vox->GetMaterial(mesh.uMaterialIndex);
 
 					const auto& diffuseView = material->pDiffuse->GetTextureResourceView();
-					const auto& diffuseSampler = material->pDiffuse->GetSamplerState();
+					const auto& diffuseSampler = Texture::s_samplers[static_cast<size_t>(material->pDiffuse->GetSamplerType())];
 
 					const auto& normalView = material->pNormal->GetTextureResourceView();
-					const auto& normalSampler = material->pNormal->GetSamplerState();
+					const auto& normalSampler = Texture::s_samplers[static_cast<size_t>(material->pNormal->GetSamplerType())];
 
 					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
 					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
@@ -830,16 +830,90 @@ namespace library
 					const auto& material = model->GetMaterial(mesh.uMaterialIndex);
 
 					const auto& diffuseView = material->pDiffuse->GetTextureResourceView();
-					const auto& diffuseSampler = material->pDiffuse->GetSamplerState();
+					const auto& diffuseSampler = Texture::s_samplers[static_cast<size_t>(material->pDiffuse->GetSamplerType())];
 
 					const auto& normalView = material->pNormal->GetTextureResourceView();
-					const auto& normalSampler = material->pNormal->GetSamplerState();
+					const auto& normalSampler = Texture::s_samplers[static_cast<size_t>(material->pNormal->GetSamplerType())];
 
 					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
 					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
 
 					m_immediateContext->PSSetShaderResources(1, 1, normalView.GetAddressOf());
 					m_immediateContext->PSSetSamplers(1, 1, normalSampler.GetAddressOf());
+				}
+
+				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, static_cast<INT>(mesh.uBaseVertex));
+			}
+		}
+
+		const auto& skyBox = mainScene->GetSkyBox();
+		if (skyBox)
+		{
+			// Set the vertex buffer
+			UINT stride = sizeof(SimpleVertex);
+			UINT offset = 0;
+
+			m_immediateContext->IASetVertexBuffers(
+				0,												// the first input slot for binding
+				1,												// the number of buffers in the array
+				skyBox->GetVertexBuffer().GetAddressOf(),	// the array of vertex buffers
+				&stride,										// array of stride values, one for each buffer
+				&offset
+			);
+
+			// Set the index buffer
+			m_immediateContext->IASetIndexBuffer(skyBox->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0);
+
+			// Set the input layout
+			m_immediateContext->IASetInputLayout(skyBox->GetVertexLayout().Get());
+
+			// Create and update renderable constant buffer
+			CBChangesEveryFrame cbRenderable = {
+				.World = XMMatrixTranspose(skyBox->GetWorldMatrix()),
+				.OutputColor = skyBox->GetOutputColor(),
+				.HasNormalMap = skyBox->HasNormalMap()
+			};
+
+			m_immediateContext->UpdateSubresource(
+				skyBox->GetConstantBuffer().Get(),
+				0u,
+				nullptr,
+				&cbRenderable,
+				0u,
+				0u
+			);
+
+			// Set shaders
+			m_immediateContext->VSSetShader(skyBox->GetVertexShader().Get(), nullptr, 0);
+			m_immediateContext->PSSetShader(skyBox->GetPixelShader().Get(), nullptr, 0);
+
+			// Set renderable constant buffer
+			m_immediateContext->VSSetConstantBuffers(2, 1, skyBox->GetConstantBuffer().GetAddressOf());
+			m_immediateContext->PSSetConstantBuffers(2, 1, skyBox->GetConstantBuffer().GetAddressOf());
+
+			const UINT numOfMesh = skyBox->GetNumMeshes();
+			for (UINT i = 0; i < numOfMesh; i++)
+			{
+				const auto& mesh = skyBox->GetMesh(i);
+
+				if (skyBox->HasTexture())
+				{
+					const auto& material = skyBox->GetMaterial(mesh.uMaterialIndex);
+
+					const auto& diffuseView = material->pDiffuse->GetTextureResourceView();
+					const auto& diffuseSampler = Texture::s_samplers[static_cast<size_t>(material->pDiffuse->GetSamplerType())];
+
+					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
+					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
+
+					if (skyBox->HasNormalMap())
+					{
+						const auto& normalView = material->pNormal->GetTextureResourceView();
+						const auto& normalSampler = Texture::s_samplers[static_cast<size_t>(material->pNormal->GetSamplerType())];
+
+						m_immediateContext->PSSetShaderResources(1, 1, normalView.GetAddressOf());
+						m_immediateContext->PSSetSamplers(1, 1, normalSampler.GetAddressOf());
+					}
 				}
 
 				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, static_cast<INT>(mesh.uBaseVertex));

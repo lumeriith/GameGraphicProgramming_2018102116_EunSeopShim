@@ -32,6 +32,7 @@ namespace library
 		, m_vertexShaders()
 		, m_pixelShaders()
 		, m_materials()
+		, m_skyBox()
 	{
 		std::ifstream inputFile;
 		inputFile.open(m_filePath.string());
@@ -167,9 +168,6 @@ namespace library
 				ID3D11DeviceContext* pImmediateContext
 				  The Direct3D context to set buffers
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Scene::Initialize definition (remove the comment)
-	--------------------------------------------------------------------*/
 	HRESULT Scene::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
 	{
 		for (auto voxel : m_voxels)
@@ -229,6 +227,11 @@ namespace library
 			{
 				return hr;
 			}
+		}
+
+		if (m_skyBox)
+		{
+			m_skyBox->Initialize(pDevice, pImmediateContext);
 		}
 
 		return S_OK;
@@ -406,9 +409,11 @@ namespace library
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	HRESULT Scene::AddSkyBox(_In_ const std::shared_ptr<Skybox>& skybox)
 	{
-		// todo check what?
+		if (!skybox)
+		{
+			return E_INVALIDARG;
+		}
 		m_skyBox = skybox;
-
 		return S_OK;
 	}
 

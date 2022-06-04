@@ -97,7 +97,7 @@ namespace library
 
 	private:
 		std::filesystem::path m_filePath;
-		std::vector<std::shared_ptr<Voxel>> m_voxels;
+		std::vector<std::shared_ptr<Voxel>> m_voxels{};
 		std::unordered_map<std::wstring, std::shared_ptr<Renderable>> m_renderables;
 		std::unordered_map<std::wstring, std::shared_ptr<Model>> m_models;
 		std::shared_ptr<PointLight> m_aPointLights[NUM_LIGHTS];
