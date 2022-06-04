@@ -712,14 +712,17 @@ namespace library
 					const auto& diffuseView = material->pDiffuse->GetTextureResourceView();
 					const auto& diffuseSampler = Texture::s_samplers[static_cast<size_t>(material->pDiffuse->GetSamplerType())];
 
-					const auto& normalView = material->pNormal->GetTextureResourceView();
-					const auto& normalSampler = Texture::s_samplers[static_cast<size_t>(material->pNormal->GetSamplerType())];
-
 					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
 					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
 
-					m_immediateContext->PSSetShaderResources(1, 1, normalView.GetAddressOf());
-					m_immediateContext->PSSetSamplers(1, 1, normalSampler.GetAddressOf());
+					if (vox->HasNormalMap())
+					{
+						const auto& normalView = material->pNormal->GetTextureResourceView();
+						const auto& normalSampler = Texture::s_samplers[static_cast<size_t>(material->pNormal->GetSamplerType())];
+
+						m_immediateContext->PSSetShaderResources(1, 1, normalView.GetAddressOf());
+						m_immediateContext->PSSetSamplers(1, 1, normalSampler.GetAddressOf());
+					}
 				}
 
 				m_immediateContext->DrawIndexedInstanced(
@@ -832,14 +835,17 @@ namespace library
 					const auto& diffuseView = material->pDiffuse->GetTextureResourceView();
 					const auto& diffuseSampler = Texture::s_samplers[static_cast<size_t>(material->pDiffuse->GetSamplerType())];
 
-					const auto& normalView = material->pNormal->GetTextureResourceView();
-					const auto& normalSampler = Texture::s_samplers[static_cast<size_t>(material->pNormal->GetSamplerType())];
-
 					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
 					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
 
-					m_immediateContext->PSSetShaderResources(1, 1, normalView.GetAddressOf());
-					m_immediateContext->PSSetSamplers(1, 1, normalSampler.GetAddressOf());
+					if (model->HasNormalMap())
+					{
+						const auto& normalView = material->pNormal->GetTextureResourceView();
+						const auto& normalSampler = Texture::s_samplers[static_cast<size_t>(material->pNormal->GetSamplerType())];
+
+						m_immediateContext->PSSetShaderResources(1, 1, normalView.GetAddressOf());
+						m_immediateContext->PSSetSamplers(1, 1, normalSampler.GetAddressOf());
+					}
 				}
 
 				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, static_cast<INT>(mesh.uBaseVertex));
