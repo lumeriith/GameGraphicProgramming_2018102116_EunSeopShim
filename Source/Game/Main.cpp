@@ -354,9 +354,9 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	floor->AddMaterial(floorMaterial);
 	if (FAILED(mainScene->AddRenderable(L"Floor", floor)))
 		return 0;
-	if (FAILED(mainScene->SetVertexShaderOfRenderable(L"Floor", L"PhongShader")))
+	if (FAILED(mainScene->SetVertexShaderOfRenderable(L"Floor", L"EnvironmentMapShader")))
 		return 0;
-	if (FAILED(mainScene->SetPixelShaderOfRenderable(L"Floor", L"PhongShader")))
+	if (FAILED(mainScene->SetPixelShaderOfRenderable(L"Floor", L"EnvironmentMapShader")))
 		return 0;
 
 	// Wall

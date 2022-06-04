@@ -200,7 +200,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
 
     if (currentDepth > closestDepth + 0.001f) // Shadow bias
     {
-        return float4(ambient * albedo.rgb, 1);
+        return float4(ambient, 1) * albedo;
     }
     
     float shininess = 20;

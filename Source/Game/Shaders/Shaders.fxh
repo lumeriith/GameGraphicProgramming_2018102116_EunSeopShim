@@ -17,6 +17,9 @@ SamplerState aSamplers[2] : register(s0);
 Texture2D shadowMapTexture : register(t2);
 SamplerState shadowMapSampler : register(s2);
 
+TextureCube envTexture : register(t3);
+SamplerState envSampler : register(s3);
+
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
 //--------------------------------------------------------------------------------------
@@ -170,6 +173,13 @@ float4 PSEnvironmentMap(PS_PHONG_INPUT input) : SV_Target
         float3 bumpNormal = bumpMap.x * input.Tangent + bumpMap.y * input.Bitangent + bumpMap.z * normal;
         normal = normalize(bumpNormal);
     }
+    
+    
+    float3 fromCamera = normalize(input.WorldPosition - CameraPosition.xyz);
+    float3 reflVector = reflect(fromCamera, normal);
+    float4 envColor = envTexture.Sample(envSampler, reflVector);
+    float envStrength = 0.25f;
+    float4 env = envColor * envStrength;
 	
     float4 albedo = aTextures[0].Sample(aSamplers[0], input.TexCoord);
     float3 ambient = float3(0.1f, 0.1f, 0.1f);
@@ -190,7 +200,7 @@ float4 PSEnvironmentMap(PS_PHONG_INPUT input) : SV_Target
 
     if (currentDepth > closestDepth + 0.001f) // Shadow bias
     {
-        return float4(ambient * albedo.rgb, 1);
+        return float4(ambient, 1) * albedo + env;
     }
     
     float shininess = 20;
@@ -212,7 +222,7 @@ float4 PSEnvironmentMap(PS_PHONG_INPUT input) : SV_Target
         specular += pow(max(dot(refDir, toViewDir), 0), shininess) * attLightColor.xyz;
     }
 
-    return float4(ambient + diffuse + specular, 1) * albedo;
+    return float4(ambient + diffuse + specular, 1) * albedo + env;
 }
 
 // Placeholder

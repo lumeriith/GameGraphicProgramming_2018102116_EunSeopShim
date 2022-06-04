@@ -543,6 +543,18 @@ namespace library
 		m_immediateContext->PSSetShaderResources(2, 1, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
 		m_immediateContext->PSSetSamplers(2, 1, m_shadowMapTexture->GetSamplerState().GetAddressOf());
 
+		// Env texture and sampler state
+		const auto& skybox = mainScene->GetSkyBox();
+		if (skybox)
+		{
+			const auto& material = skybox->GetMaterial(0);
+			const auto& envTexView = material->pDiffuse->GetTextureResourceView();
+			const auto& envSampler = Texture::s_samplers[static_cast<size_t>(material->pDiffuse->GetSamplerType())];
+
+			m_immediateContext->PSSetShaderResources(3, 1, envTexView.GetAddressOf());
+			m_immediateContext->PSSetSamplers(3, 1, envSampler.GetAddressOf());
+		}
+
 		// For each renderables
 		for (const auto& pair : mainScene->GetRenderables())
 		{
