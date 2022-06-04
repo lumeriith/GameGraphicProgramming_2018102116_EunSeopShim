@@ -159,12 +159,12 @@ float4 PSVoxel(PS_INPUT input) : SV_Target
 		
     for (uint i = 0; i < NUM_LIGHTS; ++i)
     {
-        float3 fromLightDir = normalize((input.WorldPos - LightPositions[i]).xyz);
+        float3 fromLightDir = normalize((input.WorldPos - PointLights[i].Position).xyz);
 	
-        diffuse += max(dot(normal, -fromLightDir), 0) * LightColors[i].xyz;
+        diffuse += max(dot(normal, -fromLightDir), 0) * PointLights[i].Color.xyz;
 		
         float3 refDir = reflect(fromLightDir, normal);
-        specular += pow(max(dot(refDir, toViewDir), 0), 20) * LightColors[i].xyz;
+        specular += pow(max(dot(refDir, toViewDir), 0), 20) * PointLights[i].Color.xyz;
     }
 
     return float4((ambient + diffuse + specular) * sampledAlbedo, 1);
