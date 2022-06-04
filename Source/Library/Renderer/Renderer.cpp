@@ -868,8 +868,10 @@ namespace library
 			m_immediateContext->IASetInputLayout(skyBox->GetVertexLayout().Get());
 
 			// Create and update renderable constant buffer
+			XMMATRIX world = skyBox->GetWorldMatrix();
+			world = world * XMMatrixTranslationFromVector(m_camera.GetEye());
 			CBChangesEveryFrame cbRenderable = {
-				.World = XMMatrixTranspose(skyBox->GetWorldMatrix()),
+				.World = XMMatrixTranspose(world),
 				.OutputColor = skyBox->GetOutputColor(),
 				.HasNormalMap = skyBox->HasNormalMap()
 			};
@@ -905,21 +907,11 @@ namespace library
 
 					m_immediateContext->PSSetShaderResources(0, 1, diffuseView.GetAddressOf());
 					m_immediateContext->PSSetSamplers(0, 1, diffuseSampler.GetAddressOf());
-
-					if (skyBox->HasNormalMap())
-					{
-						const auto& normalView = material->pNormal->GetTextureResourceView();
-						const auto& normalSampler = Texture::s_samplers[static_cast<size_t>(material->pNormal->GetSamplerType())];
-
-						m_immediateContext->PSSetShaderResources(1, 1, normalView.GetAddressOf());
-						m_immediateContext->PSSetSamplers(1, 1, normalSampler.GetAddressOf());
-					}
 				}
 
 				m_immediateContext->DrawIndexed(mesh.uNumIndices, mesh.uBaseIndex, static_cast<INT>(mesh.uBaseVertex));
 			}
 		}
-
 
 		// Present
 		m_swapChain->Present(0, 0);
@@ -930,7 +922,6 @@ namespace library
 		// Unbind shadow texture so fake render can write to it
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		m_immediateContext->PSSetShaderResources(2, 1, nullSRV);
-
 
 		// Unbind vertex slots so RenderSceneToTexture doesn't complain
 		ID3D11Buffer* nullVB[3] = { nullptr, nullptr, nullptr };

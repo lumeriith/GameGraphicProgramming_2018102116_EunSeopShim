@@ -8,7 +8,7 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-Texture2D diffuse : register(t0);
+TextureCube diffuse : register(t0);
 SamplerState diffuseSampler : register(s0);
 
 //--------------------------------------------------------------------------------------
@@ -84,6 +84,8 @@ PS_INPUT VSCubeMap(VS_INPUT input)
     output.Position = mul(output.Position, Projection);
     
     output.TexCoord = input.Position.xyz;
+    
+    return output;
 }
 
 //--------------------------------------------------------------------------------------

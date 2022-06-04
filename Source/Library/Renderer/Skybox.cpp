@@ -36,7 +36,7 @@ namespace library
 
 	  Modifies: [m_aMeshes, m_aMaterials].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Skybox::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pImmediateContext)
+	HRESULT Skybox::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
 	{
 		HRESULT hr = Model::Initialize(pDevice, pImmediateContext);
 		if (FAILED(hr)) return hr;
@@ -45,10 +45,10 @@ namespace library
 
 		m_aMeshes[0].uMaterialIndex = 0;
 
-		const auto&& material = std::make_shared<Material>(L"CubeMapTexture");
-		material->pDiffuse = std::make_shared<Texture>(m_cubeMapFileName);
-		material->Initialize(pDevice, pImmediateContext);
-		AddMaterial(material);
+		m_aMaterials[0]->pDiffuse = std::make_shared<Texture>(m_cubeMapFileName);
+
+		hr = m_aMaterials[0]->Initialize(pDevice, pImmediateContext);
+		if (FAILED(hr)) return hr;
 
 		return S_OK;
 	}
