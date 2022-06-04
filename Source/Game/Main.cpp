@@ -316,9 +316,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	skybox->SetVertexShader(cubeMapVertexShader);
 	skybox->SetPixelShader(cubeMapPixelShader);
 	if (FAILED(mainScene->AddSkyBox(skybox)))
-	{
 		return 0;
-	}
 
 	// Light
 	XMFLOAT4 lightColor;
@@ -373,7 +371,6 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	// Nanosuit
 	std::shared_ptr<library::Model> nanosuit = std::make_shared<library::Model>(L"Content/Nanosuit/nanosuit.obj");
-
 	if (FAILED(mainScene->AddModel(L"Nanosuit", nanosuit)))
 		return 0;
 	if (FAILED(mainScene->SetVertexShaderOfModel(L"Nanosuit", L"EnvironmentMapShader")))

@@ -216,7 +216,11 @@ namespace library
 
 			for (UINT i = 0u; i < it->second->GetNumMaterials(); ++i)
 			{
-				AddMaterial(it->second->GetMaterial(i));
+				hr = AddMaterial(it->second->GetMaterial(i));
+				if (FAILED(hr))
+				{
+					return hr;
+				}
 			}
 		}
 
@@ -231,7 +235,11 @@ namespace library
 
 		if (m_skyBox)
 		{
-			m_skyBox->Initialize(pDevice, pImmediateContext);
+			HRESULT hr = m_skyBox->Initialize(pDevice, pImmediateContext);
+			if (FAILED(hr))
+			{
+				return hr;
+			}
 		}
 
 		return S_OK;
