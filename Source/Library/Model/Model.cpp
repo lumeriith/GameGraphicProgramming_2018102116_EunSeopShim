@@ -93,6 +93,11 @@ namespace library
 		m_globalInverseTransform()
 	{}
 
+	Model::~Model()
+	{
+		delete m_pScene;
+	}
+
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
 	  Method:   Model::Initialize
 
@@ -115,10 +120,13 @@ namespace library
 
 		// Create the buffers for the vertices attributes
 
-		m_pScene = sm_pImporter->ReadFile(
+		sm_pImporter->ReadFile(
 			m_filePath.string().c_str(),
 			ASSIMP_LOAD_FLAGS
 		);
+
+		// Application is now responsible of deleting this scene.
+		m_pScene = sm_pImporter->GetOrphanedScene();
 
 		if (!m_pScene)
 		{

@@ -71,7 +71,7 @@ namespace library
 		Model(Model&& other) = delete;
 		Model& operator=(const Model& other) = delete;
 		Model& operator=(Model&& other) = delete;
-		virtual ~Model() = default;
+		~Model() override;
 
 		virtual HRESULT Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext);
 		virtual void Update(_In_ FLOAT deltaTime) override;
